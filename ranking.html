@@ -3603,5 +3603,90 @@ setInterval(updateLiveTimeDisplays,1000);
 })();
 </script>
 
+
+
+<!-- APF v82 - Admin simple + público limpio -->
+<style>
+/* v82: público más limpio en celular */
+body[data-apf-public="true"] .top .brand p{font-size:clamp(15px,4vw,22px);line-height:1.15}
+body[data-apf-public="true"] .tabs{gap:8px;align-items:center}
+body[data-apf-public="true"] .tabs button{font-size:14px;padding:11px 14px;border-radius:18px;min-height:auto}
+body[data-apf-public="true"] .match-card.apf-public-clean{padding:14px;border-radius:22px;background:linear-gradient(180deg,#083015,#051b10);border:1px solid #23e68255;box-shadow:0 10px 26px #0006}
+.apf-public-live-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.apf-public-live-head h3{margin:0;font-size:21px}.apf-live-state{background:#19e780;color:#001b0d;font-weight:900;padding:8px 12px;border-radius:999px;font-size:13px}.apf-live-meta{color:#c8dbd0;font-weight:800;font-size:13px;margin-top:3px}.apf-public-score{display:grid;gap:10px}.apf-team-row{display:grid;grid-template-columns:1fr 46px 46px 46px 52px;gap:7px;align-items:center;background:#06170f;border:1px solid #ffffff18;border-radius:18px;padding:10px}.apf-team-names b{display:block;font-size:16px;color:#f6fff8}.apf-team-names span{font-size:12px;color:#b8cdbf}.apf-score-mini{height:44px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:#020905;border:1px solid #ffffff18;color:#fff;font-weight:900;font-size:18px}.apf-score-mini.pts{background:#6b530d;color:#ffd978}.apf-public-clock{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.apf-public-clock span{background:#06170f;border:1px solid #ffffff18;border-radius:999px;padding:7px 10px;font-weight:800;color:#dfffe9;font-size:13px}.apf-public-empty{padding:18px;border-radius:20px;background:#06170f;border:1px solid #ffffff18;color:#d7e7dd}.apf-admin-simple-panel{background:linear-gradient(180deg,#0b2a18,#06170f);border:1px solid #23e68255;border-radius:22px;padding:16px;margin:0 0 14px}.apf-admin-simple-panel h2{margin:0 0 6px}.apf-admin-simple-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.apf-admin-simple-grid button{width:100%;min-height:54px}.apf-admin-match-simple{background:#06170f;border:1px solid #ffffff18;border-radius:20px;padding:14px;margin:12px 0}.apf-admin-match-title{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}.apf-admin-match-title h3{margin:0;font-size:20px}.apf-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.apf-admin-help{background:#092716;border:1px solid #23e68255;border-radius:16px;padding:10px;margin-top:10px;color:#dfffe9}
+@media(max-width:700px){body[data-apf-public="true"] .tabs{display:grid;grid-template-columns:1fr 1fr}body[data-apf-public="true"] .tabs button{font-size:13px;padding:10px 9px}.apf-team-row{grid-template-columns:1fr 38px 38px 38px 42px;padding:9px;gap:5px}.apf-score-mini{height:38px;font-size:16px}.apf-team-names b{font-size:14px}.apf-admin-simple-grid{grid-template-columns:1fr 1fr}.apf-admin-actions .btn{flex:1 1 140px}}
+</style>
+<script>
+(function(){
+  const esc82 = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const val82 = (m,k) => { try{return typeof playerName==='function'?playerName(m,k):(m.players&&m.players[k])||''}catch(e){return ''} };
+  const setVal82 = (m,t,i) => { try{return (m.sets && m.sets[t-1] && m.sets[t-1][i]) ?? '-'}catch(e){return '-'} };
+  const point82 = (m,i) => { try{return typeof pointLabel==='function'?pointLabel(m,i):((m.points&&m.points[i])||0)}catch(e){return 0} };
+  const clock82 = (m) => { try{return typeof formatClock==='function' && typeof liveMatchSeconds==='function'?formatClock(liveMatchSeconds(m)):'00:00'}catch(e){return '00:00'} };
+  const status82 = (m) => esc82(m.status || 'Programado');
+  const comp82 = (m) => esc82(m.competitionName || m.category || 'Partido APF');
+  function pairNames82(m,side){
+    const a = side===1 ? (val82(m,'p1') || m.team1 || 'Pareja 1') : (val82(m,'p3') || m.team2 || 'Pareja 2');
+    const b = side===1 ? (val82(m,'p2') || '') : (val82(m,'p4') || '');
+    return [a,b];
+  }
+  window.apfPublicMatchCard82 = function(m){
+    try{ if(typeof normalizeMatch==='function') normalizeMatch(m); }catch(e){}
+    const p1=pairNames82(m,1), p2=pairNames82(m,2);
+    return `<div class="match-card apf-public-clean">
+      <div class="apf-public-live-head"><div><h3>${esc82(m.team1||p1[0]||'Pareja 1')} <span style="color:#92ffbd">vs</span> ${esc82(m.team2||p2[0]||'Pareja 2')}</h3><div class="apf-live-meta">${comp82(m)}${m.branch?' · '+esc82(m.branch):''}${m.complex?' · '+esc82(m.complex):''}</div></div><span class="apf-live-state">${status82(m)}</span></div>
+      <div class="apf-public-score">
+        <div class="apf-team-row"><div class="apf-team-names"><b>${esc82(m.team1||'Pareja 1')}</b><span>${esc82(p1.filter(Boolean).join(' / ')||'Jugadores por confirmar')}</span></div><div class="apf-score-mini">${esc82(setVal82(m,1,0))}</div><div class="apf-score-mini">${esc82(setVal82(m,1,1))}</div><div class="apf-score-mini">${esc82(setVal82(m,1,2))}</div><div class="apf-score-mini pts">${esc82(point82(m,0))}</div></div>
+        <div class="apf-team-row"><div class="apf-team-names"><b>${esc82(m.team2||'Pareja 2')}</b><span>${esc82(p2.filter(Boolean).join(' / ')||'Jugadores por confirmar')}</span></div><div class="apf-score-mini">${esc82(setVal82(m,2,0))}</div><div class="apf-score-mini">${esc82(setVal82(m,2,1))}</div><div class="apf-score-mini">${esc82(setVal82(m,2,2))}</div><div class="apf-score-mini pts">${esc82(point82(m,1))}</div></div>
+      </div>
+      <div class="apf-public-clock"><span>⏱ Tiempo: ${clock82(m)}</span><span>🎾 Set actual: ${esc82((typeof currentSetLabel==='function'?currentSetLabel(m):'Set 1'))}</span></div>
+    </div>`;
+  };
+  window.apfAdminMatchCard82 = function(m){
+    try{ if(typeof normalizeMatch==='function') normalizeMatch(m); }catch(e){}
+    const title=(m.team1||'Pareja 1')+' vs '+(m.team2||'Pareja 2');
+    const controls = (typeof adminControls==='function') ? `<details style="margin-top:12px"><summary class="btn small" style="display:inline-block;cursor:pointer">Control de puntos y configuración avanzada</summary><div style="margin-top:10px">${adminControls(m)}</div></details>` : '';
+    return `<div class="apf-admin-match-simple"><div class="apf-admin-match-title"><div><h3>${esc82(title)}</h3><p class="muted">${comp82(m)}${m.branch?' · '+esc82(m.branch):''}${m.complex?' · '+esc82(m.complex):''}</p></div><span class="pill">${status82(m)}</span></div><div class="apf-admin-actions"><button class="btn primary small" onclick="${typeof apfEditMatchV79==='function'?'apfEditMatchV79':'apfEditMatchV82'}('${esc82(m.id)}')">✏️ Editar</button><button class="btn danger small" onclick="${typeof apfDeleteMatchV79==='function'?'apfDeleteMatchV79':'deleteMatch'}('${esc82(m.id)}')">🗑️ Eliminar</button><button class="btn small" onclick="openTV('${esc82(m.id)}')">📺 TV</button><button class="btn small" onclick="show('marcadores')">🌎 Ver público</button><button class="btn warn small" onclick="setMatchStatus('${esc82(m.id)}','Finalizado')">Finalizar</button></div>${controls}</div>`;
+  };
+  if(typeof window.matchCard==='function'){
+    const originalMatchCard82 = window.matchCard;
+    window.matchCard = function(m,admin=false){
+      if(admin) return window.apfAdminMatchCard82(m);
+      if(document.body && document.body.getAttribute('data-apf-public')==='true') return window.apfPublicMatchCard82(m);
+      return originalMatchCard82(m,admin);
+    };
+  }
+  if(typeof window.renderLive==='function'){
+    window.renderLive = function(target,list,empty='No hay marcadores activos.'){
+      const el=document.getElementById(target); if(!el)return;
+      if(!list || !list.length){el.innerHTML=`<div class="apf-public-empty">${esc82(empty)}</div>`;return;}
+      const isPublic = document.body && document.body.getAttribute('data-apf-public')==='true';
+      el.innerHTML=list.map(m=> isPublic ? window.apfPublicMatchCard82(m) : matchCard(m,false)).join('');
+    };
+  }
+  function insertAdminPanel82(){
+    const admin=document.getElementById('admin'); if(!admin || document.getElementById('apfAdminSimplePanel82')) return;
+    const panel=document.createElement('div');
+    panel.id='apfAdminSimplePanel82'; panel.className='apf-admin-simple-panel';
+    panel.innerHTML=`<h2>Panel rápido APF</h2><p class="muted">Entrá directo a lo que más vas a usar durante un torneo.</p><div class="apf-admin-simple-grid"><button class="btn primary" onclick="openAdminModule('marcadores')">📺 Marcadores</button><button class="btn" onclick="openAdminModule('competencias')">🏆 Competencias</button><button class="btn" onclick="openAdminModule('jugadores')">👥 Jugadores / Parejas</button><button class="btn" onclick="openAdminModule('fixture')">📅 Fixture</button></div><div class="apf-admin-help"><b>Consejo:</b> para editar o eliminar un marcador entrá a <b>Marcadores</b>. Ahí aparece cada partido con botones claros.</div>`;
+    const grid=admin.querySelector('.grid'); if(grid) grid.prepend(panel);
+  }
+  const oldRenderAll82=window.renderAll;
+  if(typeof oldRenderAll82==='function'){
+    window.renderAll=function(){
+      oldRenderAll82();
+      insertAdminPanel82();
+      const am=document.getElementById('adminMatches');
+      if(am && window.db){
+        const matches=(db.matches||[]);
+        am.innerHTML=matches.length?matches.map(m=>window.apfAdminMatchCard82(m)).join(''):'<p class="muted">Todavía no creaste marcadores.</p>';
+      }
+    };
+  }
+  window.apfEditMatchV82=function(id){ if(typeof apfEditMatchV79==='function') return apfEditMatchV79(id); alert('Editor no disponible todavía en esta carga. Volvé a subir todos los archivos de la versión completa.'); };
+  setTimeout(()=>{try{insertAdminPanel82(); if(typeof renderAll==='function') renderAll();}catch(e){}},800);
+})();
+</script>
+<!-- /APF v82 -->
+
 </body>
 </html>
