@@ -3749,5 +3749,126 @@ body[data-apf-public="true"] .public-panel-title h3,body[data-apf-public="true"]
 })();
 </script>
 
+
+
+<style id="apfV85CleanupStyles">
+/* APF v85 - limpieza real Admin/Público + fotos corregidas */
+body[data-apf-route="admin"] #adminMenu,
+body[data-apf-route="admin"] #admin > .grid > .card.full:not(#apfV85AdminPanel):not(.admin-module){display:none!important;}
+body[data-apf-route="admin"] #apfV85AdminPanel{display:block!important;}
+#apfV85AdminPanel{border:1px solid rgba(45,255,151,.28)!important;background:linear-gradient(180deg,rgba(8,34,22,.94),rgba(4,16,10,.94))!important;border-radius:24px!important;padding:18px!important;box-shadow:0 18px 55px rgba(0,0,0,.25)!important}
+.apf-v85-admin-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}.apf-v85-admin-head h2{font-size:32px!important;margin:0!important}.apf-v85-admin-head p{margin:6px 0 0!important;color:#c8decf!important;font-size:15px!important}.apf-v85-badge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;background:#0d281b;border:1px solid rgba(45,255,151,.32);color:#eafff2;font-weight:900}.apf-v85-badge:before{content:"";width:9px;height:9px;border-radius:50%;background:#2dff97;box-shadow:0 0 12px #2dff97}.apf-v85-admin-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}.apf-v85-admin-card{border:1px solid rgba(255,255,255,.14)!important;background:rgba(255,255,255,.045)!important;border-radius:18px!important;padding:16px!important;min-height:112px!important;text-align:left!important;cursor:pointer!important;color:#eafff2!important;transition:.15s transform,.15s border-color}.apf-v85-admin-card:hover{transform:translateY(-1px);border-color:rgba(45,255,151,.5)!important}.apf-v85-admin-card span{display:block;font-size:26px;margin-bottom:7px}.apf-v85-admin-card b{display:block;font-size:18px;line-height:1.1}.apf-v85-admin-card small{display:block;color:#c8decf;font-size:12px;line-height:1.3;margin-top:6px}.apf-v85-admin-tip{margin-top:14px;background:rgba(45,255,151,.08);border:1px solid rgba(45,255,151,.20);border-radius:16px;padding:12px;color:#dfffea;font-size:14px;line-height:1.35}.apf-v85-photo-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.apf-v85-photo-preview img{width:58px;height:58px;border-radius:14px;object-fit:cover;border:1px solid rgba(45,255,151,.35);background:#123624}.apf-v85-photo-preview span{color:#b9cabe;font-size:12px;padding:8px 0}.apf-v85-modal-back{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:999999;display:grid;place-items:start center;padding:18px;overflow:auto}.apf-v85-modal{width:min(780px,96vw);background:#07120c;color:#fff;border:1px solid rgba(45,255,151,.35);border-radius:24px;padding:18px;box-shadow:0 26px 90px rgba(0,0,0,.72)}.apf-v85-modal h2{margin:0 0 8px}.apf-v85-modal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.apf-v85-modal label{display:block;font-size:12px;text-transform:uppercase;font-weight:900;color:#dfffea;margin:8px 0 5px}.apf-v85-modal input,.apf-v85-modal select{width:100%;box-sizing:border-box;border-radius:13px;border:1px solid rgba(255,255,255,.18);background:#0b1d12;color:#fff;padding:11px;font-size:15px}.apf-v85-modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+body[data-apf-public="true"] .nav{gap:8px!important;margin-top:14px!important}body[data-apf-public="true"] .nav button{padding:10px 16px!important;border-radius:16px!important;font-size:14px!important;min-width:auto!important}body[data-apf-public="true"] #home .grid{gap:14px!important}.apf-v85-public-hero{border:1px solid rgba(45,255,151,.24);background:linear-gradient(180deg,rgba(10,48,30,.88),rgba(5,18,12,.90));border-radius:24px;padding:18px}.apf-v85-public-hero h2{font-size:32px!important;margin:0 0 8px!important}.apf-v85-public-hero p{color:#d6efe0;font-size:16px;margin:0!important;max-width:820px}.apf-v85-public-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.apf-v85-public-actions button{border-radius:15px!important}.apf-v85-section{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);border-radius:22px;padding:16px}.apf-v85-section h3{font-size:25px;margin:0 0 6px}.apf-v85-section p{color:#b9cabe;margin:0 0 12px}.apf-v85-live-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:12px}.apf-v85-public-card{border:1px solid rgba(45,255,151,.32);background:linear-gradient(180deg,rgba(8,32,20,.98),rgba(4,16,10,.98));border-radius:22px;padding:14px;box-shadow:0 12px 35px rgba(0,0,0,.24)}.apf-v85-public-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}.apf-v85-public-head b{font-size:19px;color:#fff}.apf-v85-public-meta{font-size:13px;color:#b9cabe;font-weight:800}.apf-v85-live-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(45,255,151,.14);border:1px solid rgba(45,255,151,.30);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:1000;color:#eafff2}.apf-v85-live-pill:before{content:"";width:8px;height:8px;border-radius:50%;background:#2dff97;box-shadow:0 0 12px #2dff97}.apf-v85-match-board{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}.apf-v85-side{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:12px;min-width:0}.apf-v85-side.right{text-align:right}.apf-v85-team-title{font-size:18px;font-weight:1000;color:#fff;margin-bottom:8px}.apf-v85-players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.apf-v85-player{text-align:center;min-width:0}.apf-v85-photo,.apf-v85-ph{width:64px;height:64px;border-radius:17px;object-fit:cover;background:#123624;border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;color:#9ee8bb;font-weight:1000;font-size:18px;margin:0 auto 6px}.apf-v85-player-name{font-size:12px;line-height:1.1;color:#dfffea;font-weight:800;word-break:break-word}.apf-v85-vs{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2dff97,#b7ff3c);color:#06210f;font-weight:1000;align-self:center}.apf-v85-points{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:12px}.apf-v85-point{font-size:40px;font-weight:1000;text-align:center;line-height:1;background:#071d13;border:1px solid rgba(45,255,151,.18);border-radius:17px;padding:10px;color:#eafff2}.apf-v85-dash{font-size:28px;font-weight:1000;color:#88a494}.apf-v85-sets{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:10px}.apf-v85-set{font-size:12px;color:#dcefe4;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:6px 9px}.apf-v85-empty{border:1px dashed rgba(255,255,255,.22);border-radius:18px;padding:15px;color:#b9cabe;background:rgba(255,255,255,.035)}.apf-v85-mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.apf-v85-mini-card{border:1px solid rgba(255,255,255,.12);background:#071d13;border-radius:17px;padding:12px}.apf-v85-mini-card b{display:block;color:#fff;font-size:17px;margin-bottom:4px}.apf-v85-mini-card span{color:#b9cabe;font-size:13px;line-height:1.3}
+@media(max-width:900px){.apf-v85-admin-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.apf-v85-live-grid{grid-template-columns:1fr}.apf-v85-match-board{grid-template-columns:1fr}.apf-v85-vs{width:100%;height:28px;border-radius:12px}.apf-v85-side.right{text-align:left}}
+@media(max-width:520px){.apf-v85-admin-grid{grid-template-columns:1fr!important}.apf-v85-modal-grid{grid-template-columns:1fr}.apf-v85-public-hero h2{font-size:25px!important}.apf-v85-public-actions{display:grid;grid-template-columns:1fr 1fr}.apf-v85-photo,.apf-v85-ph{width:54px;height:54px;border-radius:14px}.apf-v85-point{font-size:32px}.apf-v85-section h3{font-size:22px}body[data-apf-public="true"] .nav button{font-size:13px!important;padding:9px 11px!important}}
+</style>
+
+<script id="apfV85CleanupScript">
+/* APF v85 - cambios reales: Admin sin repetidos, Público sin repetidos, fotos funcionando */
+(function(){
+  const isAdminRoute=()=>document.body && document.body.getAttribute('data-apf-route')==='admin';
+  const isPublicRoute=()=>document.body && document.body.getAttribute('data-apf-public')==='true';
+  const safe=s=>String(s??'');
+  const esc=s=>safe(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const initials=s=>{s=safe(s).trim(); if(!s)return '?'; let p=s.split(/\s+/).filter(Boolean); return (p[0]?.[0]||'?')+(p[1]?.[0]||'');};
+  const getDB=()=>window.db||{matches:[],competitions:[],fixtures:[]};
+  const getMatches=()=>Array.isArray(getDB().matches)?getDB().matches:[];
+  const getActive=()=>getMatches().filter(m=>m && !/finalizado|resultado|terminado/i.test(safe(m.status)) && m.visible_publico!==false);
+  function q(id){return document.getElementById(id)}
+  async function imgToData(file,max=420,quality=.72){
+    if(!file)return '';
+    return await new Promise((resolve)=>{
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const img=new Image();
+        img.onload=()=>{
+          const scale=Math.min(1,max/Math.max(img.width,img.height));
+          const w=Math.max(1,Math.round(img.width*scale)), h=Math.max(1,Math.round(img.height*scale));
+          const c=document.createElement('canvas'); c.width=w; c.height=h;
+          c.getContext('2d').drawImage(img,0,0,w,h);
+          resolve(c.toDataURL('image/jpeg',quality));
+        };
+        img.onerror=()=>resolve(reader.result||'');
+        img.src=reader.result;
+      };
+      reader.onerror=()=>resolve('');
+      reader.readAsDataURL(file);
+    });
+  }
+  async function readPhoto(id){const el=q(id); const f=el&&el.files&&el.files[0]; return f?await imgToData(f):'';}
+  function installPreview(){
+    ['matchPhotoP1','matchPhotoP2','matchPhotoP3','matchPhotoP4'].forEach(id=>{
+      const el=q(id); if(!el || el.dataset.v85Preview)return; el.dataset.v85Preview='1';
+      const box=document.createElement('div'); box.className='apf-v85-photo-preview'; box.innerHTML='<span>Sin foto seleccionada</span>'; el.insertAdjacentElement('afterend',box);
+      el.addEventListener('change',()=>{box.innerHTML=''; const f=el.files&&el.files[0]; if(!f){box.innerHTML='<span>Sin foto seleccionada</span>';return} const img=document.createElement('img'); img.src=URL.createObjectURL(f); box.appendChild(img);});
+    });
+  }
+  function pairById85(id){try{ if(typeof pairById==='function')return pairById(id); }catch(e){} return null;}
+  function pairName85(p){try{ if(typeof pairName==='function')return pairName(p); }catch(e){} return (p&&(p.name||((p.p1||'')+' / '+(p.p2||''))))||'';}
+  function splitName85(s,i){try{ if(typeof splitName==='function')return splitName(s,i); }catch(e){} return safe(s).split('/')[i]?.trim()||'';}
+  function safeUid85(){try{ if(typeof safeUid==='function')return safeUid(); }catch(e){} return 'm_'+Date.now()+'_'+Math.random().toString(16).slice(2);}
+  function safeVal85(id,fb=''){try{ if(typeof safeVal==='function')return safeVal(id,fb); }catch(e){} const el=q(id); return (el&&el.value)||fb;}
+  function nowISO(){return new Date().toISOString();}
+  async function createMatchV85(){
+    if(typeof isAdmin==='function' && !isAdmin()) return (typeof adminLogin==='function'?adminLogin():alert('Ingresá como Admin'));
+    const d=getDB();
+    const comp=(d.competitions||[]).find(c=>String(c.id)===String(safeVal85('matchComp')));
+    const pair1=pairById85(safeVal85('matchPair1')), pair2=pairById85(safeVal85('matchPair2'));
+    const team1=safeVal85('matchTeam1') || (pair1?pairName85(pair1):'Pareja 1');
+    const team2=safeVal85('matchTeam2') || (pair2?pairName85(pair2):'Pareja 2');
+    const photos={p1:await readPhoto('matchPhotoP1'),p2:await readPhoto('matchPhotoP2'),p3:await readPhoto('matchPhotoP3'),p4:await readPhoto('matchPhotoP4')};
+    const serverPlayer=safeVal85('matchServer','p1')||'p1';
+    const m={id:safeUid85(),branch:safeVal85('matchBranch','Masculino'),competitionId:safeVal85('matchComp'),competitionName:comp?comp.name:(safeVal85('matchCompetition','Sin competencia')||'Sin competencia'),category:safeVal85('matchCat'),complex:safeVal85('matchComplex','Complejo / cancha'),court:'',status:safeVal85('matchStatus','En juego')||'En juego',team1,team2,pair1Id:pair1?pair1.id:'',pair2Id:pair2?pair2.id:'',playerNames:{p1:safeVal85('matchNameP1')||(pair1?pair1.p1:splitName85(team1,0))||'Jugador 1',p2:safeVal85('matchNameP2')||(pair1?pair1.p2:splitName85(team1,1))||'Jugador 2',p3:safeVal85('matchNameP3')||(pair2?pair2.p1:splitName85(team2,0))||'Jugador 1',p4:safeVal85('matchNameP4')||(pair2?pair2.p2:splitName85(team2,1))||'Jugador 2'},photos,sets:[[0,0],[0,0],[0,0]],currentSet:0,points:[0,0],adv:[false,false],mode:safeVal85('matchMode','oro'),format:safeVal85('matchFormat','best3'),serverPlayer,server:(serverPlayer==='p3'||serverPlayer==='p4')?2:1,history:[],matchClockElapsed:0,matchClockRunning:false,matchClockStartedAt:0,warmupDuration:300,warmupRemaining:300,warmupRunning:false,warmupStartedAt:0,tossWinner:'',tossChoice:'',tossSide:'',createdAt:nowISO(),updatedAt:nowISO(),visible_publico:true,publicado:true};
+    d.matches=d.matches||[]; d.matches.push(m);
+    try{ if(typeof createFixtureForMatch==='function')createFixtureForMatch(m); }catch(e){}
+    try{ if(typeof save==='function')save(); }catch(e){}
+    try{ if(typeof renderAll==='function')renderAll(); }catch(e){}
+    try{ if(typeof apfV81PublishAll==='function')setTimeout(apfV81PublishAll,450); }catch(e){}
+    ['matchPair1','matchPair2','matchTeam1','matchTeam2','matchNameP1','matchNameP2','matchNameP3','matchNameP4','matchPhotoP1','matchPhotoP2','matchPhotoP3','matchPhotoP4'].forEach(id=>{const el=q(id); if(el)el.value='';});
+    installPreview();
+    alert('Marcador creado con fotos guardadas y publicado en el link público.');
+    try{ if(typeof show==='function')show('marcadores'); }catch(e){}
+  }
+  function installCreateOverride(){ window.createMatch=createMatchV85; installPreview(); }
+  function adminCard(icon,title,desc,fn){return `<button class="apf-v85-admin-card" onclick="${fn}"><span>${icon}</span><b>${title}</b><small>${desc}</small></button>`}
+  function installAdmin(){
+    if(!isAdminRoute())return;
+    const grid=document.querySelector('#admin .grid'); if(!grid)return;
+    let p=q('apfV85AdminPanel'); if(!p){p=document.createElement('div'); p.id='apfV85AdminPanel'; p.className='card full'; grid.insertBefore(p,grid.firstChild);} 
+    p.innerHTML=`<div class="apf-v85-admin-head"><div><h2>Panel Admin APF</h2><p>Una sola entrada para manejar el torneo sin cosas repetidas.</p></div><span class="apf-v85-badge">Admin activo</span></div><div class="apf-v85-admin-grid">${adminCard('🎾','Crear marcador','Cargá un partido nuevo con nombres, fotos y estado.',"openAdminModule('marcadores');setTimeout(()=>document.getElementById('matchTeam1')?.scrollIntoView({behavior:'smooth',block:'center'}),150)")}${adminCard('📋','Marcadores creados','Editá, eliminá, publicá, finalizá o abrí TV.',"openAdminModule('marcadores');setTimeout(()=>document.getElementById('adminMatches')?.scrollIntoView({behavior:'smooth',block:'center'}),150)")}${adminCard('🌎','Publicar al público','Mandá los marcadores al link que ve la gente.',"apfV81PublishAll&&apfV81PublishAll()")}${adminCard('📅','Fixture / Resultados','Partidos, horarios, canchas y resultados.',"openAdminModule('fixture')")}${adminCard('🏆','Competencias','Ligas, torneos, zonas y categorías.',"openAdminModule('competencias')")}${adminCard('👥','Jugadores / Parejas','Cargá jugadores, parejas y fotos.',"openAdminModule('jugadores')")}${adminCard('📊','Ranking / Tablas','Posiciones por categoría y rama.',"openAdminModule('tablas')")}${adminCard('⚙️','Configuración / Público','Datos de APF, WhatsApp, Instagram y página pública.',"openAdminModule('publico')")}</div><div class="apf-v85-admin-tip"><b>Orden recomendado:</b> primero creá marcador, cargá fotos, publicalo al público y después revisá fixture/ranking.</div>`;
+  }
+  function pName(m,k,fb){return (m&&m.playerNames&&m.playerNames[k])||fb||''}
+  function pPhoto(m,k){return (m&&m.photos&&m.photos[k])||''}
+  function playerHtml(m,k,fb){const n=pName(m,k,fb); const ph=pPhoto(m,k); return `<div class="apf-v85-player">${ph?`<img class="apf-v85-photo" src="${ph}">`:`<div class="apf-v85-ph">${esc(initials(n))}</div>`}<div class="apf-v85-player-name">${esc(n)}</div></div>`}
+  function point(m,t){try{ if(typeof pointDisplay==='function')return pointDisplay(m,t); }catch(e){} return (m.points&&m.points[t-1])||0}
+  function setv(m,t,i){let s=(m.sets&&m.sets[i])||[0,0]; return t===1?(s[0]??'-'):(s[1]??'-')}
+  function publicCard(m){
+    const title=(safe(m.team1)||'Pareja 1')+' vs '+(safe(m.team2)||'Pareja 2');
+    const meta=[m.competitionName||'Sin competencia',m.category,m.branch].filter(Boolean).join(' · ');
+    return `<div class="apf-v85-public-card"><div class="apf-v85-public-head"><div><b>${esc(title)}</b><div class="apf-v85-public-meta">${esc(meta)}</div></div><span class="apf-v85-live-pill">${esc(m.status||'En juego')}</span></div><div class="apf-v85-match-board"><div class="apf-v85-side"><div class="apf-v85-team-title">${esc(m.team1||'Pareja 1')}</div><div class="apf-v85-players">${playerHtml(m,'p1','Jugador 1')}${playerHtml(m,'p2','Jugador 2')}</div></div><div class="apf-v85-vs">VS</div><div class="apf-v85-side right"><div class="apf-v85-team-title">${esc(m.team2||'Pareja 2')}</div><div class="apf-v85-players">${playerHtml(m,'p3','Jugador 1')}${playerHtml(m,'p4','Jugador 2')}</div></div></div><div class="apf-v85-points"><div class="apf-v85-point">${esc(point(m,1))}</div><div class="apf-v85-dash">-</div><div class="apf-v85-point">${esc(point(m,2))}</div></div><div class="apf-v85-sets"><span class="apf-v85-set">Set 1: ${esc(setv(m,1,0))}-${esc(setv(m,2,0))}</span><span class="apf-v85-set">Set 2: ${esc(setv(m,1,1))}-${esc(setv(m,2,1))}</span><span class="apf-v85-set">Set 3: ${esc(setv(m,1,2))}-${esc(setv(m,2,2))}</span></div></div>`;
+  }
+  function renderLiveInto(id,list){const el=q(id); if(!el)return; el.className='apf-v85-live-grid'; el.innerHTML=(list&&list.length)?list.map(publicCard).join(''):'<div class="apf-v85-empty"><b>No hay marcadores en vivo publicados.</b><br>Cuando APF publique un partido, va a aparecer acá.</div>';}
+  function rebuildPublicHome(){
+    if(!isPublicRoute())return;
+    const homeGrid=document.querySelector('#home .grid');
+    if(homeGrid && !homeGrid.dataset.v85Built){
+      homeGrid.dataset.v85Built='1';
+      homeGrid.innerHTML=`<div class="card full apf-v85-public-hero"><span class="pill">Toda la actividad del pádel friense</span><h2>Agrupación Pádel Friense</h2><p>Consultá marcadores en vivo, fixture, resultados, ranking e inscripción en un solo lugar.</p><div class="apf-v85-public-actions"><button class="btn primary" onclick="show('marcadores')">Marcadores en vivo</button><button class="btn" onclick="show('fixture')">Fixture / Resultados</button><button class="btn" onclick="show('ranking')">Ranking</button><button class="btn" onclick="openContactModal&&openContactModal()">Inscribirme</button></div></div><div class="card full apf-v85-section"><h3>Marcadores en vivo</h3><p>Partidos publicados por APF para seguir desde el celular.</p><div id="v85HomeLive" class="apf-v85-live-grid"></div></div><div class="card full apf-v85-section"><h3>Torneos y categorías</h3><p>Accesos principales sin repetir información.</p><div class="apf-v85-mini-grid"><div class="apf-v85-mini-card"><b>Fixture / Resultados</b><span>Próximos partidos y resultados cargados.</span></div><div class="apf-v85-mini-card"><b>Ranking / Tablas</b><span>Posiciones por competencia, categoría y rama.</span></div><div class="apf-v85-mini-card"><b>Masculino</b><span>Competencias y listados masculinos.</span></div><div class="apf-v85-mini-card"><b>Femenino</b><span>Competencias y listados femeninos.</span></div></div></div><div class="card full apf-v85-section"><h3>Inscripción y contacto</h3><p>Consultá cupos por WhatsApp o Instagram de APF.</p><div class="public-contact-actions"><button class="btn whatsapp" onclick="contactWhatsapp('sebastian')">Sebastián</button><button class="btn whatsapp" onclick="contactWhatsapp('jeremias')">Jeremías</button><button class="btn instagram" onclick="openInstagram()">Instagram</button></div></div>`;
+    }
+  }
+  async function loadPublic(){
+    let list=[];
+    try{ if(typeof apfV81LoadPublicLive==='function'){list=await apfV81LoadPublicLive()||[];} }catch(e){}
+    if(!list.length) list=getActive();
+    renderLiveInto('v85HomeLive',list); renderLiveInto('homeLive',list); renderLiveInto('allLive',list); renderLiveInto('branchLive',list);
+  }
+  function installPublic(){ if(!isPublicRoute())return; rebuildPublicHome(); loadPublic(); setInterval(loadPublic,5000); }
+  const oldRender=window.renderAll;
+  window.renderAll=function(){ try{ if(typeof oldRender==='function')oldRender(); }catch(e){} installAdmin(); installPreview(); if(isPublicRoute()){rebuildPublicHome(); setTimeout(loadPublic,50);} };
+  document.addEventListener('DOMContentLoaded',()=>{installCreateOverride(); installAdmin(); installPublic(); setTimeout(()=>{installCreateOverride();installAdmin();installPublic();},700);});
+  window.apfV85RenderPublic=loadPublic;
+})();
+</script>
+
 </body>
 </html>
