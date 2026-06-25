@@ -3576,89 +3576,150 @@ setInterval(updateLiveTimeDisplays,1000);
 </script>
 
 
-
-<!-- APF v82 - Admin simple + público limpio -->
-<style>
-/* v82: público más limpio en celular */
-body[data-apf-public="true"] .top .brand p{font-size:clamp(15px,4vw,22px);line-height:1.15}
-body[data-apf-public="true"] .tabs{gap:8px;align-items:center}
-body[data-apf-public="true"] .tabs button{font-size:14px;padding:11px 14px;border-radius:18px;min-height:auto}
-body[data-apf-public="true"] .match-card.apf-public-clean{padding:14px;border-radius:22px;background:linear-gradient(180deg,#083015,#051b10);border:1px solid #23e68255;box-shadow:0 10px 26px #0006}
-.apf-public-live-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.apf-public-live-head h3{margin:0;font-size:21px}.apf-live-state{background:#19e780;color:#001b0d;font-weight:900;padding:8px 12px;border-radius:999px;font-size:13px}.apf-live-meta{color:#c8dbd0;font-weight:800;font-size:13px;margin-top:3px}.apf-public-score{display:grid;gap:10px}.apf-team-row{display:grid;grid-template-columns:1fr 46px 46px 46px 52px;gap:7px;align-items:center;background:#06170f;border:1px solid #ffffff18;border-radius:18px;padding:10px}.apf-team-names b{display:block;font-size:16px;color:#f6fff8}.apf-team-names span{font-size:12px;color:#b8cdbf}.apf-score-mini{height:44px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:#020905;border:1px solid #ffffff18;color:#fff;font-weight:900;font-size:18px}.apf-score-mini.pts{background:#6b530d;color:#ffd978}.apf-public-clock{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.apf-public-clock span{background:#06170f;border:1px solid #ffffff18;border-radius:999px;padding:7px 10px;font-weight:800;color:#dfffe9;font-size:13px}.apf-public-empty{padding:18px;border-radius:20px;background:#06170f;border:1px solid #ffffff18;color:#d7e7dd}.apf-admin-simple-panel{background:linear-gradient(180deg,#0b2a18,#06170f);border:1px solid #23e68255;border-radius:22px;padding:16px;margin:0 0 14px}.apf-admin-simple-panel h2{margin:0 0 6px}.apf-admin-simple-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.apf-admin-simple-grid button{width:100%;min-height:54px}.apf-admin-match-simple{background:#06170f;border:1px solid #ffffff18;border-radius:20px;padding:14px;margin:12px 0}.apf-admin-match-title{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}.apf-admin-match-title h3{margin:0;font-size:20px}.apf-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.apf-admin-help{background:#092716;border:1px solid #23e68255;border-radius:16px;padding:10px;margin-top:10px;color:#dfffe9}
-@media(max-width:700px){body[data-apf-public="true"] .tabs{display:grid;grid-template-columns:1fr 1fr}body[data-apf-public="true"] .tabs button{font-size:13px;padding:10px 9px}.apf-team-row{grid-template-columns:1fr 38px 38px 38px 42px;padding:9px;gap:5px}.apf-score-mini{height:38px;font-size:16px}.apf-team-names b{font-size:14px}.apf-admin-simple-grid{grid-template-columns:1fr 1fr}.apf-admin-actions .btn{flex:1 1 140px}}
+<style id="apfV83Styles">
+/* APF v83 - público limpio y admin ordenado REAL */
+body[data-apf-public="true"] #tab-tv{display:none!important}
+body[data-apf-public="true"] .public-link{display:none!important}
+body[data-apf-public="true"] .nav{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px!important;margin:10px 0!important}
+body[data-apf-public="true"] .nav button{padding:8px 9px!important;border-radius:13px!important;font-size:12px!important;min-height:38px!important}
+body[data-apf-public="true"] .top{gap:8px!important;margin-bottom:6px!important}
+body[data-apf-public="true"] .brand h1{font-size:clamp(20px,6vw,28px)!important}
+body[data-apf-public="true"] .brand p{font-size:12px!important;line-height:1.25!important}
+body[data-apf-public="true"] .logoimg{width:54px!important;height:54px!important}
+body[data-apf-public="true"] .card{padding:12px!important;border-radius:18px!important}
+body[data-apf-public="true"] .public-panel-title h3,body[data-apf-public="true"] h2{font-size:22px!important}
+.apf-v83-public-card{border:1px solid rgba(45,255,151,.28);background:linear-gradient(180deg,rgba(8,32,20,.96),rgba(4,16,10,.96));border-radius:22px;padding:14px;margin:10px 0;box-shadow:0 12px 35px rgba(0,0,0,.22)}
+.apf-v83-public-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}.apf-v83-status{display:inline-flex;align-items:center;gap:7px;background:rgba(45,255,151,.12);border:1px solid rgba(45,255,151,.28);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:1000;color:#eafff2}.apf-v83-status:before{content:"";width:8px;height:8px;border-radius:50%;background:#2dff97;box-shadow:0 0 13px #2dff97}.apf-v83-meta{font-size:12px;color:#b9cabe;font-weight:800}.apf-v83-score{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}.apf-v83-team{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:12px;min-height:96px;display:flex;flex-direction:column;justify-content:center}.apf-v83-team.right{text-align:right}.apf-v83-team b{font-size:18px;line-height:1.05;color:#fff}.apf-v83-team small{font-size:12px;color:#b9cabe;margin-top:5px;line-height:1.2}.apf-v83-vs{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2dff97,#b7ff3c);color:#06210f;font-weight:1000;font-size:12px}.apf-v83-points{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:11px}.apf-v83-point{font-size:42px;font-weight:1000;text-align:center;line-height:1;background:#071d13;border:1px solid rgba(45,255,151,.18);border-radius:17px;padding:10px;color:#eafff2}.apf-v83-dash{font-size:30px;font-weight:1000;color:#88a494}.apf-v83-sets{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:10px}.apf-v83-set{font-size:12px;color:#dcefe4;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:6px 9px}.apf-v83-empty{border:1px dashed rgba(255,255,255,.18);border-radius:18px;padding:16px;background:#071d13;color:#b9cabe}.apf-v83-admin-dashboard{grid-column:1/-1;border:1px solid rgba(45,255,151,.25);background:linear-gradient(180deg,rgba(11,34,22,.98),rgba(5,20,12,.98));border-radius:24px;padding:18px;margin-bottom:12px}.apf-v83-admin-dashboard h2{margin:0 0 6px}.apf-v83-admin-dashboard p{margin:0 0 14px;color:#b9cabe}.apf-v83-quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.apf-v83-quick button{width:100%;text-align:left;padding:14px;border-radius:17px}.apf-v83-manage-card{border:1px solid rgba(255,255,255,.13);background:#071d13;border-radius:20px;padding:14px;margin:10px 0}.apf-v83-manage-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}.apf-v83-manage-title{font-size:18px;font-weight:1000;color:#fff}.apf-v83-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.apf-v83-admin-note{grid-column:1/-1;background:rgba(45,255,151,.08);border:1px solid rgba(45,255,151,.18);border-radius:16px;padding:12px;color:#dfffea;margin-bottom:8px}
+@media(max-width:760px){.apf-v83-quick{grid-template-columns:1fr}.apf-v83-score{gap:6px}.apf-v83-team{padding:10px;min-height:88px}.apf-v83-team b{font-size:15px}.apf-v83-team small{font-size:11px}.apf-v83-vs{width:32px;height:32px;font-size:10px}.apf-v83-point{font-size:34px;padding:8px}.apf-v83-public-card{padding:12px;border-radius:20px}}
 </style>
-<script>
+<script id="apfV83Script">
+/* APF v83 - cambios reales: público transparente + admin simple */
 (function(){
-  const esc82 = s => String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const val82 = (m,k) => { try{return typeof playerName==='function'?playerName(m,k):(m.players&&m.players[k])||''}catch(e){return ''} };
-  const setVal82 = (m,t,i) => { try{return (m.sets && m.sets[t-1] && m.sets[t-1][i]) ?? '-'}catch(e){return '-'} };
-  const point82 = (m,i) => { try{return typeof pointLabel==='function'?pointLabel(m,i):((m.points&&m.points[i])||0)}catch(e){return 0} };
-  const clock82 = (m) => { try{return typeof formatClock==='function' && typeof liveMatchSeconds==='function'?formatClock(liveMatchSeconds(m)):'00:00'}catch(e){return '00:00'} };
-  const status82 = (m) => esc82(m.status || 'Programado');
-  const comp82 = (m) => esc82(m.competitionName || m.category || 'Partido APF');
-  function pairNames82(m,side){
-    const a = side===1 ? (val82(m,'p1') || m.team1 || 'Pareja 1') : (val82(m,'p3') || m.team2 || 'Pareja 2');
-    const b = side===1 ? (val82(m,'p2') || '') : (val82(m,'p4') || '');
-    return [a,b];
+  function esc(s){return String(s??'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+  function isPublic(){return document.body && document.body.getAttribute('data-apf-public')==='true'}
+  function arr(){return (window.db && Array.isArray(db.matches))?db.matches:[]}
+  function statusPublic(m){let s=String(m&&m.status||'En vivo'); return s==='Publicado'?'En vivo':s}
+  function point(m,i){try{if(typeof normalizeMatch==='function')normalizeMatch(m); if(typeof pointLabel==='function')return pointLabel(m,i)}catch(e){} let p=(m&&m.points&&m.points[i])||0; return ['0','15','30','40'][p]||String(p||0)}
+  function setsHtml(m){let sets=(m&&Array.isArray(m.sets))?m.sets:[[0,0],[0,0],[0,0]]; return sets.slice(0,3).map(function(s,i){return '<span class="apf-v83-set">Set '+(i+1)+': <b>'+esc((s&&s[0])||0)+'-'+esc((s&&s[1])||0)+'</b></span>'}).join('')}
+  function players(m,team){let pn=(m&&m.playerNames)||{}; if(team===1){return [pn.p1,pn.p2].filter(Boolean).join(' / ') || 'Pareja 1'} return [pn.p3,pn.p4].filter(Boolean).join(' / ') || 'Pareja 2'}
+  function publicCard(m){
+    let meta=[m&&m.competitionName&&m.competitionName!=='Sin competencia'?m.competitionName:'APF',m&&m.category,m&&m.branch].filter(Boolean).join(' · ');
+    return '<div class="apf-v83-public-card">'+
+      '<div class="apf-v83-public-head"><span class="apf-v83-status">'+esc(statusPublic(m))+'</span><span class="apf-v83-meta">'+esc(meta)+'</span></div>'+
+      '<div class="apf-v83-score"><div class="apf-v83-team"><b>'+esc((m&&m.team1)||'Pareja 1')+'</b><small>'+esc(players(m,1))+'</small></div><div class="apf-v83-vs">VS</div><div class="apf-v83-team right"><b>'+esc((m&&m.team2)||'Pareja 2')+'</b><small>'+esc(players(m,2))+'</small></div></div>'+
+      '<div class="apf-v83-points"><div class="apf-v83-point">'+esc(point(m,0))+'</div><div class="apf-v83-dash">-</div><div class="apf-v83-point">'+esc(point(m,1))+'</div></div>'+
+      '<div class="apf-v83-sets">'+setsHtml(m)+'</div>'+
+    '</div>';
   }
-  window.apfPublicMatchCard82 = function(m){
-    try{ if(typeof normalizeMatch==='function') normalizeMatch(m); }catch(e){}
-    const p1=pairNames82(m,1), p2=pairNames82(m,2);
-    return `<div class="match-card apf-public-clean">
-      <div class="apf-public-live-head"><div><h3>${esc82(m.team1||p1[0]||'Pareja 1')} <span style="color:#92ffbd">vs</span> ${esc82(m.team2||p2[0]||'Pareja 2')}</h3><div class="apf-live-meta">${comp82(m)}${m.branch?' · '+esc82(m.branch):''}${m.complex?' · '+esc82(m.complex):''}</div></div><span class="apf-live-state">${status82(m)}</span></div>
-      <div class="apf-public-score">
-        <div class="apf-team-row"><div class="apf-team-names"><b>${esc82(m.team1||'Pareja 1')}</b><span>${esc82(p1.filter(Boolean).join(' / ')||'Jugadores por confirmar')}</span></div><div class="apf-score-mini">${esc82(setVal82(m,1,0))}</div><div class="apf-score-mini">${esc82(setVal82(m,1,1))}</div><div class="apf-score-mini">${esc82(setVal82(m,1,2))}</div><div class="apf-score-mini pts">${esc82(point82(m,0))}</div></div>
-        <div class="apf-team-row"><div class="apf-team-names"><b>${esc82(m.team2||'Pareja 2')}</b><span>${esc82(p2.filter(Boolean).join(' / ')||'Jugadores por confirmar')}</span></div><div class="apf-score-mini">${esc82(setVal82(m,2,0))}</div><div class="apf-score-mini">${esc82(setVal82(m,2,1))}</div><div class="apf-score-mini">${esc82(setVal82(m,2,2))}</div><div class="apf-score-mini pts">${esc82(point82(m,1))}</div></div>
-      </div>
-      <div class="apf-public-clock"><span>⏱ Tiempo: ${clock82(m)}</span><span>🎾 Set actual: ${esc82((typeof currentSetLabel==='function'?currentSetLabel(m):'Set 1'))}</span></div>
-    </div>`;
-  };
-  window.apfAdminMatchCard82 = function(m){
-    try{ if(typeof normalizeMatch==='function') normalizeMatch(m); }catch(e){}
-    const title=(m.team1||'Pareja 1')+' vs '+(m.team2||'Pareja 2');
-    const controls = (typeof adminControls==='function') ? `<details style="margin-top:12px"><summary class="btn small" style="display:inline-block;cursor:pointer">Control de puntos y configuración avanzada</summary><div style="margin-top:10px">${adminControls(m)}</div></details>` : '';
-    return `<div class="apf-admin-match-simple"><div class="apf-admin-match-title"><div><h3>${esc82(title)}</h3><p class="muted">${comp82(m)}${m.branch?' · '+esc82(m.branch):''}${m.complex?' · '+esc82(m.complex):''}</p></div><span class="pill">${status82(m)}</span></div><div class="apf-admin-actions"><button class="btn primary small" onclick="${typeof apfEditMatchV79==='function'?'apfEditMatchV79':'apfEditMatchV82'}('${esc82(m.id)}')">✏️ Editar</button><button class="btn danger small" onclick="${typeof apfDeleteMatchV79==='function'?'apfDeleteMatchV79':'deleteMatch'}('${esc82(m.id)}')">🗑️ Eliminar</button><button class="btn small" onclick="openTV('${esc82(m.id)}')">📺 TV</button><button class="btn small" onclick="show('marcadores')">🌎 Ver público</button><button class="btn warn small" onclick="setMatchStatus('${esc82(m.id)}','Finalizado')">Finalizar</button></div>${controls}</div>`;
-  };
-  if(typeof window.matchCard==='function'){
-    const originalMatchCard82 = window.matchCard;
-    window.matchCard = function(m,admin=false){
-      if(admin) return window.apfAdminMatchCard82(m);
-      if(document.body && document.body.getAttribute('data-apf-public')==='true') return window.apfPublicMatchCard82(m);
-      return originalMatchCard82(m,admin);
-    };
+  window.apfV83PublicCard=publicCard;
+  if(isPublic()){
+    window.matchCard=function(m,admin){return publicCard(m)};
   }
-  if(typeof window.renderLive==='function'){
-    window.renderLive = function(target,list,empty='No hay marcadores activos.'){
-      const el=document.getElementById(target); if(!el)return;
-      if(!list || !list.length){el.innerHTML=`<div class="apf-public-empty">${esc82(empty)}</div>`;return;}
-      const isPublic = document.body && document.body.getAttribute('data-apf-public')==='true';
-      el.innerHTML=list.map(m=> isPublic ? window.apfPublicMatchCard82(m) : matchCard(m,false)).join('');
-    };
-  }
-  function insertAdminPanel82(){
-    const admin=document.getElementById('admin'); if(!admin || document.getElementById('apfAdminSimplePanel82')) return;
-    const panel=document.createElement('div');
-    panel.id='apfAdminSimplePanel82'; panel.className='apf-admin-simple-panel';
-    panel.innerHTML=`<h2>Panel rápido APF</h2><p class="muted">Entrá directo a lo que más vas a usar durante un torneo.</p><div class="apf-admin-simple-grid"><button class="btn primary" onclick="openAdminModule('marcadores')">📺 Marcadores</button><button class="btn" onclick="openAdminModule('competencias')">🏆 Competencias</button><button class="btn" onclick="openAdminModule('jugadores')">👥 Jugadores / Parejas</button><button class="btn" onclick="openAdminModule('fixture')">📅 Fixture</button></div><div class="apf-admin-help"><b>Consejo:</b> para editar o eliminar un marcador entrá a <b>Marcadores</b>. Ahí aparece cada partido con botones claros.</div>`;
-    const grid=admin.querySelector('.grid'); if(grid) grid.prepend(panel);
-  }
-  const oldRenderAll82=window.renderAll;
-  if(typeof oldRenderAll82==='function'){
-    window.renderAll=function(){
-      oldRenderAll82();
-      insertAdminPanel82();
-      const am=document.getElementById('adminMatches');
-      if(am && window.db){
-        const matches=(db.matches||[]);
-        am.innerHTML=matches.length?matches.map(m=>window.apfAdminMatchCard82(m)).join(''):'<p class="muted">Todavía no creaste marcadores.</p>';
+  function cleanPublicNow(){
+    if(!isPublic())return;
+    let tv=document.getElementById('tab-tv'); if(tv)tv.remove();
+    document.querySelectorAll('.public-link').forEach(function(e){e.remove()});
+    ['homeLive','allLive','branchLive'].forEach(function(id){
+      let el=document.getElementById(id); if(!el)return;
+      if(el.textContent && /Modo TV|Link:|Complejo \/ referencia|Punto de oro|Saca:/.test(el.textContent)){
+        let active=arr().filter(function(m){return m && String(m.status||'').toLowerCase()!=='finalizado' && m.visible_publico!==false});
+        el.innerHTML=active.length?active.map(publicCard).join(''):'<div class="apf-v83-empty"><b>No hay marcadores en vivo publicados.</b><br>Cuando APF publique un partido desde Admin, va a aparecer acá automáticamente.</div>';
       }
-    };
+    });
   }
-  window.apfEditMatchV82=function(id){ if(typeof apfEditMatchV79==='function') return apfEditMatchV79(id); alert('Editor no disponible todavía en esta carga. Volvé a subir todos los archivos de la versión completa.'); };
-  setTimeout(()=>{try{insertAdminPanel82(); if(typeof renderAll==='function') renderAll();}catch(e){}},800);
+  function publishOne(id){
+    let m=arr().find(function(x){return String(x.id)===String(id)}); if(!m)return alert('No encontré el marcador.');
+    m.visible_publico=true; m.publicado=true; if(!m.status||m.status==='Programado')m.status='En juego'; m.updatedAt=new Date().toISOString();
+    try{ if(typeof save==='function')save(); }catch(e){}
+    try{ if(typeof apfV81PublishAll==='function') setTimeout(apfV81PublishAll,350); }catch(e){}
+    alert('Marcador publicado para el link público.');
+  }
+  function finishOne(id){
+    let m=arr().find(function(x){return String(x.id)===String(id)}); if(!m)return alert('No encontré el marcador.');
+    m.status='Finalizado'; m.updatedAt=new Date().toISOString();
+    try{ if(typeof finishMatch==='function')finishMatch(id); else if(typeof save==='function')save(); }catch(e){try{if(typeof save==='function')save()}catch(_){}}
+  }
+  function delOne(id){
+    if(typeof apfDeleteMatchV79==='function')return apfDeleteMatchV79(id);
+    let m=arr().find(function(x){return String(x.id)===String(id)}); let name=m?((m.team1||'Pareja 1')+' vs '+(m.team2||'Pareja 2')):'este marcador';
+    if(!confirm('¿Eliminar '+name+'?'))return; db.matches=arr().filter(function(x){return String(x.id)!==String(id)}); try{if(typeof save==='function')save()}catch(e){}
+  }
+  window.apfV83PublishOne=publishOne; window.apfV83FinishOne=finishOne; window.apfV83DeleteOne=delOne;
+  function adminMatchCard(m){
+    let meta=[m.competitionName&&m.competitionName!=='Sin competencia'?m.competitionName:'Sin competencia',m.category,m.complex||m.court].filter(Boolean).join(' · ');
+    return '<div class="apf-v83-manage-card"><div class="apf-v83-manage-top"><div><div class="apf-v83-manage-title">'+esc(m.team1||'Pareja 1')+' vs '+esc(m.team2||'Pareja 2')+'</div><div class="muted">'+esc(meta||'Marcador APF')+'</div></div><span class="pill">'+esc(m.status||'En vivo')+'</span></div><div class="apf-v83-actions">'+
+      '<button class="btn primary small" onclick="apfEditMatchV79(\''+esc(m.id)+'\')">✏️ Editar</button>'+ 
+      '<button class="btn danger small" onclick="apfV83DeleteOne(\''+esc(m.id)+'\')">🗑 Eliminar</button>'+ 
+      '<button class="btn small" onclick="apfV83PublishOne(\''+esc(m.id)+'\')">🌎 Publicar</button>'+ 
+      '<button class="btn small" onclick="show(\'tv\')">📺 TV</button>'+ 
+      '<button class="btn warn small" onclick="apfV83FinishOne(\''+esc(m.id)+'\')">✅ Finalizar</button>'+ 
+      '</div></div>';
+  }
+  function patchAdmin(){
+    if(isPublic())return;
+    let admin=document.getElementById('admin'); if(!admin)return;
+    let grid=admin.querySelector('.grid')||admin;
+    if(!document.getElementById('apfV83AdminDash')){
+      let dash=document.createElement('div'); dash.id='apfV83AdminDash'; dash.className='apf-v83-admin-dashboard';
+      dash.innerHTML='<h2>Panel rápido APF</h2><p>Usá estos accesos para trabajar sin perderte. Primero creás o publicás marcadores; después revisás fixture, ranking y competencias.</p><div class="apf-v83-quick"><button class="btn primary" onclick="openAdminModule(\'marcadores\');document.getElementById(\'matchTeam1\')?.scrollIntoView({behavior:\'smooth\',block:\'center\'})">🎾 Crear marcador</button><button class="btn" onclick="openAdminModule(\'marcadores\');document.getElementById(\'adminMatches\')?.scrollIntoView({behavior:\'smooth\',block:\'center\'})">📋 Marcadores creados</button><button class="btn" onclick="apfV81PublishAll&&apfV81PublishAll()">🌎 Publicar al público</button><button class="btn" onclick="openAdminModule(\'fixture\')">📅 Fixture</button><button class="btn" onclick="openAdminModule(\'ranking\')">📊 Ranking / tablas</button><button class="btn" onclick="openAdminModule(\'competencias\')">🏆 Competencias</button></div>';
+      grid.insertBefore(dash,grid.firstChild);
+    }
+    let am=document.getElementById('adminMatches');
+    if(am){
+      let list=arr();
+      am.classList.remove('live-grid');
+      am.innerHTML='<div class="apf-v83-admin-note"><b>Marcadores creados:</b> desde acá editás, eliminás, publicás para el público, abrís TV o finalizás cada partido.</div>'+(list.length?list.map(adminMatchCard).join(''):'<p class="muted">Todavía no creaste marcadores.</p>');
+      let h=am.parentElement&&am.parentElement.querySelector('h3'); if(h)h.textContent='Marcadores creados';
+      let p=am.parentElement&&am.parentElement.querySelector('p.muted'); if(p)p.textContent='Lista simple para editar, eliminar, publicar o finalizar marcadores.';
+    }
+  }
+  const oldRenderAll=window.renderAll;
+  window.renderAll=function(){ if(typeof oldRenderAll==='function')oldRenderAll.apply(this,arguments); setTimeout(function(){cleanPublicNow();patchAdmin();},30); };
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){cleanPublicNow();patchAdmin();},400); setInterval(function(){cleanPublicNow();patchAdmin();},2500);});
 })();
 </script>
-<!-- /APF v82 -->
+
+
+<style id="apfV84Styles">
+/* APF v84 - Admin ordenado real + fotos visibles en público */
+#apfV83AdminDash{display:none!important}
+#admin > .grid{align-items:start!important}
+#apfV84AdminPanel{grid-column:1/-1!important;width:100%!important;max-width:100%!important;display:block!important;border:1px solid rgba(45,255,151,.28)!important;background:linear-gradient(180deg,rgba(9,32,20,.98),rgba(4,18,11,.98))!important;border-radius:24px!important;padding:18px!important;margin:0 0 14px 0!important;box-sizing:border-box!important}
+.apf-v84-admin-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}.apf-v84-admin-title h2{margin:0!important;font-size:30px!important}.apf-v84-admin-title p{margin:6px 0 0!important;color:#b9cabe!important;font-size:15px!important;line-height:1.3!important}.apf-v84-status{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:8px 11px;background:#0d281b;border:1px solid rgba(45,255,151,.3);font-weight:900;color:#eafff2;font-size:13px}.apf-v84-status:before{content:"";width:9px;height:9px;border-radius:50%;background:#2dff97;box-shadow:0 0 12px #2dff97}.apf-v84-quick-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}.apf-v84-quick-card{border:1px solid rgba(255,255,255,.13)!important;background:#071d13!important;border-radius:18px!important;padding:15px!important;min-height:105px!important;cursor:pointer!important;text-align:left!important;color:#eafff2!important;box-shadow:0 10px 24px rgba(0,0,0,.22)!important;transition:.15s transform,.15s border-color}.apf-v84-quick-card:hover{transform:translateY(-1px);border-color:rgba(45,255,151,.42)!important}.apf-v84-quick-card .ico{font-size:25px;display:block;margin-bottom:8px}.apf-v84-quick-card b{font-size:17px;display:block;line-height:1.1}.apf-v84-quick-card small{display:block;margin-top:6px;color:#b9cabe;line-height:1.25;font-size:12px}.apf-v84-admin-help{grid-column:1/-1;background:rgba(45,255,151,.08);border:1px solid rgba(45,255,151,.18);border-radius:16px;padding:12px;color:#dfffea;margin:10px 0 8px}.apf-v84-manage-list{display:grid;gap:10px}.apf-v84-manage-card{border:1px solid rgba(255,255,255,.14);background:#071d13;border-radius:19px;padding:14px}.apf-v84-manage-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.apf-v84-manage-title{font-size:18px;font-weight:1000;color:#fff;line-height:1.15}.apf-v84-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.apf-v84-actions .btn{margin:0!important}.apf-v84-public-card{border:1px solid rgba(45,255,151,.28);background:linear-gradient(180deg,rgba(8,32,20,.97),rgba(4,16,10,.97));border-radius:22px;padding:14px;margin:10px 0;box-shadow:0 12px 35px rgba(0,0,0,.24)}.apf-v84-public-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px}.apf-v84-live{display:inline-flex;align-items:center;gap:7px;background:rgba(45,255,151,.12);border:1px solid rgba(45,255,151,.28);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:1000;color:#eafff2}.apf-v84-live:before{content:"";width:8px;height:8px;border-radius:50%;background:#2dff97;box-shadow:0 0 13px #2dff97}.apf-v84-meta{font-size:12px;color:#b9cabe;font-weight:800}.apf-v84-vs-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:10px}.apf-v84-team{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:12px;min-width:0}.apf-v84-team.right{text-align:right}.apf-v84-team-name{font-size:17px;font-weight:1000;line-height:1.05;color:#fff;margin-bottom:8px}.apf-v84-players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.apf-v84-player{text-align:center;min-width:0}.apf-v84-player-photo,.apf-v84-player-ph{width:58px;height:58px;border-radius:16px;object-fit:cover;background:#123624;border:1px solid rgba(255,255,255,.16);display:grid;place-items:center;color:#9ee8bb;font-weight:1000;font-size:17px;margin:0 auto 5px}.apf-v84-player-name{font-size:11px;line-height:1.1;color:#dfffea;font-weight:800;word-break:break-word}.apf-v84-vs{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2dff97,#b7ff3c);color:#06210f;font-weight:1000;font-size:11px;align-self:center}.apf-v84-points{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:11px}.apf-v84-point{font-size:38px;font-weight:1000;text-align:center;line-height:1;background:#071d13;border:1px solid rgba(45,255,151,.18);border-radius:17px;padding:10px;color:#eafff2}.apf-v84-dash{font-size:28px;font-weight:1000;color:#88a494}.apf-v84-sets{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-top:10px}.apf-v84-set{font-size:12px;color:#dcefe4;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:6px 9px}
+@media(max-width:900px){.apf-v84-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.apf-v84-admin-title h2{font-size:24px!important}}
+@media(max-width:520px){#apfV84AdminPanel{padding:14px!important;border-radius:20px!important}.apf-v84-quick-grid{grid-template-columns:1fr!important}.apf-v84-vs-row{grid-template-columns:1fr;gap:8px}.apf-v84-vs{width:100%;height:28px;border-radius:12px}.apf-v84-team.right{text-align:left}.apf-v84-point{font-size:32px}.apf-v84-player-photo,.apf-v84-player-ph{width:52px;height:52px;border-radius:14px}.apf-v84-public-card{padding:12px}}
+</style>
+<script id="apfV84Script">
+/* APF v84 - corrección real: admin usable + fotos en marcador público */
+(function(){
+  function esc(s){return String(s??'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+  function isPublic(){return document.body && document.body.getAttribute('data-apf-public')==='true'}
+  function matches(){return (window.db&&Array.isArray(db.matches))?db.matches:[]}
+  function norm(m){try{if(typeof normalizeMatch==='function')normalizeMatch(m)}catch(e){} return m||{}}
+  function name(m,k,fallback){let pn=(m&&m.playerNames)||{}; return pn[k]||fallback}
+  function initials(txt){txt=String(txt||'J'); let parts=txt.trim().split(/\s+/).filter(Boolean); if(!parts.length)return 'J'; return (parts[0][0]||'J').toUpperCase()+(parts[1]?(parts[1][0]||'').toUpperCase():'')}
+  function photo(m,k){return m&&m.photos&&m.photos[k]?m.photos[k]:''}
+  function player(m,k,fallback){let n=name(m,k,fallback); let ph=photo(m,k); return '<div class="apf-v84-player">'+(ph?'<img class="apf-v84-player-photo" src="'+ph+'">':'<div class="apf-v84-player-ph">'+esc(initials(n))+'</div>')+'<div class="apf-v84-player-name">'+esc(n)+'</div></div>'}
+  function point(m,i){m=norm(m); try{if(typeof pointLabel==='function')return pointLabel(m,i)}catch(e){} let p=(m.points&&m.points[i])||0; return ['0','15','30','40'][p]||String(p||0)}
+  function sets(m){m=norm(m); let ss=Array.isArray(m.sets)?m.sets:[[0,0],[0,0],[0,0]]; return ss.slice(0,3).map(function(s,i){return '<span class="apf-v84-set">Set '+(i+1)+': <b>'+esc((s&&s[0])||0)+'-'+esc((s&&s[1])||0)+'</b></span>'}).join('')}
+  function publicCard(m){m=norm(m); let meta=[m.competitionName&&m.competitionName!=='Sin competencia'?m.competitionName:'APF',m.category,m.branch].filter(Boolean).join(' · '); return '<div class="apf-v84-public-card"><div class="apf-v84-public-head"><span class="apf-v84-live">'+esc(m.status||'En vivo')+'</span><span class="apf-v84-meta">'+esc(meta)+'</span></div><div class="apf-v84-vs-row"><div class="apf-v84-team"><div class="apf-v84-team-name">'+esc(m.team1||'Pareja 1')+'</div><div class="apf-v84-players">'+player(m,'p1','Jugador 1')+player(m,'p2','Jugador 2')+'</div></div><div class="apf-v84-vs">VS</div><div class="apf-v84-team right"><div class="apf-v84-team-name">'+esc(m.team2||'Pareja 2')+'</div><div class="apf-v84-players">'+player(m,'p3','Jugador 1')+player(m,'p4','Jugador 2')+'</div></div></div><div class="apf-v84-points"><div class="apf-v84-point">'+esc(point(m,0))+'</div><div class="apf-v84-dash">-</div><div class="apf-v84-point">'+esc(point(m,1))+'</div></div><div class="apf-v84-sets">'+sets(m)+'</div></div>'}
+  window.apfV84PublicCard=publicCard;
+  if(isPublic()){window.matchCard=function(m,admin){return publicCard(m)}}
+  function showSection(section){try{ if(typeof openAdminModule==='function')openAdminModule(section); else if(typeof show==='function')show('admin'); }catch(e){}}
+  function goTo(id){setTimeout(function(){let el=document.getElementById(id); if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},150)}
+  function publishAll(){try{ if(typeof apfV81PublishAll==='function')return apfV81PublishAll(); }catch(e){} alert('No encontré la función de publicar. Creá un marcador y guardalo de nuevo.');}
+  function publishOne(id){let m=matches().find(x=>String(x.id)===String(id)); if(!m)return alert('No encontré ese marcador.'); m.visible_publico=true; m.publicado=true; if(!m.status||m.status==='Programado')m.status='En juego'; try{if(typeof save==='function')save()}catch(e){} try{if(typeof apfV81PublishAll==='function')setTimeout(apfV81PublishAll,300)}catch(e){} alert('Marcador publicado en el link público.');}
+  function delOne(id){let m=matches().find(x=>String(x.id)===String(id)); let text=m?((m.team1||'Pareja 1')+' vs '+(m.team2||'Pareja 2')):'este marcador'; if(!confirm('¿Eliminar '+text+'?'))return; if(window.db)db.matches=matches().filter(x=>String(x.id)!==String(id)); try{if(typeof save==='function')save()}catch(e){} renderAdmin();}
+  function finishOne(id){try{ if(typeof finishMatch==='function')return finishMatch(id); }catch(e){} let m=matches().find(x=>String(x.id)===String(id)); if(m){m.status='Finalizado'; if(typeof save==='function')save();}}
+  window.apfV84PublishOne=publishOne; window.apfV84DeleteOne=delOne; window.apfV84FinishOne=finishOne;
+  function adminMatchCard(m){m=norm(m); let meta=[m.competitionName&&m.competitionName!=='Sin competencia'?m.competitionName:'Sin competencia',m.category,m.complex||m.court||'Cancha sin definir'].filter(Boolean).join(' · '); return '<div class="apf-v84-manage-card"><div class="apf-v84-manage-top"><div><div class="apf-v84-manage-title">'+esc(m.team1||'Pareja 1')+' vs '+esc(m.team2||'Pareja 2')+'</div><div class="muted">'+esc(meta)+'</div></div><span class="pill">'+esc(m.status||'En vivo')+'</span></div><div class="apf-v84-actions"><button class="btn primary small" onclick="apfEditMatchV79&&apfEditMatchV79(\''+esc(m.id)+'\')">✏️ Editar</button><button class="btn danger small" onclick="apfV84DeleteOne(\''+esc(m.id)+'\')">🗑 Eliminar</button><button class="btn small" onclick="apfV84PublishOne(\''+esc(m.id)+'\')">🌎 Publicar</button><button class="btn small" onclick="show(\'tv\')">📺 TV</button><button class="btn warn small" onclick="apfV84FinishOne(\''+esc(m.id)+'\')">✅ Finalizar</button></div></div>'}
+  function buildAdminPanel(){return '<div class="apf-v84-admin-title"><div><h2>Panel Admin APF</h2><p>Entrada simple para trabajar durante el torneo. Tocá una tarjeta y vas directo a lo que necesitás.</p></div><span class="apf-v84-status">Admin activo</span></div><div class="apf-v84-quick-grid"><button class="apf-v84-quick-card" onclick="showSection(\'marcadores\');goTo(\'matchTeam1\')"><span class="ico">🎾</span><b>Crear marcador</b><small>Cargar un partido nuevo para llevarlo en vivo.</small></button><button class="apf-v84-quick-card" onclick="showSection(\'marcadores\');goTo(\'adminMatches\')"><span class="ico">📋</span><b>Marcadores creados</b><small>Editar, eliminar, publicar, abrir TV o finalizar.</small></button><button class="apf-v84-quick-card" onclick="publishAll()"><span class="ico">🌎</span><b>Publicar al público</b><small>Enviar marcadores al link que ve la gente.</small></button><button class="apf-v84-quick-card" onclick="showSection(\'fixture\')"><span class="ico">📅</span><b>Fixture / resultados</b><small>Partidos, horarios y resultados.</small></button><button class="apf-v84-quick-card" onclick="showSection(\'ranking\')"><span class="ico">📊</span><b>Ranking / tablas</b><small>Posiciones por categoría y rama.</small></button><button class="apf-v84-quick-card" onclick="showSection(\'competencias\')"><span class="ico">🏆</span><b>Competencias</b><small>Ligas, torneos, zonas y categorías.</small></button><button class="apf-v84-quick-card" onclick="showSection(\'jugadores\')"><span class="ico">👥</span><b>Jugadores / parejas</b><small>Cargar o corregir participantes.</small></button><button class="apf-v84-quick-card" onclick="showSection(\'publico\')"><span class="ico">📣</span><b>Página pública</b><small>Configuración de lo que ve la gente.</small></button></div>'}
+  function renderAdmin(){if(isPublic())return; let admin=document.getElementById('admin'); if(!admin)return; let grid=admin.querySelector(':scope > .grid')||admin.querySelector('.grid')||admin; let old=document.getElementById('apfV83AdminDash'); if(old)old.remove(); let panel=document.getElementById('apfV84AdminPanel'); if(!panel){panel=document.createElement('div'); panel.id='apfV84AdminPanel'; grid.insertBefore(panel,grid.firstChild)} panel.innerHTML=buildAdminPanel(); let am=document.getElementById('adminMatches'); if(am){am.classList.remove('live-grid'); let list=matches(); am.innerHTML='<div class="apf-v84-admin-help"><b>Marcadores creados:</b> desde acá podés editar, eliminar, publicar en el link público, abrir TV o finalizar cada partido.</div><div class="apf-v84-manage-list">'+(list.length?list.map(adminMatchCard).join(''):'<p class="muted">Todavía no creaste marcadores.</p>')+'</div>'; let card=am.closest('.card'); if(card){let h=card.querySelector('h3'); if(h)h.textContent='Marcadores creados'; let p=card.querySelector('p.muted'); if(p)p.textContent='Lista simple para trabajar rápido durante el torneo.'}}}
+  function cleanPublic(){if(!isPublic())return; let tv=document.getElementById('tab-tv'); if(tv)tv.remove(); document.querySelectorAll('.public-link').forEach(e=>e.remove()); ['homeLive','allLive','branchLive'].forEach(function(id){let el=document.getElementById(id); if(!el)return; if(/Modo TV|Link:|Punto de oro|Complejo \/ referencia|Saca:/.test(el.textContent||'')){let active=matches().filter(m=>m&&String(m.status||'').toLowerCase()!=='finalizado'&&m.visible_publico!==false); el.innerHTML=active.length?active.map(publicCard).join(''):'<div class="apf-v84-public-card"><b>No hay marcadores en vivo publicados.</b><br><span class="muted">Cuando APF publique un marcador, aparece acá.</span></div>';}})}
+  const oldRender=window.renderAll; window.renderAll=function(){if(typeof oldRender==='function')oldRender.apply(this,arguments); setTimeout(function(){renderAdmin();cleanPublic()},40)};
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){renderAdmin();cleanPublic()},450); setInterval(function(){renderAdmin();cleanPublic()},2500)});
+})();
+</script>
 
 </body>
 </html>
