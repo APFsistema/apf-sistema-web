@@ -1,11 +1,18 @@
 {
+  "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/publico", "destination": "/publico.html" },
+    { "source": "/tv", "destination": "/tv.html" },
+    { "source": "/planillero", "destination": "/planillero.html" },
+    { "source": "/fixture", "destination": "/fixture.html" },
+    { "source": "/ranking", "destination": "/ranking.html" },
+    { "source": "/accesos", "destination": "/accesos.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
-        { "key": "Pragma", "value": "no-cache" },
-        { "key": "Expires", "value": "0" }
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" }
       ]
     }
   ]

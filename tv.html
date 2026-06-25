@@ -832,11 +832,6 @@ body.tv-full .tv-stage.apf-pro.tv-redesign{width:100vw!important;max-width:none!
 .public-comp-meta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.public-comp-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-top:10px}.public-comp-tab{background:#06170f;border:1px solid #ffffff18;border-radius:14px;padding:10px}.public-comp-tab b{display:block;color:#eafff2;font-size:14px}.public-comp-tab span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.public-classification{margin-top:10px;background:#06170f;border:1px solid rgba(185,255,0,.18);border-radius:14px;padding:10px;color:#dfffea;font-size:13px}.inscription-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.whatsapp{background:#0f4b2c;border-color:#25d36688}.btn.instagram{background:#3a1739;border-color:#e1306c88}.btn.outline-lime{background:#071d13;border-color:rgba(185,255,0,.45);color:#eafff2}.public-privacy-note{font-size:12px;color:var(--muted);margin-top:8px}.contact-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9998;display:grid;place-items:center;padding:18px}.contact-modal{max-width:520px;width:100%;background:linear-gradient(180deg,#0d2b1c,#06170f);border:1px solid rgba(185,255,0,.28);border-radius:24px;padding:18px;box-shadow:0 24px 70px #000}.contact-modal h3{margin-bottom:4px}.contact-modal p{color:var(--muted);margin-top:0}.contact-modal .contact-list{display:grid;gap:10px;margin:14px 0}.contact-modal .contact-list a{display:block;text-decoration:none}.contact-modal .btn{width:100%;text-align:center}.public-tournament-note{background:#071d13;border:1px solid #ffffff18;border-radius:16px;padding:12px;color:#dfffea;margin-top:10px}.public-tournament-note ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
 
 </style>
-
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<meta name="apf-version" content="80">
 </head>
 <body data-apf-route="tv">
 <div class="wrap">
@@ -3481,27 +3476,104 @@ setInterval(updateLiveTimeDisplays,1000);
 
 
 <script>
+/* APF v81 - Público transparente: marcadores reales desde Supabase y aviso claro de publicación */
 (function(){
-  const APF_VERSION='80';
-  try{
-    if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{}); }
-    const isPublic = document.body?.dataset?.apfPublic === 'true' || location.pathname === '/' || location.pathname.includes('publico') || location.pathname.includes('fixture') || location.pathname.includes('ranking');
-    if(isPublic){
-      window.__APF_PUBLIC_VERSION__ = APF_VERSION;
-      const refreshPublic = ()=>{
-        try{
-          if(typeof renderAll==='function') renderAll();
-          if(typeof loadSupabaseMarkers==='function') loadSupabaseMarkers();
-          if(typeof apfRefreshLive==='function') apfRefreshLive();
-        }catch(e){ console.warn('APF refresh móvil', e); }
-      };
-      document.addEventListener('visibilitychange',()=>{ if(!document.hidden) refreshPublic(); });
-      window.addEventListener('focus', refreshPublic);
-      setTimeout(refreshPublic, 600);
-      setInterval(refreshPublic, 8000);
+  const URL='https://reowspzpwhjuughxntnk.supabase.co';
+  const KEY='sb_publishable_s2aJuFnfls5CCtPffndv7w_5SleIDJj';
+  let clientPromise=null, syncTimer=null, lastRender='';
+  function isPublicPage(){return document.body && document.body.getAttribute('data-apf-public')==='true';}
+  function isFinal(m){return ['Finalizado','Resultado cargado'].includes(String(m&&m.status||''));}
+  function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function badge(text, ok=true){
+    let el=document.getElementById('apfV81PublicStatus');
+    const host=document.querySelector('.top')||document.querySelector('.hero')||document.body;
+    if(!el){el=document.createElement('div');el.id='apfV81PublicStatus';el.style.cssText='display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 11px;margin:6px 0;background:#0d281b;border:1px solid rgba(45,255,151,.35);color:#eafff2;font-size:12px;font-weight:900'; if(host&&host.appendChild)host.appendChild(el);}
+    el.textContent=text; el.style.borderColor=ok?'rgba(45,255,151,.35)':'rgba(255,90,90,.55)'; el.style.color=ok?'#eafff2':'#ffd4d4';
+  }
+  async function client(){
+    if(clientPromise) return clientPromise;
+    clientPromise=(async()=>{
+      if(!window.supabase){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=res;s.onerror=()=>rej(new Error('No cargó Supabase'));document.head.appendChild(s);});}
+      return window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    })();
+    return clientPromise;
+  }
+  function simpleCard(m){
+    const st=esc(m.status||'En vivo');
+    const place=esc(m.complex||m.court||'');
+    let sets=''; try{sets=(m.sets||[]).map((s,i)=>`<span>Set ${i+1}: <b>${s[0]||0}-${s[1]||0}</b></span>`).join(' ');}catch(e){}
+    let pts=''; try{pts=`<div style="font-size:38px;font-weight:1000;line-height:1;margin:10px 0">${(m.points&&m.points[0])||0} - ${(m.points&&m.points[1])||0}</div>`;}catch(e){}
+    return `<div class="match live-card" style="border:1px solid rgba(45,255,151,.22);background:rgba(9,28,17,.82);border-radius:20px;padding:14px;margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><span class="pill">${st}</span><small class="muted">${place}</small></div><div style="display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:12px"><div><b style="font-size:18px">${esc(m.team1||'Pareja 1')}</b></div><div style="font-weight:1000;color:#dcffea">VS</div><div style="text-align:right"><b style="font-size:18px">${esc(m.team2||'Pareja 2')}</b></div></div>${pts}<div class="muted" style="font-size:13px">${sets}</div><div class="muted" style="font-size:12px;margin-top:8px">${esc(m.competitionName||'APF')} ${m.category?('· '+esc(m.category)):''}</div></div>`;
+  }
+  function renderPublic(matches, note){
+    const active=(matches||[]).filter(m=>m && !isFinal(m) && m.visible_publico!==false);
+    const html=active.length?active.map(m=>{try{return typeof matchCard==='function'?matchCard(m,false):simpleCard(m)}catch(e){return simpleCard(m)}}).join(''):`<div class="card full" style="border:1px solid rgba(255,255,255,.10)"><h3>No hay marcadores en vivo publicados</h3><p class="muted">Cuando APF cargue o publique un marcador desde Admin, va a aparecer acá automáticamente.</p></div>`;
+    ['homeLive','allLive','branchLive'].forEach(id=>{const el=document.getElementById(id); if(el) el.innerHTML=html;});
+    if(note) badge(note, true);
+    lastRender=html;
+  }
+  async function loadPublicLive(){
+    try{
+      const sb=await client();
+      const {data,error}=await sb.from('marcadores').select('partido_id,data,updated_at').order('updated_at',{ascending:false}).limit(50);
+      if(error) throw error;
+      const matches=(data||[]).map(r=>Object.assign({},r.data||{},{id:(r.data&&r.data.id)||r.partido_id,updatedAt:(r.data&&r.data.updatedAt)||r.updated_at,visible_publico:true}));
+      if(window.db){db.matches=matches;}
+      renderPublic(matches, matches.length?'🟢 Marcadores públicos actualizados':'🟢 Público conectado');
+    }catch(e){console.warn('APF v81 público:',e); badge('🔴 No se pudieron cargar marcadores públicos',false); if(!lastRender) renderPublic([], '');}
+  }
+  async function publishMatch(m){
+    if(!m || !m.id) return false;
+    try{
+      const sb=await client();
+      const data=Object.assign({},m,{visible_publico:true,updatedAt:new Date().toISOString()});
+      const partido={id:m.id,estado:m.status||'En juego',cancha:m.complex||m.court||'',visible_publico:true};
+      let r=await sb.from('partidos').upsert(partido,{onConflict:'id'}); if(r.error) throw r.error;
+      r=await sb.from('marcadores').upsert({partido_id:m.id,data,updated_at:new Date().toISOString()},{onConflict:'partido_id'}); if(r.error) throw r.error;
+      badge('🟢 Marcador publicado online'); return true;
+    }catch(e){console.warn('APF v81 publicar:',e); badge('🔴 El marcador quedó en Admin, pero no se publicó online',false); alert('El marcador quedó creado en Admin, pero NO se publicó en el link público. Revisá conexión/login de Supabase.'); return false;}
+  }
+  async function publishAll(){
+    const list=(window.db&&Array.isArray(db.matches))?db.matches:[];
+    let ok=0;
+    for(const m of list){ if(m && !isFinal(m)){m.visible_publico=true; if(await publishMatch(m)) ok++;} }
+    if(ok) alert('Marcadores publicados online: '+ok+'. Ahora deberían verse desde otro celular.');
+  }
+  window.apfV81LoadPublicLive=loadPublicLive;
+  window.apfV81PublishAll=publishAll;
+
+  const oldCreate=window.createMatch;
+  if(typeof oldCreate==='function'){
+    window.createMatch=async function(){
+      const before=(window.db&&db.matches)?db.matches.length:0;
+      const ret=await oldCreate.apply(this,arguments);
+      const list=(window.db&&db.matches)?db.matches:[];
+      const m=list.length>before?list[list.length-1]:list[list.length-1];
+      if(m){m.visible_publico=true; m.updatedAt=new Date().toISOString(); await publishMatch(m);}
+      return ret;
+    };
+  }
+  const oldSave=window.save;
+  window.save=function(){
+    try{ if(typeof oldSave==='function') oldSave.apply(this,arguments); }catch(e){console.warn(e)}
+    clearTimeout(syncTimer);
+    syncTimer=setTimeout(()=>{try{const list=(db&&db.matches)||[]; list.filter(m=>m&&!isFinal(m)).forEach(m=>publishMatch(m));}catch(e){}},900);
+  };
+
+  function addAdminButton(){
+    if(isPublicPage()) return;
+    const adminBox=document.querySelector('[data-admin-module="marcadores"]')||document.querySelector('#adminMatches');
+    if(adminBox && !document.getElementById('apfV81PublishBtn')){
+      const btn=document.createElement('button'); btn.id='apfV81PublishBtn'; btn.className='btn primary'; btn.textContent='Publicar marcadores en el link público'; btn.onclick=publishAll;
+      adminBox.parentNode.insertBefore(btn, adminBox);
     }
-  }catch(e){ console.warn('APF móvil cache fix', e); }
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    if(isPublicPage()){ badge('🟡 Cargando marcadores públicos...'); loadPublicLive(); setInterval(loadPublicLive,5000); }
+    else { setTimeout(addAdminButton,1200); setInterval(addAdminButton,3000); }
+  });
 })();
 </script>
+
 </body>
 </html>
