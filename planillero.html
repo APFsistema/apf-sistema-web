@@ -839,7 +839,7 @@ body.tv-full .tv-stage.apf-pro.tv-redesign{width:100vw!important;max-width:none!
   <section id="accesos" class="view hidden"><div class="grid">
     <div class="card full"><h2>Ingreso al sistema APF</h2><p class="muted">Estructura preparada para la futura página online: vos entrás como Admin con control total, los planilleros entran solo al tablero asignado y el público entra a un link solo lectura.</p>
       <div class="role-real-grid">
-        <div class="role-real-card"><span class="role-badge">Control total</span><div class="gate-ico">🛠️</div><h3>Admin APF</h3><p>Usuario y contraseña para manejar todo: competencias, ligas, torneos, categorías, jugadores, parejas, fixture, marcadores, ranking, sponsors y planilleros.</p><div class="role-login-form"><div><label>Usuario Admin</label><input id="adminUserLogin" placeholder="Ej: admin_apf"></div><div><label>Contraseña</label><input id="adminPassLogin" type="password" placeholder="••••••"></div><button class="btn primary" onclick="adminLoginFull('adminUserLogin','adminPassLogin')">Entrar como Admin</button></div><div class="role-note">En este prototipo la clave sigue siendo APF2026. En la versión online será usuario y contraseña real.</div></div>
+        <div class="role-real-card"><span class="role-badge">Control total</span><div class="gate-ico">🛠️</div><h3>Admin APF</h3><p>Usuario y contraseña para manejar todo: competencias, ligas, torneos, categorías, jugadores, parejas, fixture, marcadores, ranking, sponsors y planilleros.</p><div class="role-login-form"><div><label>Usuario Admin</label><input id="adminUserLogin" placeholder="Ej: admin_apf"></div><div><label>Contraseña</label><input id="adminPassLogin" type="password" placeholder="••••••"></div><button class="btn primary" onclick="adminLoginFull('adminUserLogin','adminPassLogin')">Entrar como Admin</button></div><div class="role-note">Login real con Supabase: usá el email y contraseña del Admin APF.</div></div>
         <div class="role-real-card"><span class="role-badge">Solo tablero</span><div class="gate-ico">🎾</div><h3>Planillero</h3><p>Acceso para la gente que trabaja en cancha. Solo ve sus partidos asignados y entra al tablero para llevar los puntos.</p><div class="role-login-form"><div><label>Usuario planillero</label><input id="scorekeeperUserAccess" placeholder="Ej: cancha1"></div><div><label>Contraseña</label><input id="scorekeeperPassAccess" type="password" placeholder="••••••"></div><button class="btn primary" onclick="mockScorekeeperLoginAccess()">Entrar al tablero</button></div><div class="role-note">No puede tocar Admin, competencias, jugadores, parejas ni ranking.</div></div>
         <div class="role-real-card"><span class="role-badge">Solo ver</span><div class="gate-ico">🌐</div><h3>Link público</h3><p>La gente entra sin contraseña para seguir todo lo público de APF.</p><div class="readonly-grid"><div class="readonly-item"><b>Partidos</b><span>En vivo y resultados</span></div><div class="readonly-item"><b>Ranking</b><span>Tablas y posiciones</span></div><div class="readonly-item"><b>Torneos</b><span>Ligas, categorías y fixture</span></div></div><button class="btn primary" style="margin-top:12px;width:100%" onclick="show('marcadores')">Ver link público</button></div>
       </div>
@@ -1415,7 +1415,7 @@ function adminLoginFull(userId,passId){
   const user=(document.getElementById(userId)?.value||'').trim();
   const pass=(document.getElementById(passId)?.value||'').trim();
   if(pass===PASS){localStorage.setItem(ADMIN_KEY,'1');renderAll();show('admin');return;}
-  alert('Usuario o contraseña incorrectos. En este prototipo la clave Admin es APF2026.');
+  alert('Usuario o contraseña incorrectos. Ahora se usa login real con Supabase.');
 }
 function mockScorekeeperLoginAccess(){
   alert('Ingreso planillero simulado. En la versión online este usuario verá solo sus partidos asignados.');
@@ -2617,5 +2617,8 @@ setInterval(updateLiveTimeDisplays,1000);
   else setTimeout(openRoute,80);
 })();
 </script>
+
+<script src="/api/apf-config.js"></script>
+<script src="/js/apfAuthReal.js"></script>
 </body>
 </html>
