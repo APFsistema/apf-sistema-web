@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>APF Sistema v73 - Portal Público Completo</title>
+<title>APF Sistema v74 - Panel Admin Funcional</title>
 <style>
 :root{--bg:#06170f;--card:#0d2419;--card2:#123623;--line:#23583a;--text:#f2fff7;--muted:#a9c6b5;--green:#21d777;--green2:#10a85a;--danger:#ff6969;--warn:#ffd166;--blue:#4cc9f0;--white:#fff;}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#04100a,#082015 65%,#04100a);color:var(--text)}
@@ -798,6 +798,27 @@ body.tv-full .tv-stage.apf-pro.tv-redesign{width:100vw!important;max-width:none!
 .public-contact-actions{display:flex;gap:8px;flex-wrap:wrap}.public-contact-actions .btn{white-space:nowrap}
 .public-comp-meta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.public-comp-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-top:10px}.public-comp-tab{background:#06170f;border:1px solid #ffffff18;border-radius:14px;padding:10px}.public-comp-tab b{display:block;color:#eafff2;font-size:14px}.public-comp-tab span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.public-classification{margin-top:10px;background:#06170f;border:1px solid rgba(185,255,0,.18);border-radius:14px;padding:10px;color:#dfffea;font-size:13px}.inscription-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.whatsapp{background:#0f4b2c;border-color:#25d36688}.btn.instagram{background:#3a1739;border-color:#e1306c88}.btn.outline-lime{background:#071d13;border-color:rgba(185,255,0,.45);color:#eafff2}.public-privacy-note{font-size:12px;color:var(--muted);margin-top:8px}.contact-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9998;display:grid;place-items:center;padding:18px}.contact-modal{max-width:520px;width:100%;background:linear-gradient(180deg,#0d2b1c,#06170f);border:1px solid rgba(185,255,0,.28);border-radius:24px;padding:18px;box-shadow:0 24px 70px #000}.contact-modal h3{margin-bottom:4px}.contact-modal p{color:var(--muted);margin-top:0}.contact-modal .contact-list{display:grid;gap:10px;margin:14px 0}.contact-modal .contact-list a{display:block;text-decoration:none}.contact-modal .btn{width:100%;text-align:center}.public-tournament-note{background:#071d13;border:1px solid #ffffff18;border-radius:16px;padding:12px;color:#dfffea;margin-top:10px}.public-tournament-note ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
 
+
+
+/* v74 - Panel Admin funcional */
+.admin-control-hero{display:grid;grid-template-columns:1.4fr .9fr;gap:16px;align-items:stretch}
+.admin-control-hero .hero-main{background:linear-gradient(135deg,#123623,#071c11);border:1px solid #2a7a4d;border-radius:22px;padding:18px;box-shadow:0 18px 35px #0005}
+.admin-control-hero h2{font-size:30px;margin:0 0 6px}
+.admin-control-hero p{margin:0;color:var(--muted)}
+.admin-status-panel{background:#071a10;border:1px solid #23583a;border-radius:22px;padding:16px;display:grid;gap:10px}
+.admin-status-panel .status-line{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #ffffff12;padding-bottom:8px;color:var(--muted)}
+.admin-status-panel .status-line:last-child{border-bottom:0;padding-bottom:0}
+.admin-status-panel b{color:var(--text)}
+.admin-kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(140px,1fr));gap:12px;margin-top:14px}
+.admin-kpi{background:linear-gradient(180deg,#0f2e1e,#0a2015);border:1px solid #23583a;border-radius:18px;padding:14px;min-height:98px}
+.admin-kpi span{display:block;color:var(--muted);font-size:13px;margin-bottom:8px}.admin-kpi b{display:block;font-size:30px;line-height:1}.admin-kpi small{display:block;margin-top:8px;color:#b9d8c5}
+.admin-quick-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.admin-quick-actions .btn{min-height:42px}
+.admin-section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}.admin-section-title h3{margin:0}.admin-section-title p{margin:4px 0 0;color:var(--muted)}
+.admin-menu-grid.v74{grid-template-columns:repeat(4,minmax(190px,1fr));}
+.admin-menu-grid.v74 .admin-menu-card{min-height:154px}.admin-menu-card.primary-admin{border-color:var(--green);box-shadow:0 0 0 1px #21d77733 inset;background:linear-gradient(180deg,#123d27,#0c2217)}
+.admin-ops-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.admin-list-box{background:#071a10;border:1px solid #23583a;border-radius:18px;padding:14px}.admin-list-box h4{margin:0 0 10px}.admin-mini-list{display:grid;gap:8px}.admin-mini-list .mini-row{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #ffffff12;padding:8px 0;color:var(--muted)}.admin-mini-list .mini-row:last-child{border-bottom:0}.admin-mini-list b{color:var(--text)}
+@media(max-width:900px){.admin-control-hero,.admin-ops-grid{grid-template-columns:1fr}.admin-kpi-grid{grid-template-columns:repeat(2,1fr)}.admin-menu-grid.v74{grid-template-columns:1fr}}
+
 </style>
 
 <style>
@@ -897,54 +918,73 @@ body.tv-full .tv-stage.apf-pro.tv-redesign{width:100vw!important;max-width:none!
 
   <section id="categoria" class="view hidden"><div class="grid"><div class="card full"><button class="btn small" onclick="openBranch(currentBranch)">← Volver</button><h2 id="catTitle"></h2><p class="muted">Listado de jugadores cargados para esta rama y categoría.</p><div id="playersList"></div></div></div></section>
 
-  <section id="admin" class="view hidden"><div class="grid"><div class="card full"><h2>Panel Admin</h2><p class="muted">Desde acá manejás todo el sistema APF. Entrá por módulos para trabajar más ordenado.</p><div class="status-roadmap"><div class="mini-panel"><h4>1. Admin</h4><p class="muted">Crear competencias, parejas, fixture y marcadores.</p></div><div class="mini-panel"><h4>2. Base online</h4><p class="muted">Guardar todo en una base de datos real.</p></div><div class="mini-panel"><h4>3. Planilleros</h4><p class="muted">Usuarios limitados para cargar puntos.</p></div><div class="mini-panel"><h4>4. Público</h4><p class="muted">Link para ver marcador, fixture y ranking.</p></div></div></div>
+  <section id="admin" class="view hidden"><div class="grid">
+    <div class="card full">
+      <div class="admin-control-hero">
+        <div class="hero-main">
+          <span class="pill">Panel privado · Solo APF</span>
+          <h2>Centro de control APF</h2>
+          <p>Desde acá manejás toda la organización: competencias, inscripciones, fixture, marcadores, ranking, sponsors, planilleros y publicación pública.</p>
+          <div class="admin-quick-actions">
+            <button class="btn primary" onclick="openAdminModule('competencias')">+ Crear competencia</button>
+            <button class="btn" onclick="openAdminModule('inscripciones')">Ver inscripciones</button>
+            <button class="btn" onclick="openAdminModule('marcadores')">Marcadores en vivo</button>
+            <button class="btn" onclick="openAdminModule('publico')">Página pública</button>
+          </div>
+        </div>
+        <div class="admin-status-panel">
+          <div class="status-line"><span>Sesión</span><b id="adminSessionLabel">Admin APF</b></div>
+          <div class="status-line"><span>Web pública</span><b>Solo lectura</b></div>
+          <div class="status-line"><span>Planilleros</span><b>Acceso limitado</b></div>
+          <div class="status-line"><span>Base online</span><b>Supabase</b></div>
+        </div>
+      </div>
+      <div class="admin-kpi-grid">
+        <div class="admin-kpi"><span>Competencias activas</span><b id="admKpiComps">0</b><small>Ligas y torneos en curso</small></div>
+        <div class="admin-kpi"><span>Inscripciones pendientes</span><b id="admKpiInscripciones">0</b><small>Para revisar o confirmar</small></div>
+        <div class="admin-kpi"><span>Partidos programados</span><b id="admKpiFixture">0</b><small>Fixture cargado</small></div>
+        <div class="admin-kpi"><span>Marcadores en vivo</span><b id="admKpiVivo">0</b><small>Partidos activos</small></div>
+        <div class="admin-kpi"><span>Resultados guardados</span><b id="admKpiResultados">0</b><small>Finalizados / publicados</small></div>
+      </div>
+    </div>
+
     <div id="adminMenu" class="card full">
-      <h3>¿Qué querés hacer?</h3><p class="muted">Elegí una opción. Así no aparece todo junto y trabajás sin tanto scroll.</p>
-      <div class="admin-menu-grid">
-        <div class="admin-menu-card" onclick="openAdminModule('competencias')"><div><div class="ico">🏆</div><b>Competencias</b><p>Crear liga o torneo, definir formato, cupos, reglas y estado.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('parejas')"><div><div class="ico">👥</div><b>Parejas</b><p>Cargar parejas inscriptas y vincularlas a una competencia.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('fixture')"><div><div class="ico">📅</div><b>Fixture</b><p>Crear partidos programados y generar cruces automáticos.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('jugadores')"><div><div class="ico">🎾</div><b>Jugadores</b><p>Cargar jugadores, importar desde Excel/CSV y borrar por categoría.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('marcadores')"><div><div class="ico">📺</div><b>Marcadores</b><p>Crear partidos, abrir modo TV y administrar marcadores activos.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('ranking')"><div><div class="ico">📊</div><b>Ranking</b><p>Actualizar ranking automático y revisar subidas o descensos.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('roles')"><div><div class="ico">🔐</div><b>Usuarios y roles</b><p>Preparar accesos para Admin, planilleros y público.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('asignaciones')"><div><div class="ico">📝</div><b>Asignar planilleros</b><p>Crear planilleros y asignarles partidos para que solo carguen puntos.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('base')"><div><div class="ico">🗄️</div><b>Base APF</b><p>Ver cómo se conectan competencias, parejas, fixture, marcadores, resultados y ranking.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('flujo')"><div><div class="ico">🔗</div><b>Flujo conectado</b><p>Ver cómo un resultado se guarda y alimenta fixture, tabla y público.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('online')"><div><div class="ico">🌐</div><b>Online real</b><p>Preparar página pública, usuarios, planilleros y base de datos en vivo.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('publico')"><div><div class="ico">👀</div><b>Portal público</b><p>Definir qué verá la gente en el link: vivo, fixture, resultados, ranking, tablas y categorías.</p></div><span class="go">Entrar</span></div>
+      <div class="admin-section-title">
+        <div><h3>¿Qué querés administrar?</h3><p>Elegí un módulo. Cada parte se abre por separado para no mezclar todo en una sola pantalla.</p></div>
+        <span class="pill">v74 · Admin funcional</span>
+      </div>
+      <div class="admin-menu-grid v74">
+        <div class="admin-menu-card primary-admin" onclick="openAdminModule('competencias')"><div><div class="ico">🏆</div><b>Competencias</b><p>Crear ligas o torneos, rama, categoría, formato, estados y clasificación.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card primary-admin" onclick="openAdminModule('inscripciones')"><div><div class="ico">📝</div><b>Inscripciones</b><p>Controlar parejas anotadas, pagos, confirmadas, pendientes y lista de espera.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card" onclick="openAdminModule('categorias')"><div><div class="ico">🏷️</div><b>Categorías</b><p>Crear y ordenar masculino, femenino, mixto, suma 11, suma 15 y más.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card" onclick="openAdminModule('jugadores')"><div><div class="ico">🎾</div><b>Jugadores</b><p>Cargar jugadores, fotos, categoría y datos deportivos.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card" onclick="openAdminModule('parejas')"><div><div class="ico">👥</div><b>Parejas</b><p>Crear parejas, buscar jugadores existentes o crear jugador nuevo desde ahí.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card primary-admin" onclick="openAdminModule('fixture')"><div><div class="ico">📅</div><b>Fixture</b><p>Programar fechas, horarios, canchas, grupos, cruces y playoffs.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card primary-admin" onclick="openAdminModule('marcadores')"><div><div class="ico">📺</div><b>Marcadores</b><p>Crear marcador, poner en vivo, abrir TV y finalizar partidos.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card" onclick="openAdminModule('tablas')"><div><div class="ico">📊</div><b>Tablas / Ranking</b><p>Controlar posiciones, puntos, sets, games y ranking público.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card" onclick="openAdminModule('asignaciones')"><div><div class="ico">👨‍⚖️</div><b>Planilleros</b><p>Crear planilleros y asignarles solo los partidos que deben manejar.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card" onclick="openAdminModule('sponsors')"><div><div class="ico">🤝</div><b>Sponsors</b><p>Cargar comercios y elegir dónde se muestran: público, TV, fixture o ranking.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card primary-admin" onclick="openAdminModule('publico')"><div><div class="ico">🌎</div><b>Página pública</b><p>Decidir qué ve la gente: torneos, ligas, inscripción, zonas, fixture y ranking.</p></div><span class="go">Entrar</span></div>
+        <div class="admin-menu-card" onclick="openAdminModule('configuracion')"><div><div class="ico">⚙️</div><b>Configuración</b><p>Datos de APF, contacto, Instagram, módulos visibles y parámetros generales.</p></div><span class="go">Entrar</span></div>
+      </div>
+    </div>
 
-        <div class="admin-menu-card" onclick="openAdminModule('tablas')"><div><div class="ico">🏅</div><b>Tablas automáticas</b><p>Preparar cómo se calculan posiciones, puntos, sets y games desde resultados.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('sync')"><div><div class="ico">🔄</div><b>Sincronización</b><p>Preparar cómo se actualizan Admin, Planillero, TV y Público en tiempo real.</p></div><span class="go">Entrar</span></div>
+    <div class="card full">
+      <div class="admin-section-title"><div><h3>Resumen rápido</h3><p>Información diaria para tomar decisiones sin entrar módulo por módulo.</p></div><button class="btn small" onclick="renderAdminControlCenter()">Actualizar</button></div>
+      <div class="admin-ops-grid">
+        <div class="admin-list-box"><h4>Últimos movimientos</h4><div id="admRecentList" class="admin-mini-list"></div></div>
+        <div class="admin-list-box"><h4>Alertas de gestión</h4><div id="admAlertsList" class="admin-mini-list"></div></div>
+      </div>
+    </div>
 
-        <div class="admin-menu-card" onclick="openAdminModule('historial')"><div><div class="ico">🧾</div><b>Historial y respaldo</b><p>Registrar cambios importantes, crear copias de seguridad y preparar auditoría online.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('configuracion')"><div><div class="ico">⚙️</div><b>Configuración general</b><p>Datos de APF, publicación pública, módulos visibles, reglas base y parámetros del sistema.</p></div><span class="go">Entrar</span></div>
-
-        <div class="admin-menu-card" onclick="openAdminModule('categorias')"><div><div class="ico">🏷️</div><b>Categorías</b><p>Crear ramas y categorías activas: masculino, femenino, mixto, suma 11, suma 15 y más.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('estados')"><div><div class="ico">🚦</div><b>Estados</b><p>Ordenar cada competencia: borrador, inscripción abierta, fixture armado, en juego y finalizada.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('inscripciones')"><div><div class="ico">💳</div><b>Inscripciones</b><p>Controlar parejas inscriptas, pagos, confirmadas, pendientes y lista de espera.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('cierre')"><div><div class="ico">✅</div><b>Cierre deportivo</b><p>Conectar fixture, marcador, resultado, tabla, ranking y publicación pública.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('sponsors')"><div><div class="ico">🤝</div><b>Sponsors</b><p>Cargar comercios y definir dónde se muestran: público, TV, torneo o marcador.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('checklist')"><div><div class="ico">📋</div><b>Checklist online</b><p>Lista rápida para saber qué falta antes de subir la plataforma a internet.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('pruebas')"><div><div class="ico">🧪</div><b>Pruebas del sistema</b><p>Probar flujo completo: admin crea, planillero carga y público visualiza.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('publicacion')"><div><div class="ico">🚀</div><b>Publicación online</b><p>Preparar dominio, base de datos, rutas y salida a versión real online.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('tecnico')"><div><div class="ico">🧩</div><b>Plan técnico online</b><p>Ordenar qué falta construir para pasar del prototipo local a la plataforma online real.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('backend')"><div><div class="ico">🛠️</div><b>Backend y datos reales</b><p>Preparar la base online real: tablas, permisos, seguridad, sincronización y guardado.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('resumen')"><div><div class="ico">📌</div><b>Resumen Admin</b><p>Ver el estado general del día: competencias activas, partidos, marcadores, planilleros y alertas.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('estadosPartido')"><div><div class="ico">🎛️</div><b>Estados de partido</b><p>Preparar estados reales: programado, calentamiento, en juego, pausado, finalizado y publicado.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('publicar')"><div><div class="ico">📣</div><b>Publicación pública</b><p>Decidir qué se publica al link público y qué queda oculto hasta ser confirmado por Admin.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('final')"><div><div class="ico">🏁</div><b>Cierre final</b><p>Resumen final de la plataforma: qué queda listo, qué falta online y qué se pule después.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('webreal')"><div><div class="ico">🌍</div><b>Web real APF</b><p>Preparar el paso final: dominio, hosting, base de datos, login, rutas públicas y pruebas antes de publicar.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('entrega')"><div><div class="ico">📦</div><b>Entrega final online</b><p>Checklist final para dejar listo el paquete web: rutas, datos, permisos, publicación y pruebas.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('conexion')"><div><div class="ico">🔌</div><b>Conexión real</b><p>Preparar la conexión concreta con base online, login, permisos y tiempo real.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('lanzamiento')"><div><div class="ico">✅</div><b>Lanzamiento MVP</b><p>Último cierre técnico: prueba piloto, publicación, roles reales y ajustes posteriores.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('piloto')"><div><div class="ico">🧪</div><b>Prueba piloto real</b><p>Organizar la primera prueba con una competencia chica, usuarios reales, planillero, TV y público.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('publicacionFinal')"><div><div class="ico">🌟</div><b>Publicación oficial</b><p>Ordenar el último paso: publicar la web, hacer seguimiento y dejar un plan de mejoras posterior.</p></div><span class="go">Entrar</span></div>
-
-        <div class="admin-menu-card" onclick="openAdminModule('supabaseMvp')"><div><div class="ico">🟩</div><b>Supabase MVP</b><p>Primer esquema real para base online: tablas, roles, permisos y datos que guardará APF.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('deployVercel')"><div><div class="ico">▲</div><b>Deploy Vercel</b><p>Preparar la publicación real del sistema: proyecto web, variables, dominio, rutas y conexión con Supabase.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('conectableFinal')"><div><div class="ico">🔌</div><b>Conectable final</b><p>Último bloque técnico: login real, base Supabase, roles, datos y marcador en vivo listos para conectar.</p></div><span class="go">Entrar</span></div>
-        <div class="admin-menu-card" onclick="openAdminModule('definitivo')"><div><div class="ico">🏆</div><b>Cierre definitivo</b><p>Última pantalla de control: qué queda listo, cómo se usa y cuál es el siguiente paso para publicarlo online.</p></div><span class="go">Entrar</span></div>
+    <div class="card full">
+      <div class="admin-section-title"><div><h3>Herramientas del sistema</h3><p>Opciones técnicas y de control. No se muestran al público.</p></div></div>
+      <div class="admin-quick-actions">
+        <button class="btn small" onclick="openAdminModule('roles')">Usuarios y roles</button>
+        <button class="btn small" onclick="openAdminModule('sync')">Sincronización</button>
+        <button class="btn small" onclick="openAdminModule('historial')">Historial y respaldo</button>
+        <button class="btn small" onclick="openAdminModule('conexion')">Conexión real</button>
+        <button class="btn small" onclick="openAdminModule('webreal')">Web real APF</button>
       </div>
     </div>
     <div id="adminModuleHeader" class="card full"><div class="admin-module-title"><span id="adminModuleIcon">⚙️</span><div><h3 id="adminModuleTitle">Módulo</h3><p id="adminModuleDesc">Trabajá solo en esta sección.</p></div></div><button class="btn" onclick="showAdminHome()">← Volver al panel admin</button></div>
@@ -1885,8 +1925,42 @@ function addRegistrationV51(){
   save();
 }
 
+
+
+function renderAdminControlCenter(){
+  try{
+    const comps=(db.competitions||[]);
+    const regs=(db.registrations||[]);
+    const fixtures=(db.fixtures||[]);
+    const matches=(db.matches||[]);
+    const results=(db.results||[]);
+    const activeComps=comps.filter(c=>String(c.status||'').toLowerCase()!=='finalizada').length;
+    const pendingRegs=regs.filter(r=>/pendiente|espera|seña|pago/i.test(String(r.status||''))).length;
+    const live=matches.filter(m=>String(m.status||'').toLowerCase()!=='finalizado').length;
+    const ids={admKpiComps:activeComps,admKpiInscripciones:pendingRegs,admKpiFixture:fixtures.length,admKpiVivo:live,admKpiResultados:results.length};
+    Object.keys(ids).forEach(id=>{const el=document.getElementById(id); if(el)el.textContent=ids[id];});
+    const email=(localStorage.getItem('apf_admin_email')||localStorage.getItem('apfAdminEmail')||'Admin APF');
+    const ses=document.getElementById('adminSessionLabel'); if(ses)ses.textContent=email.includes('@')?email:'Admin APF';
+    const recent=[];
+    if(comps.length) recent.push(['🏆','Última competencia', comps[comps.length-1].name||'Competencia APF']);
+    if(fixtures.length) recent.push(['📅','Último partido programado', (fixtures[fixtures.length-1].team1||'Pareja 1')+' vs '+(fixtures[fixtures.length-1].team2||'Pareja 2')]);
+    if(matches.length) recent.push(['📺','Último marcador creado', (matches[matches.length-1].team1||'Pareja 1')+' vs '+(matches[matches.length-1].team2||'Pareja 2')]);
+    if(results.length) recent.push(['✅','Último resultado', results[results.length-1].summary||'Resultado guardado']);
+    const recentBox=document.getElementById('admRecentList');
+    if(recentBox) recentBox.innerHTML=recent.length?recent.slice(-5).reverse().map(x=>`<div class="mini-row"><span>${x[0]} <b>${esc(x[1])}</b><br><small>${esc(x[2])}</small></span><span>Ver</span></div>`).join(''):'<p class="muted">Todavía no hay movimientos cargados.</p>';
+    const alerts=[];
+    if(!comps.length) alerts.push(['Crear competencia','Todavía no hay torneos o ligas cargadas.']);
+    if(comps.length && !fixtures.length) alerts.push(['Armar fixture','Hay competencias, pero todavía no hay partidos programados.']);
+    if(fixtures.length && !matches.length) alerts.push(['Crear marcadores','Hay fixture, pero aún no hay marcadores activos.']);
+    if(live>0) alerts.push(['Marcadores activos', live+' partido(s) pueden mostrarse en vivo.']);
+    if(pendingRegs>0) alerts.push(['Inscripciones pendientes', pendingRegs+' inscripción(es) para revisar.']);
+    const alertBox=document.getElementById('admAlertsList');
+    if(alertBox) alertBox.innerHTML=alerts.length?alerts.map(x=>`<div class="mini-row"><span><b>${esc(x[0])}</b><br><small>${esc(x[1])}</small></span><span>•</span></div>`).join(''):'<p class="muted">Sin alertas importantes por ahora.</p>';
+  }catch(e){console.warn('renderAdminControlCenter',e)}
+}
+
 function renderAll(){
-  renderTV(); renderRanking(); renderBaseDashboard(); renderSyncOnline(); renderAssignmentsModule(); renderAutoStandingsDashboard(); renderSponsorsModule(); renderAuditModule(); renderConfigModule(); renderV51Modules();
+  renderTV(); renderRanking(); renderAdminControlCenter(); renderBaseDashboard(); renderSyncOnline(); renderAssignmentsModule(); renderAutoStandingsDashboard(); renderSponsorsModule(); renderAuditModule(); renderConfigModule(); renderV51Modules();
  document.getElementById('adminBtn').classList.toggle('hidden',isAdmin()); document.getElementById('logoutBtn').classList.toggle('hidden',!isAdmin()); document.querySelectorAll('.adminOnly').forEach(e=>e.classList.toggle('hidden',!isAdmin()));
  let active=db.matches.filter(m=>m.status!=='Finalizado'); renderLive('homeLive',active,'Todavía no hay partidos en vivo.'); renderLive('allLive',active,'Todavía no hay marcadores activos.'); renderPlanilleroMatches(active); renderCompsPublic('homeComps', (db.competitions||[]).filter(c=>c.status!=='Finalizada'), 'Todavía no hay ligas o torneos activos cargados.'); renderFixturePublic('homeFixture', db.fixtures||[], 'Todavía no hay fixture cargado.'); renderFixturePublic('publicFixtureAll', db.fixtures||[], 'Todavía no hay fixture cargado.'); renderRankingPreview();
  document.getElementById('branchTitle').textContent=currentBranch; let comps=db.competitions.filter(c=>c.branch===currentBranch && c.status!=='Finalizada'); document.getElementById('branchComps').innerHTML=comps.length?`<div class="public-comp-grid">${comps.map(c=>competitionCard(c)).join('')}</div>`:'<p class="muted">Todavía no hay ligas o torneos cargados para esta rama.</p>'; renderFixturePublic('branchFixture', (db.fixtures||[]).filter(f=>{let c=db.competitions.find(x=>x.id===f.competitionId); return c&&c.branch===currentBranch}), 'Todavía no hay fixture cargado para esta rama.');
