@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>APF Sistema v70 - Login Admin Definitivo</title>
+<title>APF Sistema v73 - Portal Público Completo</title>
 <style>
 :root{--bg:#06170f;--card:#0d2419;--card2:#123623;--line:#23583a;--text:#f2fff7;--muted:#a9c6b5;--green:#21d777;--green2:#10a85a;--danger:#ff6969;--warn:#ffd166;--blue:#4cc9f0;--white:#fff;}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#04100a,#082015 65%,#04100a);color:var(--text)}
@@ -790,10 +790,26 @@ body.tv-full .tv-stage.apf-pro.tv-redesign{width:100vw!important;max-width:none!
 .v51-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:12px}.v51-card{background:linear-gradient(180deg,rgba(9,34,21,.96),rgba(4,18,11,.98));border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:14px}.v51-card b{display:block;color:#fff;margin-bottom:6px}.v51-card span,.v51-card p{color:var(--muted);font-size:13px;line-height:1.35}.v51-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}.v51-flow div{background:#082516;border:1px solid rgba(185,255,0,.25);border-radius:16px;padding:12px;text-align:center;font-weight:900}.v51-flow small{display:block;color:var(--muted);font-weight:600;margin-top:4px}.v51-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;background:#143824;color:#dffff0;border:1px solid rgba(255,255,255,.16);font-size:12px;font-weight:900;margin:4px}.v51-table-actions{display:flex;gap:6px;flex-wrap:wrap}.v51-checklist{display:grid;gap:8px}.v51-checklist label{display:flex;gap:8px;align-items:center;background:#082516;border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:9px 10px;color:#eafff3;font-weight:800}.v51-public-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px}.v51-public-map div{border-radius:16px;padding:12px;background:#051b10;border:1px solid rgba(255,255,255,.12)}
 
 .summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.big-number{font-size:42px;font-weight:1000;margin:6px 0;color:var(--green2)}@media(max-width:900px){.summary-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.summary-grid{grid-template-columns:1fr}}
+
+
+/* APF v73 - Portal público completo e inscripción */
+.public-contact-strip{margin-top:14px;border:1px solid rgba(185,255,0,.25);background:linear-gradient(135deg,rgba(185,255,0,.10),rgba(33,215,119,.08));border-radius:20px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.public-contact-strip b{color:#fff;font-size:16px}.public-contact-strip span{color:var(--muted);font-size:13px}
+.public-contact-actions{display:flex;gap:8px;flex-wrap:wrap}.public-contact-actions .btn{white-space:nowrap}
+.public-comp-meta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.public-comp-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-top:10px}.public-comp-tab{background:#06170f;border:1px solid #ffffff18;border-radius:14px;padding:10px}.public-comp-tab b{display:block;color:#eafff2;font-size:14px}.public-comp-tab span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.public-classification{margin-top:10px;background:#06170f;border:1px solid rgba(185,255,0,.18);border-radius:14px;padding:10px;color:#dfffea;font-size:13px}.inscription-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.whatsapp{background:#0f4b2c;border-color:#25d36688}.btn.instagram{background:#3a1739;border-color:#e1306c88}.btn.outline-lime{background:#071d13;border-color:rgba(185,255,0,.45);color:#eafff2}.public-privacy-note{font-size:12px;color:var(--muted);margin-top:8px}.contact-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9998;display:grid;place-items:center;padding:18px}.contact-modal{max-width:520px;width:100%;background:linear-gradient(180deg,#0d2b1c,#06170f);border:1px solid rgba(185,255,0,.28);border-radius:24px;padding:18px;box-shadow:0 24px 70px #000}.contact-modal h3{margin-bottom:4px}.contact-modal p{color:var(--muted);margin-top:0}.contact-modal .contact-list{display:grid;gap:10px;margin:14px 0}.contact-modal .contact-list a{display:block;text-decoration:none}.contact-modal .btn{width:100%;text-align:center}.public-tournament-note{background:#071d13;border:1px solid #ffffff18;border-radius:16px;padding:12px;color:#dfffea;margin-top:10px}.public-tournament-note ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+
 </style>
 
 <style>
 .dashboard-grid,.final-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:12px 0}.dash-card,.final-card{border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px;background:rgba(255,255,255,.045)}.dash-card strong{display:block;font-size:34px;margin:8px 0}.dash-card span,.final-card span{display:block;color:#9fb0c8;font-size:13px;margin-top:6px}.alert-list{display:grid;gap:8px;color:#dce7fb}.status-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}.status-flow div{border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px;background:rgba(26,115,232,.08)}.status-flow span{display:block;color:#9fb0c8;font-size:13px;margin-top:6px}.final-steps{line-height:1.8;color:#dce7fb}
+
+
+/* APF v73 - Portal público completo e inscripción */
+.public-contact-strip{margin-top:14px;border:1px solid rgba(185,255,0,.25);background:linear-gradient(135deg,rgba(185,255,0,.10),rgba(33,215,119,.08));border-radius:20px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.public-contact-strip b{color:#fff;font-size:16px}.public-contact-strip span{color:var(--muted);font-size:13px}
+.public-contact-actions{display:flex;gap:8px;flex-wrap:wrap}.public-contact-actions .btn{white-space:nowrap}
+.public-comp-meta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.public-comp-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-top:10px}.public-comp-tab{background:#06170f;border:1px solid #ffffff18;border-radius:14px;padding:10px}.public-comp-tab b{display:block;color:#eafff2;font-size:14px}.public-comp-tab span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.public-classification{margin-top:10px;background:#06170f;border:1px solid rgba(185,255,0,.18);border-radius:14px;padding:10px;color:#dfffea;font-size:13px}.inscription-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.whatsapp{background:#0f4b2c;border-color:#25d36688}.btn.instagram{background:#3a1739;border-color:#e1306c88}.btn.outline-lime{background:#071d13;border-color:rgba(185,255,0,.45);color:#eafff2}.public-privacy-note{font-size:12px;color:var(--muted);margin-top:8px}.contact-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9998;display:grid;place-items:center;padding:18px}.contact-modal{max-width:520px;width:100%;background:linear-gradient(180deg,#0d2b1c,#06170f);border:1px solid rgba(185,255,0,.28);border-radius:24px;padding:18px;box-shadow:0 24px 70px #000}.contact-modal h3{margin-bottom:4px}.contact-modal p{color:var(--muted);margin-top:0}.contact-modal .contact-list{display:grid;gap:10px;margin:14px 0}.contact-modal .contact-list a{display:block;text-decoration:none}.contact-modal .btn{width:100%;text-align:center}.public-tournament-note{background:#071d13;border:1px solid #ffffff18;border-radius:16px;padding:12px;color:#dfffea;margin-top:10px}.public-tournament-note ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
+
 </style>
 </head>
 <body data-apf-route="tv">
@@ -825,9 +841,10 @@ body.tv-full .tv-stage.apf-pro.tv-redesign{width:100vw!important;max-width:none!
           <div class="online-access-card" onclick="adminLogin()"><div><div class="bigico">🛠️</div><b>Admin APF</b><p>Gestión completa del sistema.</p></div><span class="go">Ingresar</span></div>
           <div class="online-access-card" onclick="show('planillero')"><div><div class="bigico">🎾</div><b>Planillero</b><p>Control limitado de partidos asignados.</p></div><span class="go">Entrar</span></div>
         </div>
-        <div class="branchCards"><div class="branch" onclick="openBranch('Masculino')"><b>Masculino</b><p class="muted">Competencias activas, marcadores, fixture y listados masculinos.</p></div><div class="branch" onclick="openBranch('Femenino')"><b>Femenino</b><p class="muted">Competencias activas, marcadores, fixture y listados femeninos.</p></div></div>
+        <div class="public-contact-strip"><div><b>¿Querés anotarte a una competencia?</b><br><span>Consultá cupos e inscripción por WhatsApp o Instagram de APF.</span></div><div class="public-contact-actions"><button class="btn whatsapp" onclick="window.open(apfWhatsAppLink('3854693517','',''),'_blank')">Sebastián</button><button class="btn whatsapp" onclick="window.open(apfWhatsAppLink('3854400216','',''),'_blank')">Jeremías</button><button class="btn instagram" onclick="window.open(apfInstagramLink(),'_blank')">Instagram</button></div></div>
+        <div class="branchCards"><div class="branch" onclick="openBranch('Masculino')"><b>Masculino</b><p class="muted">Competencias activas, marcadores, fixture y listados masculinos.</p></div><div class="branch" onclick="openBranch('Femenino')"><b>Femenino</b><p class="muted">Competencias activas, marcadores, fixture y listados femeninos.</p></div><div class="branch" onclick="openBranch('Mixto')"><b>Mixto</b><p class="muted">Competencias mixtas, torneos y ligas cuando estén disponibles.</p></div></div>
       </div>
-      <div class="card full"><div class="public-panel-title"><div><h3>Ligas y torneos activos</h3><p class="muted">Lo primero que verá el público: las competencias que están funcionando ahora.</p></div></div><div id="homeComps"></div></div>
+      <div class="card full"><div class="public-panel-title"><div><h3>Ligas y torneos activos</h3><p class="muted">El público puede ver inscripciones confirmadas, zonas/grupos, fixture, tablas, clasificación y playoffs.</p></div></div><div class="public-tournament-note"><b>Información pública disponible:</b><ul><li>Inscripciones visibles sin datos privados.</li><li>Zonas, grupos y clasificación cuando estén cargados.</li><li>Botón INSCRIBIRME para consultar por WhatsApp o Instagram.</li></ul></div><div id="homeComps"></div></div>
       <div class="card full"><div class="public-panel-title"><div><h3>Marcadores en vivo</h3><p class="muted">Partidos que se están llevando al mismo tiempo, incluso en distintos complejos.</p></div><button class="btn small" onclick="show('marcadores')">Ver todos</button></div><div id="homeLive" class="live-grid"></div></div>
       <div class="card half"><h3>Fixture de hoy / próximos partidos</h3><p class="muted">Partidos programados cargados desde Admin.</p><div id="homeFixture" class="fixture-public"></div></div>
       <div class="card half"><h3>Ranking destacado</h3><p class="muted">Primeros puestos según puntos cargados.</p><div id="homeRankingPreview" class="rank-preview"></div><div style="margin-top:10px"><button class="btn small" onclick="show('ranking')">Ver ranking completo</button></div></div>
@@ -850,7 +867,7 @@ body.tv-full .tv-stage.apf-pro.tv-redesign{width:100vw!important;max-width:none!
   <section id="marcadores" class="view hidden"><div class="grid"><div class="card full"><h2>Marcadores en vivo</h2><p class="muted">Cada marcador puede pertenecer a un complejo distinto o torneo/liga distinta.</p><div id="allLive" class="live-grid"></div></div></div></section>
 
   <section id="fixture" class="view hidden"><div class="grid">
-    <div class="card full"><h2>Fixture y resultados</h2><p class="muted">Página pública preparada para que la gente vea partidos programados, resultados y estados por competencia.</p><div class="online-public-tabs"><div class="quick-card" onclick="show('marcadores')"><b>En vivo</b><p class="muted">Partidos que se están jugando.</p></div><div class="quick-card" onclick="show('ranking')"><b>Ranking</b><p class="muted">Tablas y posiciones.</p></div><div class="quick-card" onclick="openBranch('Masculino')"><b>Masculino</b><p class="muted">Fixture por rama.</p></div><div class="quick-card" onclick="openBranch('Femenino')"><b>Femenino</b><p class="muted">Fixture por rama.</p></div><div class="quick-card" onclick="show('admin')"><b>Admin</b><p class="muted">Carga interna.</p></div></div></div>
+    <div class="card full"><h2>Fixture y resultados</h2><p class="muted">Página pública preparada para que la gente vea partidos programados, resultados y estados por competencia.</p><div class="online-public-tabs"><div class="quick-card" onclick="show('marcadores')"><b>En vivo</b><p class="muted">Partidos que se están jugando.</p></div><div class="quick-card" onclick="show('ranking')"><b>Ranking</b><p class="muted">Tablas y posiciones.</p></div><div class="quick-card" onclick="openBranch('Masculino')"><b>Masculino</b><p class="muted">Fixture por rama.</p></div><div class="quick-card" onclick="openBranch('Femenino')"><b>Femenino</b><p class="muted">Fixture por rama.</p></div><div class="quick-card" onclick="window.scrollTo({top:document.getElementById('homeComps').offsetTop-120,behavior:'smooth'})"><b>Torneos y ligas</b><p class="muted">Inscripciones, zonas y clasificación.</p></div></div></div>
     <div class="card full"><h3>Todos los partidos cargados</h3><div id="publicFixtureAll" class="fixture-public"></div></div>
   </div></section>
 
@@ -1574,12 +1591,40 @@ function renderRanking(filter='Todos'){
 
 
 
-function competitionCardPublic(c){
-  let pairs=(db.pairs||[]).filter(p=>p.competitionId===c.id).length;
-  let fixtures=(db.fixtures||[]).filter(f=>f.competitionId===c.id).length;
-  let live=(db.matches||[]).filter(m=>m.competitionId===c.id && m.status!=='Finalizado').length;
-  return `<div class="comp-card ${c.status==='Finalizada'?'status-final':''}"><div class="admin-box-title"><div><h3>${esc(c.name)}</h3><p class="muted">${esc(c.type)} · ${esc(c.branch)} · ${esc(c.category||'Sin categoría')}</p><p class="muted">${esc(c.format||'Formato sin definir')} ${c.pairsLimit?`· cupo ${esc(c.pairsLimit)} parejas`:''}</p></div><span class="pill">${live} en vivo</span></div><div class="comp-details"><div class="mini-panel"><h4>Parejas</h4><div class="mini-item">${pairs}${c.pairsLimit?` / ${esc(c.pairsLimit)}`:''} inscriptas</div></div><div class="mini-panel"><h4>Fixture</h4><div class="mini-item">${fixtures} partidos cargados</div><div class="mini-item">Liga APF: 2-0 = 3/0 · 2-1 = 2/1</div></div></div></div>`;
+
+
+function apfWhatsAppLink(number, competitionName, category){
+  const base='https://wa.me/549'+String(number).replace(/\D/g,'');
+  const target=competitionName?` a ${competitionName}${category?' - categoría '+category:''}`:' a una competencia de Agrupación Pádel Friense';
+  const text=`Hola, quiero inscribirme${target}. ¿Me pasan información?`;
+  return base+'?text='+encodeURIComponent(text);
 }
+function apfInstagramLink(){return 'https://www.instagram.com/agrupacion.padel.friense'}
+function apfInscriptionButtons(competitionName='', category=''){
+  return `<div class="inscription-actions"><button class="btn primary" onclick="apfOpenInscriptionOptions('${escAttr(competitionName)}','${escAttr(category)}')">📝 INSCRIBIRME</button><button class="btn whatsapp" onclick="window.open(apfWhatsAppLink('3854693517','${escAttr(competitionName)}','${escAttr(category)}'),'_blank')">WhatsApp Sebastián</button><button class="btn whatsapp" onclick="window.open(apfWhatsAppLink('3854400216','${escAttr(competitionName)}','${escAttr(category)}'),'_blank')">WhatsApp Jeremías</button><button class="btn instagram" onclick="window.open(apfInstagramLink(),'_blank')">Instagram APF</button></div>`
+}
+function apfOpenInscriptionOptions(competitionName='', category=''){
+  const safeName=competitionName||'Competencia APF';
+  const html=`<div class="contact-modal-backdrop" id="apfContactModal" onclick="if(event.target.id==='apfContactModal')apfCloseInscriptionOptions()"><div class="contact-modal"><h3>Inscribirme</h3><p>${esc(safeName)}${category?' · '+esc(category):''}</p><div class="contact-list"><a target="_blank" href="${apfWhatsAppLink('3854693517',competitionName,category)}"><button class="btn whatsapp">💬 WhatsApp Sebastián · 3854693517</button></a><a target="_blank" href="${apfWhatsAppLink('3854400216',competitionName,category)}"><button class="btn whatsapp">💬 WhatsApp Jeremías · 3854400216</button></a><a target="_blank" href="${apfInstagramLink()}"><button class="btn instagram">📸 Instagram @agrupacion.padel.friense</button></a></div><button class="btn outline-lime" onclick="apfCloseInscriptionOptions()">Cerrar</button><div class="public-privacy-note">La inscripción se coordina por contacto directo con la organización. La web pública no muestra teléfonos personales de jugadores, pagos ni datos privados.</div></div></div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+function apfCloseInscriptionOptions(){const m=document.getElementById('apfContactModal'); if(m)m.remove();}
+function escAttr(v){return String(v??'').replace(/&/g,'&amp;').replace(/'/g,'&#39;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function competitionCardPublic(c){
+  const pairsList=(db.pairs||[]).filter(p=>p.competitionId===c.id);
+  const fixturesList=(db.fixtures||[]).filter(f=>f.competitionId===c.id);
+  const matchesList=(db.matches||[]).filter(m=>m.competitionId===c.id && m.status!=='Finalizado');
+  const pairs=pairsList.length, fixtures=fixturesList.length, live=matchesList.length;
+  const status=c.status||'Inscripción abierta';
+  const canRegister=!/finalizada/i.test(status);
+  const classifiedText=c.classification||c.qualifiers||'Clasificación visible según formato: zonas, tabla y playoffs cuando estén cargados.';
+  const zonesText=c.groups||c.zones||c.groupCount||'A confirmar';
+  const pairPreview=pairsList.slice(0,6).map(p=>`<div class="mini-item">${esc(pairDisplay(p))}</div>`).join('') || '<div class="mini-item">Todavía no hay parejas confirmadas públicamente.</div>';
+  const fixturePreview=fixturesList.slice(0,4).map(f=>`<div class="mini-item"><b>${esc(f.team1)} vs ${esc(f.team2)}</b><br><span class="muted">${esc(f.time||'Horario a confirmar')} · ${esc(f.place||'Cancha a confirmar')}</span>${f.result?`<br><span class="result-pill">${esc(f.result)}</span>`:''}</div>`).join('') || '<div class="mini-item">Fixture pendiente de publicación.</div>';
+  return `<div class="comp-card ${c.status==='Finalizada'?'status-final':''}"><div class="admin-box-title"><div><h3>${esc(c.name)}</h3><p class="muted">${esc(c.type||'Competencia')} · ${esc(c.branch||'Rama')} · ${esc(c.category||'Categoría')}</p><div class="public-comp-meta"><span class="pill">${esc(status)}</span><span class="pill">${esc(c.format||'Formato a confirmar')}</span><span class="pill">${pairs}${c.pairsLimit?` / ${esc(c.pairsLimit)}`:''} parejas</span><span class="pill">${live} en vivo</span></div></div></div><div class="public-comp-tabs"><div class="public-comp-tab"><b>Inscripciones</b><span>${pairs}${c.pairsLimit?` / ${esc(c.pairsLimit)}`:''} parejas confirmadas o cargadas.</span></div><div class="public-comp-tab"><b>Zonas / grupos</b><span>${esc(zonesText)}</span></div><div class="public-comp-tab"><b>Fixture</b><span>${fixtures} partidos publicados.</span></div><div class="public-comp-tab"><b>Clasificación</b><span>Tablas, posiciones y cruces.</span></div></div><div class="comp-details"><div class="mini-panel"><h4>Parejas inscriptas</h4><div class="mini-list">${pairPreview}</div></div><div class="mini-panel"><h4>Fixture / resultados</h4><div class="mini-list">${fixturePreview}</div></div></div><div class="public-classification"><b>Clasificación:</b> ${esc(classifiedText)}<br><span class="muted">El público ve zonas, tablas y playoffs. Datos privados como pagos, teléfonos y observaciones quedan solo para Admin.</span></div>${canRegister?apfInscriptionButtons(c.name,c.category||''):'<div class="public-tournament-note"><b>Competencia finalizada.</b><br><span class="muted">Las inscripciones no están disponibles para esta competencia.</span></div>'}</div>`;
+}
+
 function renderCompsPublic(id, comps, empty){
   let el=document.getElementById(id); if(!el)return;
   el.innerHTML=comps.length?`<div class="public-comp-grid">${comps.map(c=>competitionCardPublic(c)).join('')}</div>`:`<div class="empty-note">${empty}</div>`;
@@ -2795,6 +2840,184 @@ setInterval(updateLiveTimeDisplays,1000);
 })();
 </script>
 
+
+
+
+<script>
+/* APF v71 - Marcadores en vivo reales con Supabase
+   Flujo: crear marcador -> guardar en tabla partidos/marcadores -> público/TV lee marcadores activos. */
+(function(){
+  const APF_SUPABASE_URL = 'https://reowspzpwhjuughxntnk.supabase.co';
+  const APF_SUPABASE_ANON_KEY = 'sb_publishable_s2aJuFnfls5CCtPffndv7w_5SleIDJj';
+  const APF_UUID_RE=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  let sbClientPromise=null, syncTimer=null, loadingRemote=false, lastRemotePull=0;
+
+  function apfUuid(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&3|8);return v.toString(16)});
+  }
+  // Desde ahora los marcadores nuevos usan UUID real para poder guardarse en Supabase.
+  window.uid = apfUuid;
+
+  async function apfClient(){
+    if(sbClientPromise) return sbClientPromise;
+    sbClientPromise=(async()=>{
+      if(!window.supabase){
+        await new Promise((resolve,reject)=>{
+          const s=document.createElement('script');
+          s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+          s.onload=resolve;
+          s.onerror=()=>reject(new Error('No se pudo cargar Supabase JS'));
+          document.head.appendChild(s);
+        });
+      }
+      return window.supabase.createClient(APF_SUPABASE_URL, APF_SUPABASE_ANON_KEY);
+    })();
+    return sbClientPromise;
+  }
+  function apfStatus(text, ok=true){
+    let el=document.getElementById('apfLiveSyncStatusV71');
+    const bar=document.querySelector('.loginbar')||document.querySelector('.top')||document.body;
+    if(!el){
+      el=document.createElement('span');
+      el.id='apfLiveSyncStatusV71';
+      el.style.cssText='display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;margin:4px;background:#123624;border:1px solid rgba(45,255,151,.30);font-weight:900;font-size:12px;color:#d8ffea';
+      if(bar && bar.prepend) bar.prepend(el);
+    }
+    el.textContent=text;
+    el.style.borderColor=ok?'rgba(45,255,151,.30)':'rgba(255,105,105,.5)';
+    el.style.color=ok?'#d8ffea':'#ffd0d0';
+  }
+  function apfEstado(status){
+    const allowed=['Programado','Calentamiento','En juego','Pausado','Finalizado','Resultado cargado','Publicado'];
+    return allowed.includes(status)?status:'En juego';
+  }
+  function apfIsMatch(m){ return m && m.id && APF_UUID_RE.test(String(m.id)); }
+  function apfLightMatch(m){
+    try{ if(typeof normalizeMatch==='function') normalizeMatch(m); }catch(e){}
+    return Object.assign({}, m, {
+      updatedAt: new Date().toISOString(),
+      visible_publico: true,
+      source: 'supabase-v71'
+    });
+  }
+  async function apfUpsertMatch(m){
+    if(!apfIsMatch(m)) return;
+    const sb=await apfClient();
+    const data=apfLightMatch(m);
+    const partido={id:m.id, estado:apfEstado(m.status), cancha:m.complex||m.court||'', visible_publico:true};
+    const p=await sb.from('partidos').upsert(partido,{onConflict:'id'});
+    if(p.error) throw p.error;
+    const q=await sb.from('marcadores').upsert({partido_id:m.id,data,updated_at:new Date().toISOString()},{onConflict:'partido_id'});
+    if(q.error) throw q.error;
+  }
+  async function apfSyncMatchesToSupabase(){
+    if(loadingRemote) return;
+    const matches=(window.db&&Array.isArray(db.matches))?db.matches:[];
+    const live=matches.filter(m=>apfIsMatch(m));
+    if(!live.length){ apfStatus('🟡 Sin marcadores online'); return; }
+    try{
+      for(const m of live) await apfUpsertMatch(m);
+      apfStatus('🟢 Marcadores sincronizados');
+    }catch(e){ console.warn('APF sync error',e); apfStatus('🔴 Error al sincronizar marcador',false); }
+  }
+  function apfMergeRemoteRows(rows){
+    if(!window.db) return 0;
+    db.matches=db.matches||[];
+    let changed=0;
+    (rows||[]).forEach(r=>{
+      const m=r.data||{};
+      if(!m.id) m.id=r.partido_id;
+      if(!m.id) return;
+      const remoteTime=Date.parse(m.updatedAt||r.updated_at||0)||0;
+      const ix=db.matches.findIndex(x=>String(x.id)===String(m.id));
+      if(ix>=0){
+        const localTime=Date.parse(db.matches[ix].updatedAt||0)||0;
+        if(remoteTime>=localTime){ db.matches[ix]=Object.assign({},db.matches[ix],m); changed++; }
+      }else{ db.matches.push(m); changed++; }
+    });
+    if(changed){
+      try{ localStorage.setItem(KEY,JSON.stringify(db)); }catch(e){}
+      try{ if(typeof renderAll==='function') renderAll(); }catch(e){}
+    }
+    return changed;
+  }
+  async function apfLoadLiveMatches(){
+    if(loadingRemote) return;
+    loadingRemote=true;
+    try{
+      const sb=await apfClient();
+      const {data,error}=await sb.from('marcadores').select('partido_id,data,updated_at').order('updated_at',{ascending:false}).limit(30);
+      if(error) throw error;
+      const changed=apfMergeRemoteRows(data||[]);
+      lastRemotePull=Date.now();
+      apfStatus(changed?'🟢 Marcadores actualizados':'🟢 Conectado a marcadores');
+    }catch(e){ console.warn('APF load live error',e); apfStatus('🔴 No pude leer marcadores online',false); }
+    finally{ loadingRemote=false; }
+  }
+  function apfStartRealtime(){
+    apfClient().then(sb=>{
+      try{
+        sb.channel('apf-marcadores-v71')
+          .on('postgres_changes',{event:'*',schema:'public',table:'marcadores'},payload=>{
+            if(payload && payload.new) apfMergeRemoteRows([payload.new]);
+          })
+          .subscribe();
+      }catch(e){ console.warn('APF realtime:',e); }
+    });
+  }
+
+  const oldSave=window.save;
+  window.save=function(){
+    if(window.db && Array.isArray(db.matches)){
+      db.matches.forEach(m=>{ if(m && !m.updatedAt) m.updatedAt=new Date().toISOString(); });
+    }
+    if(typeof oldSave==='function') oldSave();
+    clearTimeout(syncTimer);
+    syncTimer=setTimeout(apfSyncMatchesToSupabase,500);
+  };
+
+  const oldDelete=window.deleteMatch;
+  window.deleteMatch=async function(id){
+    if(!confirm('¿Eliminar este marcador?')) return;
+    if(window.db) db.matches=(db.matches||[]).filter(m=>m.id!==id);
+    try{
+      if(APF_UUID_RE.test(String(id))){
+        const sb=await apfClient();
+        await sb.from('marcadores').delete().eq('partido_id',id);
+        await sb.from('partidos').delete().eq('id',id);
+      }
+    }catch(e){ console.warn('No se pudo borrar online:',e); }
+    if(typeof oldSave==='function') oldSave();
+    apfStatus('🟢 Marcador eliminado');
+  };
+
+  // Refuerzo del botón Crear marcador: luego de crear, hace sync inmediato y avisa.
+  const oldCreate=window.createMatch;
+  if(typeof oldCreate==='function'){
+    window.createMatch=async function(){
+      const before=(window.db&&db.matches)?db.matches.length:0;
+      await oldCreate.apply(this,arguments);
+      const after=(window.db&&db.matches)?db.matches.length:0;
+      if(after>before){
+        const m=db.matches[db.matches.length-1];
+        if(m){m.updatedAt=new Date().toISOString();}
+        setTimeout(async()=>{ await apfSyncMatchesToSupabase(); alert('Marcador creado y enviado a Marcadores en vivo.'); },650);
+      }
+    };
+  }
+
+  window.apfLoadLiveMatches=apfLoadLiveMatches;
+  window.apfSyncMatchesToSupabase=apfSyncMatchesToSupabase;
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    apfStatus('🟡 Conectando marcadores...');
+    setTimeout(apfLoadLiveMatches,900);
+    apfStartRealtime();
+    setInterval(()=>{ if(Date.now()-lastRemotePull>7000) apfLoadLiveMatches(); },8000);
+  });
+})();
+</script>
 
 </body>
 </html>
