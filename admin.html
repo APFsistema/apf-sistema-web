@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>APF Sistema v74 - Panel Admin Funcional</title>
+<title>APF Sistema v75 - Marcadores Funcionales</title>
 <style>
 :root{--bg:#06170f;--card:#0d2419;--card2:#123623;--line:#23583a;--text:#f2fff7;--muted:#a9c6b5;--green:#21d777;--green2:#10a85a;--danger:#ff6969;--warn:#ffd166;--blue:#4cc9f0;--white:#fff;}
 *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#04100a,#082015 65%,#04100a);color:var(--text)}
@@ -3090,6 +3090,86 @@ setInterval(updateLiveTimeDisplays,1000);
     apfStartRealtime();
     setInterval(()=>{ if(Date.now()-lastRemotePull>7000) apfLoadLiveMatches(); },8000);
   });
+})();
+</script>
+
+
+
+<script>
+/* APF v75 - Marcadores en vivo funcionales: controles de estado, sincronización manual y vista pública clara */
+(function(){
+  const APF_STATUS_OPTIONS=['Programado','Calentamiento','En juego','Pausado','Finalizado','Resultado cargado','Publicado'];
+  function esc75(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function nowISO(){return new Date().toISOString();}
+  function find(id){try{return typeof findMatch==='function'?findMatch(id):(window.db&&db.matches||[]).find(m=>m.id===id)}catch(e){return null}}
+  function saveAndSync(){try{if(typeof save==='function')save();}catch(e){} try{if(typeof apfSyncMatchesToSupabase==='function')setTimeout(apfSyncMatchesToSupabase,250);}catch(e){}}
+  window.apfSetMatchStatus=function(id,status){
+    const m=find(id); if(!m)return alert('No encontré el marcador.');
+    m.status=status; m.updatedAt=nowISO();
+    if(status==='En juego' && typeof startMatchClock==='function') { try{ startMatchClock(id); }catch(e){} }
+    if(status==='Pausado' && typeof pauseMatchClock==='function') { try{ pauseMatchClock(id); }catch(e){} }
+    saveAndSync();
+  };
+  window.apfPublishMatch=function(id){
+    const m=find(id); if(!m)return alert('No encontré el marcador.');
+    m.status='Publicado'; m.visible_publico=true; m.publicado=true; m.updatedAt=nowISO();
+    saveAndSync(); alert('Marcador publicado para el público.');
+  };
+  window.apfFinalizeAndPublish=function(id){
+    const m=find(id); if(!m)return alert('No encontré el marcador.');
+    m.status='Finalizado'; m.visible_publico=true; m.publicado=true; m.updatedAt=nowISO();
+    try{ if(typeof pauseMatchClock==='function') pauseMatchClock(id); }catch(e){}
+    saveAndSync(); alert('Partido finalizado y sincronizado.');
+  };
+  window.apfManualSync=function(){
+    if(typeof apfSyncMatchesToSupabase==='function') apfSyncMatchesToSupabase();
+    if(typeof apfLoadLiveMatches==='function') setTimeout(apfLoadLiveMatches,700);
+    alert('Sincronización solicitada. Revisá Marcadores en vivo o Modo TV.');
+  };
+  window.apfRefreshLive=function(){
+    if(typeof apfLoadLiveMatches==='function') apfLoadLiveMatches();
+    else if(typeof renderAll==='function') renderAll();
+  };
+  window.apfOpenPublicLive=function(){ window.open('/publico','_blank'); };
+  window.apfOpenTvLive=function(){ window.open('/tv','_blank'); };
+
+  const oldAdminControls = window.adminControls;
+  if(typeof oldAdminControls==='function'){
+    window.adminControls=function(m){
+      const base=oldAdminControls(m)||'';
+      const opts=APF_STATUS_OPTIONS.map(s=>`<option value="${esc75(s)}" ${m.status===s?'selected':''}>${esc75(s)}</option>`).join('');
+      return base + `<div class="mini-panel apf-v75-controls" style="margin-top:10px;border-color:rgba(45,255,151,.28)">
+        <h4>Marcador en vivo online</h4>
+        <p class="muted">Este bloque controla cómo aparece el partido en la web pública, en Marcadores en vivo y en Modo TV.</p>
+        <div class="formgrid">
+          <div><label>Estado público del partido</label><select onchange="apfSetMatchStatus('${m.id}',this.value)">${opts}</select></div>
+          <div><label>Acciones rápidas</label><div class="row"><button class="btn primary small" onclick="apfSetMatchStatus('${m.id}','En juego')">Poner en vivo</button><button class="btn small" onclick="apfSetMatchStatus('${m.id}','Pausado')">Pausar</button><button class="btn warn small" onclick="apfFinalizeAndPublish('${m.id}')">Finalizar</button></div></div>
+          <div><label>Publicación</label><div class="row"><button class="btn small" onclick="apfPublishMatch('${m.id}')">Publicar</button><button class="btn small" onclick="apfManualSync()">Sincronizar ahora</button><button class="btn small" onclick="apfOpenTvLive()">Abrir TV</button><button class="btn small" onclick="apfOpenPublicLive()">Ver público</button></div></div>
+        </div>
+      </div>`;
+    };
+  }
+
+  function addLiveToolbar(){
+    const targets=['homeLive','allLive','branchLive'];
+    targets.forEach(id=>{
+      const el=document.getElementById(id); if(!el || el.dataset.v75Toolbar)return;
+      el.dataset.v75Toolbar='1';
+      const bar=document.createElement('div');
+      bar.className='apf-live-toolbar-v75';
+      bar.style.cssText='grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#071d13;border:1px solid rgba(45,255,151,.20);border-radius:16px;padding:10px;margin-bottom:8px';
+      bar.innerHTML='<b>Marcadores online</b><span class="muted">Actualización desde Supabase</span><button class="btn small" onclick="apfRefreshLive()">Actualizar</button>';
+      el.prepend(bar);
+    });
+  }
+  const oldRenderAll=window.renderAll;
+  if(typeof oldRenderAll==='function'){
+    window.renderAll=function(){
+      oldRenderAll.apply(this,arguments);
+      setTimeout(addLiveToolbar,20);
+    };
+  }
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{try{if(typeof renderAll==='function')renderAll();}catch(e){}},500));
 })();
 </script>
 
