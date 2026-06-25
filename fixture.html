@@ -859,6 +859,11 @@ body[data-apf-public="true"] .top .brand p{max-width:780px}
 .public-comp-meta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.public-comp-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-top:10px}.public-comp-tab{background:#06170f;border:1px solid #ffffff18;border-radius:14px;padding:10px}.public-comp-tab b{display:block;color:#eafff2;font-size:14px}.public-comp-tab span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.public-classification{margin-top:10px;background:#06170f;border:1px solid rgba(185,255,0,.18);border-radius:14px;padding:10px;color:#dfffea;font-size:13px}.inscription-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.whatsapp{background:#0f4b2c;border-color:#25d36688}.btn.instagram{background:#3a1739;border-color:#e1306c88}.btn.outline-lime{background:#071d13;border-color:rgba(185,255,0,.45);color:#eafff2}.public-privacy-note{font-size:12px;color:var(--muted);margin-top:8px}.contact-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9998;display:grid;place-items:center;padding:18px}.contact-modal{max-width:520px;width:100%;background:linear-gradient(180deg,#0d2b1c,#06170f);border:1px solid rgba(185,255,0,.28);border-radius:24px;padding:18px;box-shadow:0 24px 70px #000}.contact-modal h3{margin-bottom:4px}.contact-modal p{color:var(--muted);margin-top:0}.contact-modal .contact-list{display:grid;gap:10px;margin:14px 0}.contact-modal .contact-list a{display:block;text-decoration:none}.contact-modal .btn{width:100%;text-align:center}.public-tournament-note{background:#071d13;border:1px solid #ffffff18;border-radius:16px;padding:12px;color:#dfffea;margin-top:10px}.public-tournament-note ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
 
 </style>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="apf-version" content="80">
 </head>
 <body data-apf-route="fixture" data-apf-public="true">
 <div class="wrap">
@@ -1098,7 +1103,7 @@ body[data-apf-public="true"] .top .brand p{max-width:780px}
         </div>
       </div>
     </div>
-    <div class="card full admin-module" data-admin-module="marcadores"><h3>Administrar marcadores activos</h3><div id="adminMatches" class="live-grid"></div></div>
+    <div class="card full admin-module" data-admin-module="marcadores"><h3>Marcadores creados / editar y eliminar</h3><p class="muted">Desde acá podés editar, eliminar, abrir TV y administrar todos los marcadores creados.</p><div id="adminMatches" class="live-grid"></div></div>
     <div class="card full admin-module" data-admin-module="asignaciones"><h3>Asignación de planilleros</h3><p class="muted">Acá el Admin prepara quién va a llevar cada partido. La idea final online es que el planillero entre con usuario y contraseña y vea solamente sus partidos asignados.</p>
       <div class="assignment-grid">
         <div class="mini-panel"><h4>Crear planillero</h4><p class="muted">Alta rápida para la gente que trabaja en cancha.</p><div class="formgrid"><div><label>Nombre</label><input id="skName" placeholder="Ej: Juan planillero"></div><div><label>Usuario</label><input id="skUser" placeholder="Ej: cancha1"></div><div><label>Clave provisoria</label><input id="skPass" placeholder="Ej: 1234"></div></div><div class="formgrid"><div><label>Cancha / sector</label><input id="skCourt" placeholder="Ej: Cancha 1"></div><div><label>Estado</label><select id="skStatus"><option>Activo</option><option>Inactivo</option></select></div></div><button class="btn primary" onclick="createScorekeeperUser()">Crear planillero</button></div>
@@ -3336,5 +3341,195 @@ setInterval(updateLiveTimeDisplays,1000);
 })();
 </script>
 
+
+<script>
+/* APF v79 - Edición y eliminación clara de marcadores creados */
+(function(){
+  function esc79(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+  function byId79(id){return (window.db && Array.isArray(db.matches)) ? db.matches.find(m=>String(m.id)===String(id)) : null;}
+  function ensureStyle79(){
+    if(document.getElementById('apfV79Styles')) return;
+    const st=document.createElement('style');
+    st.id='apfV79Styles';
+    st.textContent=`
+      .apf-v79-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0;padding:10px;border-radius:16px;background:rgba(33,215,119,.08);border:1px solid rgba(33,215,119,.22)}
+      .apf-v79-backdrop{position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.78);display:flex;align-items:flex-start;justify-content:center;padding:18px;overflow:auto}
+      .apf-v79-modal{width:min(920px,96vw);background:#07120c;color:#fff;border:1px solid rgba(45,255,151,.35);border-radius:24px;box-shadow:0 26px 90px rgba(0,0,0,.7);padding:18px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+      .apf-v79-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px}
+      .apf-v79-head h2{margin:0;font-size:24px}.apf-v79-head p{margin:4px 0 0;color:#b9cabe}
+      .apf-v79-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+      .apf-v79-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .apf-v79-modal label{display:block;font-size:12px;text-transform:uppercase;color:#d9ffea;font-weight:900;margin:8px 0 5px}
+      .apf-v79-modal input,.apf-v79-modal select{width:100%;box-sizing:border-box;border-radius:13px;border:1px solid rgba(255,255,255,.18);background:#0b1d12;color:#fff;padding:11px;font-size:15px;outline:none}
+      .apf-v79-box{border-radius:18px;border:1px solid rgba(255,255,255,.12);padding:12px;background:rgba(255,255,255,.04);margin-top:12px}
+      .apf-v79-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+      .apf-v79-note{font-size:13px;color:#b9cabe;margin-top:8px;line-height:1.35}
+      @media(max-width:760px){.apf-v79-grid,.apf-v79-grid.two{grid-template-columns:1fr}.apf-v79-head{display:block}}
+    `;
+    document.head.appendChild(st);
+  }
+  function close79(){const el=document.getElementById('apfV79Modal'); if(el)el.remove();}
+  async function readPhoto79(inputId){
+    const inp=document.getElementById(inputId);
+    const f=inp && inp.files && inp.files[0];
+    if(!f) return null;
+    if(typeof compressImageFile==='function') return await compressImageFile(f);
+    return await new Promise((resolve,reject)=>{
+      const r=new FileReader();
+      r.onload=()=>resolve(r.result);
+      r.onerror=reject;
+      r.readAsDataURL(f);
+    });
+  }
+  window.apfEditMatchV79=function(id){
+    if(typeof isAdmin==='function' && !isAdmin()) return adminLogin();
+    const m=byId79(id); if(!m){alert('No encontré ese marcador.'); return;}
+    try{ if(typeof normalizeMatch==='function') normalizeMatch(m); }catch(e){}
+    ensureStyle79();
+    close79();
+    const statuses=['Programado','Calentamiento','En juego','Pausado','Finalizado','Resultado cargado','Publicado'];
+    const formats=[['best3','Mejor de 3 sets'],['twoSuper','2 sets + super tiebreak'],['oneSet','A un set']];
+    const modes=[['oro','Punto de oro'],['star','Star Point'],['ventaja','Ventaja']];
+    const div=document.createElement('div');
+    div.className='apf-v79-backdrop'; div.id='apfV79Modal';
+    div.innerHTML=`<div class="apf-v79-modal">
+      <div class="apf-v79-head"><div><h2>Editar marcador</h2><p>Modificá nombres, competencia, categoría, cancha, estado y fotos del marcador creado.</p></div><button class="btn small" onclick="apfCloseEditMatchV79()">Cerrar</button></div>
+      <div class="apf-v79-box"><h3>Datos principales</h3>
+        <div class="apf-v79-grid">
+          <div><label>Pareja 1</label><input id="v79Team1" value="${esc79(m.team1||'')}"></div>
+          <div><label>Pareja 2</label><input id="v79Team2" value="${esc79(m.team2||'')}"></div>
+          <div><label>Estado</label><select id="v79Status">${statuses.map(s=>`<option ${m.status===s?'selected':''}>${s}</option>`).join('')}</select></div>
+          <div><label>Competencia / torneo</label><input id="v79Competition" value="${esc79(m.competitionName||'')}"></div>
+          <div><label>Categoría</label><input id="v79Category" value="${esc79(m.category||'')}"></div>
+          <div><label>Cancha / complejo</label><input id="v79Complex" value="${esc79(m.complex||m.court||'')}"></div>
+          <div><label>Formato</label><select id="v79Format">${formats.map(([v,l])=>`<option value="${v}" ${m.format===v?'selected':''}>${l}</option>`).join('')}</select></div>
+          <div><label>Regla de punto</label><select id="v79Mode">${modes.map(([v,l])=>`<option value="${v}" ${(m.mode||'oro')===v?'selected':''}>${l}</option>`).join('')}</select></div>
+          <div><label>Visible al público</label><select id="v79Visible"><option value="true" ${m.visible_publico!==false?'selected':''}>Sí, mostrar</option><option value="false" ${m.visible_publico===false?'selected':''}>No, ocultar</option></select></div>
+        </div>
+      </div>
+      <div class="apf-v79-box"><h3>Nombres de jugadores</h3>
+        <div class="apf-v79-grid">
+          <div><label>J1 Pareja 1</label><input id="v79p1" value="${esc79((m.playerNames&&m.playerNames.p1)||'')}"></div>
+          <div><label>J2 Pareja 1</label><input id="v79p2" value="${esc79((m.playerNames&&m.playerNames.p2)||'')}"></div>
+          <div><label>J1 Pareja 2</label><input id="v79p3" value="${esc79((m.playerNames&&m.playerNames.p3)||'')}"></div>
+          <div><label>J2 Pareja 2</label><input id="v79p4" value="${esc79((m.playerNames&&m.playerNames.p4)||'')}"></div>
+        </div>
+      </div>
+      <div class="apf-v79-box"><h3>Fotos del marcador</h3>
+        <div class="apf-v79-grid">
+          <div><label>Foto J1 Pareja 1</label><input id="v79PhotoP1" type="file" accept="image/*"></div>
+          <div><label>Foto J2 Pareja 1</label><input id="v79PhotoP2" type="file" accept="image/*"></div>
+          <div><label>Foto J1 Pareja 2</label><input id="v79PhotoP3" type="file" accept="image/*"></div>
+          <div><label>Foto J2 Pareja 2</label><input id="v79PhotoP4" type="file" accept="image/*"></div>
+          <div><label>Acción fotos</label><button class="btn danger small" onclick="apfClearPhotosV79('${esc79(id)}')">Borrar fotos actuales</button></div>
+        </div>
+        <div class="apf-v79-note">Si no cargás fotos nuevas, se mantienen las actuales. Si el marcador no necesita fotos, dejalas vacías.</div>
+      </div>
+      <div class="apf-v79-actions">
+        <button class="btn primary" onclick="apfSaveEditMatchV79('${esc79(id)}')">Guardar cambios</button>
+        <button class="btn danger" onclick="apfDeleteMatchV79('${esc79(id)}')">Eliminar marcador</button>
+        <button class="btn" onclick="show('tv')">Abrir TV</button>
+        <button class="btn" onclick="apfCloseEditMatchV79()">Cancelar</button>
+      </div>
+    </div>`;
+    document.body.appendChild(div);
+  };
+  window.apfCloseEditMatchV79=close79;
+  window.apfClearPhotosV79=function(id){
+    const m=byId79(id); if(!m)return;
+    if(confirm('¿Borrar todas las fotos de este marcador?')){m.photos={}; m.updatedAt=new Date().toISOString(); if(typeof save==='function')save(); alert('Fotos borradas.');}
+  };
+  window.apfSaveEditMatchV79=async function(id){
+    const m=byId79(id); if(!m){alert('No encontré ese marcador.'); return;}
+    m.team1=(document.getElementById('v79Team1')?.value||'Pareja 1').trim();
+    m.team2=(document.getElementById('v79Team2')?.value||'Pareja 2').trim();
+    m.status=document.getElementById('v79Status')?.value||m.status||'Programado';
+    m.competitionName=(document.getElementById('v79Competition')?.value||'').trim();
+    m.category=(document.getElementById('v79Category')?.value||'').trim();
+    m.complex=(document.getElementById('v79Complex')?.value||'').trim();
+    m.court=m.complex;
+    m.format=document.getElementById('v79Format')?.value||m.format||'best3';
+    m.mode=document.getElementById('v79Mode')?.value||m.mode||'oro';
+    m.visible_publico=(document.getElementById('v79Visible')?.value||'true')==='true';
+    m.publicado=m.visible_publico;
+    m.playerNames=m.playerNames||{};
+    ['p1','p2','p3','p4'].forEach(k=>{m.playerNames[k]=(document.getElementById('v79'+k)?.value||'').trim()||m.playerNames[k]||'';});
+    m.photos=m.photos||{};
+    const map=[['p1','v79PhotoP1'],['p2','v79PhotoP2'],['p3','v79PhotoP3'],['p4','v79PhotoP4']];
+    for(const [k,inputId] of map){
+      const data=await readPhoto79(inputId);
+      if(data) m.photos[k]=data;
+    }
+    m.updatedAt=new Date().toISOString();
+    try{ if(typeof updateFixtureFromMatch==='function') updateFixtureFromMatch(m); }catch(e){}
+    if(typeof save==='function') save();
+    try{ if(typeof apfSyncMatchesToSupabase==='function') setTimeout(apfSyncMatchesToSupabase,450); }catch(e){}
+    close79();
+    alert('Marcador actualizado.');
+  };
+  window.apfDeleteMatchV79=function(id){
+    const m=byId79(id);
+    const name=m?((m.team1||'Pareja 1')+' vs '+(m.team2||'Pareja 2')):'este marcador';
+    if(!confirm('¿Seguro que querés eliminar definitivamente '+name+'?')) return;
+    try{
+      if(typeof deleteMatch==='function') deleteMatch(id);
+      else { db.matches=(db.matches||[]).filter(x=>String(x.id)!==String(id)); if(typeof save==='function')save(); }
+    }catch(e){console.warn(e);}
+    close79();
+  };
+  function extraControls79(m){
+    return `<div class="apf-v79-toolbar"><button class="btn primary small" onclick="apfEditMatchV79('${esc79(m.id)}')">✏️ Editar marcador</button><button class="btn danger small" onclick="apfDeleteMatchV79('${esc79(m.id)}')">🗑️ Eliminar marcador</button><button class="btn small" onclick="show('tv')">📺 Abrir TV</button></div>`;
+  }
+  const oldAdminControls79=window.adminControls;
+  if(typeof oldAdminControls79==='function'){
+    window.adminControls=function(m){
+      return extraControls79(m) + oldAdminControls79(m);
+    };
+  }
+  function patchAdminTitle79(){
+    const el=document.getElementById('adminMatches');
+    if(el && el.parentElement && !document.getElementById('apfManageHelpV79')){
+      const help=document.createElement('p');
+      help.id='apfManageHelpV79';
+      help.className='muted';
+      help.innerHTML='Desde acá podés <b>editar</b>, <b>eliminar</b>, abrir en TV, cambiar nombres, estado, cancha, categoría y fotos de cada marcador creado.';
+      el.parentElement.insertBefore(help,el);
+      const h=el.parentElement.querySelector('h3');
+      if(h) h.textContent='Marcadores creados / editar y eliminar';
+    }
+  }
+  const oldRenderAll79=window.renderAll;
+  window.renderAll=function(){
+    if(typeof oldRenderAll79==='function') oldRenderAll79();
+    try{patchAdminTitle79();}catch(e){}
+  };
+  document.addEventListener('DOMContentLoaded',()=>{ensureStyle79(); setTimeout(()=>{try{patchAdminTitle79(); if(typeof renderAll==='function')renderAll();}catch(e){}},300);});
+})();
+</script>
+
+
+<script>
+(function(){
+  const APF_VERSION='80';
+  try{
+    if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{}); }
+    const isPublic = document.body?.dataset?.apfPublic === 'true' || location.pathname === '/' || location.pathname.includes('publico') || location.pathname.includes('fixture') || location.pathname.includes('ranking');
+    if(isPublic){
+      window.__APF_PUBLIC_VERSION__ = APF_VERSION;
+      const refreshPublic = ()=>{
+        try{
+          if(typeof renderAll==='function') renderAll();
+          if(typeof loadSupabaseMarkers==='function') loadSupabaseMarkers();
+          if(typeof apfRefreshLive==='function') apfRefreshLive();
+        }catch(e){ console.warn('APF refresh móvil', e); }
+      };
+      document.addEventListener('visibilitychange',()=>{ if(!document.hidden) refreshPublic(); });
+      window.addEventListener('focus', refreshPublic);
+      setTimeout(refreshPublic, 600);
+      setInterval(refreshPublic, 8000);
+    }
+  }catch(e){ console.warn('APF móvil cache fix', e); }
+})();
+</script>
 </body>
 </html>

@@ -832,6 +832,11 @@ body.tv-full .tv-stage.apf-pro.tv-redesign{width:100vw!important;max-width:none!
 .public-comp-meta{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}.public-comp-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-top:10px}.public-comp-tab{background:#06170f;border:1px solid #ffffff18;border-radius:14px;padding:10px}.public-comp-tab b{display:block;color:#eafff2;font-size:14px}.public-comp-tab span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.public-classification{margin-top:10px;background:#06170f;border:1px solid rgba(185,255,0,.18);border-radius:14px;padding:10px;color:#dfffea;font-size:13px}.inscription-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn.whatsapp{background:#0f4b2c;border-color:#25d36688}.btn.instagram{background:#3a1739;border-color:#e1306c88}.btn.outline-lime{background:#071d13;border-color:rgba(185,255,0,.45);color:#eafff2}.public-privacy-note{font-size:12px;color:var(--muted);margin-top:8px}.contact-modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9998;display:grid;place-items:center;padding:18px}.contact-modal{max-width:520px;width:100%;background:linear-gradient(180deg,#0d2b1c,#06170f);border:1px solid rgba(185,255,0,.28);border-radius:24px;padding:18px;box-shadow:0 24px 70px #000}.contact-modal h3{margin-bottom:4px}.contact-modal p{color:var(--muted);margin-top:0}.contact-modal .contact-list{display:grid;gap:10px;margin:14px 0}.contact-modal .contact-list a{display:block;text-decoration:none}.contact-modal .btn{width:100%;text-align:center}.public-tournament-note{background:#071d13;border:1px solid #ffffff18;border-radius:16px;padding:12px;color:#dfffea;margin-top:10px}.public-tournament-note ul{margin:8px 0 0;padding-left:18px;color:var(--muted)}
 
 </style>
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="apf-version" content="80">
 </head>
 <body data-apf-route="accesos">
 <div class="wrap">
@@ -3474,5 +3479,29 @@ setInterval(updateLiveTimeDisplays,1000);
 })();
 </script>
 
+
+<script>
+(function(){
+  const APF_VERSION='80';
+  try{
+    if('serviceWorker' in navigator){ navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{}); }
+    const isPublic = document.body?.dataset?.apfPublic === 'true' || location.pathname === '/' || location.pathname.includes('publico') || location.pathname.includes('fixture') || location.pathname.includes('ranking');
+    if(isPublic){
+      window.__APF_PUBLIC_VERSION__ = APF_VERSION;
+      const refreshPublic = ()=>{
+        try{
+          if(typeof renderAll==='function') renderAll();
+          if(typeof loadSupabaseMarkers==='function') loadSupabaseMarkers();
+          if(typeof apfRefreshLive==='function') apfRefreshLive();
+        }catch(e){ console.warn('APF refresh móvil', e); }
+      };
+      document.addEventListener('visibilitychange',()=>{ if(!document.hidden) refreshPublic(); });
+      window.addEventListener('focus', refreshPublic);
+      setTimeout(refreshPublic, 600);
+      setInterval(refreshPublic, 8000);
+    }
+  }catch(e){ console.warn('APF móvil cache fix', e); }
+})();
+</script>
 </body>
 </html>
