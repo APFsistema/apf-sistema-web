@@ -2,33 +2,15 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    {
-      "source": "/admin",
-      "destination": "/admin.html"
-    },
-    {
-      "source": "/planillero",
-      "destination": "/planillero.html"
-    },
-    {
-      "source": "/tv",
-      "destination": "/tv.html"
-    },
-    {
-      "source": "/publico",
-      "destination": "/publico.html"
-    },
-    {
-      "source": "/fixture",
-      "destination": "/fixture.html"
-    },
-    {
-      "source": "/ranking",
-      "destination": "/ranking.html"
-    },
-    {
-      "source": "/accesos",
-      "destination": "/accesos.html"
-    }
+    {"source": "/admin", "destination": "/admin.html"},
+    {"source": "/administrador", "destination": "/admin.html"},
+    {"source": "/planillero", "destination": "/planillero.html"},
+    {"source": "/tv", "destination": "/tv.html"},
+    {"source": "/television", "destination": "/tv.html"},
+    {"source": "/publico", "destination": "/publico.html"},
+    {"source": "/fixture", "destination": "/fixture.html"},
+    {"source": "/ranking", "destination": "/ranking.html"},
+    {"source": "/clasificacion", "destination": "/ranking.html"},
+    {"source": "/accesos", "destination": "/accesos.html"}
   ]
 }

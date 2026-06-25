@@ -2618,7 +2618,133 @@ setInterval(updateLiveTimeDisplays,1000);
 })();
 </script>
 
-<script src="/api/apf-config.js"></script>
-<script src="/js/apfAuthReal.js"></script>
+
+<script>
+/* APF v69 - Login real corregido: reemplaza el prompt viejo APF2026 */
+(function(){
+  const APF_SUPABASE_URL = 'https://reowspzpwhjuughxntnk.supabase.co';
+  const APF_SUPABASE_ANON_KEY = 'sb_publishable_s2aJuFnfls5CCtPffndv7w_5SleIDJj';
+  const ADMIN_KEY = 'apf_v60_admin';
+  const ROLE_KEY = 'apf_auth_role';
+  const USER_KEY = 'apf_auth_email';
+  let sbClientPromise = null;
+
+  function injectStyles(){
+    if(document.getElementById('apfAuthStylesV69')) return;
+    const st=document.createElement('style');
+    st.id='apfAuthStylesV69';
+    st.textContent=`
+      .apf-auth-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.76);z-index:999999;display:flex;align-items:center;justify-content:center;padding:18px}
+      .apf-auth-modal{width:min(460px,96vw);background:#07120c;border:1px solid rgba(45,255,151,.30);box-shadow:0 28px 90px rgba(0,0,0,.60);border-radius:22px;padding:20px;color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+      .apf-auth-modal h2{margin:0 0 8px;font-size:24px}.apf-auth-modal p{margin:0 0 14px;color:#b9c8bf;font-size:14px;line-height:1.35}
+      .apf-auth-modal label{display:block;font-size:13px;color:#d8ffea;margin:10px 0 5px;font-weight:800}
+      .apf-auth-modal input{width:100%;box-sizing:border-box;border-radius:13px;border:1px solid rgba(255,255,255,.18);background:#0b1d12;color:#fff;padding:12px;font-size:16px;outline:none}
+      .apf-auth-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}.apf-auth-actions button{border:0;border-radius:14px;padding:11px 14px;font-weight:900;cursor:pointer}
+      .apf-auth-primary{background:#21d777;color:#041008}.apf-auth-secondary{background:#223128;color:#fff}.apf-auth-error{color:#ffb4b4;margin-top:10px;font-size:13px;min-height:18px}.apf-auth-ok{color:#b8ffd2;margin-top:10px;font-size:13px}
+      .apf-auth-small{font-size:12px!important;color:#91a89b!important;margin-top:12px!important}
+    `;
+    document.head.appendChild(st);
+  }
+
+  async function getClient(){
+    if(sbClientPromise) return sbClientPromise;
+    sbClientPromise=(async()=>{
+      if(!window.supabase){
+        await new Promise((resolve,reject)=>{
+          const s=document.createElement('script');
+          s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+          s.onload=resolve; s.onerror=()=>reject(new Error('No se pudo cargar Supabase JS. Revisá internet.'));
+          document.head.appendChild(s);
+        });
+      }
+      return window.supabase.createClient(APF_SUPABASE_URL, APF_SUPABASE_ANON_KEY);
+    })();
+    return sbClientPromise;
+  }
+
+  function setLocalRole(role,email){
+    if(role==='admin') localStorage.setItem(ADMIN_KEY,'1'); else localStorage.removeItem(ADMIN_KEY);
+    if(role) localStorage.setItem(ROLE_KEY, role); else localStorage.removeItem(ROLE_KEY);
+    if(email) localStorage.setItem(USER_KEY, email); else localStorage.removeItem(USER_KEY);
+    try{ if(typeof renderAll==='function') renderAll(); }catch(e){}
+  }
+
+  async function readRole(user){
+    const sb=await getClient();
+    let role='';
+    try{
+      const {data,error}=await sb.from('profiles').select('role,nombre,activo').eq('id',user.id).maybeSingle();
+      if(!error && data && data.activo!==false) role=data.role || '';
+    }catch(e){}
+    return role;
+  }
+
+  async function refreshSession(){
+    try{
+      const sb=await getClient();
+      const {data}=await sb.auth.getSession();
+      const session=data && data.session;
+      if(!session){ setLocalRole('', ''); return null; }
+      const role=await readRole(session.user);
+      setLocalRole(role, session.user.email || '');
+      return {user:session.user, role};
+    }catch(e){ console.warn('APF auth:', e); return null; }
+  }
+
+  function showLogin(roleNeeded){
+    injectStyles();
+    const old=document.getElementById('apfAuthModalV69'); if(old) old.remove();
+    const isPlan=roleNeeded==='planillero';
+    const title=isPlan?'Ingreso Planillero':'Ingreso Admin APF';
+    const info=isPlan?'Entrá con el usuario asignado por APF para ver solo tus partidos.':'Entrá con tu email y contraseña real de Supabase. Ya no se usa la clave vieja APF2026.';
+    const div=document.createElement('div');
+    div.className='apf-auth-backdrop'; div.id='apfAuthModalV69';
+    div.innerHTML=`<div class="apf-auth-modal"><h2>${title}</h2><p>${info}</p><label>Email</label><input id="apfAuthEmailV69" type="email" placeholder="correo@ejemplo.com" autocomplete="username"><label>Contraseña</label><input id="apfAuthPassV69" type="password" placeholder="••••••" autocomplete="current-password"><div class="apf-auth-actions"><button class="apf-auth-primary" id="apfAuthSubmitV69">Ingresar</button><button class="apf-auth-secondary" id="apfAuthCancelV69">Cancelar</button></div><div class="apf-auth-error" id="apfAuthErrorV69"></div><p class="apf-auth-small">Si el usuario todavía no existe, crealo en Supabase: Authentication → Users. Luego agregalo a profiles con role admin o planillero.</p></div>`;
+    document.body.appendChild(div);
+    const email=document.getElementById('apfAuthEmailV69'), pass=document.getElementById('apfAuthPassV69'), err=document.getElementById('apfAuthErrorV69');
+    document.getElementById('apfAuthCancelV69').onclick=()=>div.remove();
+    document.getElementById('apfAuthSubmitV69').onclick=async()=>{
+      err.textContent='Ingresando...';
+      try{
+        const sb=await getClient();
+        const {data,error}=await sb.auth.signInWithPassword({email:email.value.trim(), password:pass.value});
+        if(error) throw error;
+        const role=await readRole(data.user);
+        if(role!==roleNeeded){
+          err.textContent = roleNeeded==='admin' ? 'El usuario existe, pero todavía no tiene rol admin en profiles.' : 'El usuario existe, pero todavía no tiene rol planillero en profiles.';
+          return;
+        }
+        setLocalRole(role, data.user.email || '');
+        div.remove();
+        if(role==='admin') try{ show('admin'); }catch(e){}
+        if(role==='planillero') try{ show('planillero'); }catch(e){}
+      }catch(e){ err.textContent=e.message || 'No se pudo iniciar sesión.'; }
+    };
+    pass.addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('apfAuthSubmitV69').click(); });
+    setTimeout(()=>email.focus(),50);
+  }
+
+  window.isAdmin=function(){ return localStorage.getItem(ROLE_KEY)==='admin' || localStorage.getItem(ADMIN_KEY)==='1'; };
+  window.adminLogin=function(){ showLogin('admin'); };
+  window.adminLoginFull=function(userId,passId){
+    const u=document.getElementById(userId)?.value||''; const p=document.getElementById(passId)?.value||'';
+    showLogin('admin');
+    setTimeout(()=>{ const e=document.getElementById('apfAuthEmailV69'); const q=document.getElementById('apfAuthPassV69'); if(e)e.value=u; if(q)q.value=p; },60);
+  };
+  window.mockScorekeeperLogin=function(){ showLogin('planillero'); };
+  window.mockScorekeeperLoginAccess=function(){ showLogin('planillero'); };
+  window.logout=async function(){
+    try{ const sb=await getClient(); await sb.auth.signOut(); }catch(e){}
+    setLocalRole('', '');
+    try{ renderAll(); show('home'); }catch(e){ location.href='/'; }
+  };
+  window.apfRefreshAuth=refreshSession;
+  document.addEventListener('DOMContentLoaded',()=>{
+    refreshSession();
+    const btn=document.getElementById('adminBtn'); if(btn) btn.textContent='🔐 Entrar Admin';
+  });
+})();
+</script>
+
 </body>
 </html>
