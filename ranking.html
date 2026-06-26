@@ -3139,7 +3139,7 @@ setInterval(updateLiveTimeDisplays,1000);
     apfStatus('🟡 Conectando marcadores...');
     setTimeout(apfLoadLiveMatches,900);
     apfStartRealtime();
-    setInterval(()=>{ if(Date.now()-lastRemotePull>7000) apfLoadLiveMatches(); },8000);
+    /* v88: actualización automática remota desactivada */
   });
 })();
 </script>
@@ -3597,8 +3597,8 @@ setInterval(updateLiveTimeDisplays,1000);
     }
   }
   document.addEventListener('DOMContentLoaded',()=>{
-    if(isPublicPage()){ badge('🟡 Cargando marcadores públicos...'); loadPublicLive(); setInterval(loadPublicLive,5000); }
-    else { setTimeout(addAdminButton,1200); setInterval(addAdminButton,3000); }
+    if(isPublicPage()){ badge('🟡 Cargando marcadores públicos...'); loadPublicLive(); /* v88: recarga automática pública desactivada */ }
+    else { setTimeout(addAdminButton,1200); /* v88: recarga automática admin desactivada */ }
   });
 })();
 </script>
@@ -3703,7 +3703,7 @@ body[data-apf-public="true"] .public-panel-title h3,body[data-apf-public="true"]
   }
   const oldRenderAll=window.renderAll;
   window.renderAll=function(){ if(typeof oldRenderAll==='function')oldRenderAll.apply(this,arguments); setTimeout(function(){cleanPublicNow();patchAdmin();},30); };
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){cleanPublicNow();patchAdmin();},400); setInterval(function(){cleanPublicNow();patchAdmin();},2500);});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){cleanPublicNow();patchAdmin();},400); /* v88: limpieza automática visual desactivada */});
 })();
 </script>
 
@@ -3745,7 +3745,7 @@ body[data-apf-public="true"] .public-panel-title h3,body[data-apf-public="true"]
   function renderAdmin(){if(isPublic())return; let admin=document.getElementById('admin'); if(!admin)return; let grid=admin.querySelector(':scope > .grid')||admin.querySelector('.grid')||admin; let old=document.getElementById('apfV83AdminDash'); if(old)old.remove(); let panel=document.getElementById('apfV84AdminPanel'); if(!panel){panel=document.createElement('div'); panel.id='apfV84AdminPanel'; grid.insertBefore(panel,grid.firstChild)} panel.innerHTML=buildAdminPanel(); let am=document.getElementById('adminMatches'); if(am){am.classList.remove('live-grid'); let list=matches(); am.innerHTML='<div class="apf-v84-admin-help"><b>Marcadores creados:</b> desde acá podés editar, eliminar, publicar en el link público, abrir TV o finalizar cada partido.</div><div class="apf-v84-manage-list">'+(list.length?list.map(adminMatchCard).join(''):'<p class="muted">Todavía no creaste marcadores.</p>')+'</div>'; let card=am.closest('.card'); if(card){let h=card.querySelector('h3'); if(h)h.textContent='Marcadores creados'; let p=card.querySelector('p.muted'); if(p)p.textContent='Lista simple para trabajar rápido durante el torneo.'}}}
   function cleanPublic(){if(!isPublic())return; let tv=document.getElementById('tab-tv'); if(tv)tv.remove(); document.querySelectorAll('.public-link').forEach(e=>e.remove()); ['homeLive','allLive','branchLive'].forEach(function(id){let el=document.getElementById(id); if(!el)return; if(/Modo TV|Link:|Punto de oro|Complejo \/ referencia|Saca:/.test(el.textContent||'')){let active=matches().filter(m=>m&&String(m.status||'').toLowerCase()!=='finalizado'&&m.visible_publico!==false); el.innerHTML=active.length?active.map(publicCard).join(''):'<div class="apf-v84-public-card"><b>No hay marcadores en vivo publicados.</b><br><span class="muted">Cuando APF publique un marcador, aparece acá.</span></div>';}})}
   const oldRender=window.renderAll; window.renderAll=function(){if(typeof oldRender==='function')oldRender.apply(this,arguments); setTimeout(function(){renderAdmin();cleanPublic()},40)};
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){renderAdmin();cleanPublic()},450); setInterval(function(){renderAdmin();cleanPublic()},2500)});
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){renderAdmin();cleanPublic()},450); /* v88: render automático visual desactivado */});
 })();
 </script>
 
@@ -3862,7 +3862,7 @@ body[data-apf-public="true"] .nav{gap:8px!important;margin-top:14px!important}bo
     if(!list.length) list=getActive();
     renderLiveInto('v85HomeLive',list); renderLiveInto('homeLive',list); renderLiveInto('allLive',list); renderLiveInto('branchLive',list);
   }
-  function installPublic(){ if(!isPublicRoute())return; rebuildPublicHome(); loadPublic(); setInterval(loadPublic,5000); }
+  function installPublic(){ if(!isPublicRoute())return; rebuildPublicHome(); loadPublic(); /* v88: recarga automática pública desactivada */ }
   const oldRender=window.renderAll;
   window.renderAll=function(){ try{ if(typeof oldRender==='function')oldRender(); }catch(e){} installAdmin(); installPreview(); if(isPublicRoute()){rebuildPublicHome(); setTimeout(loadPublic,50);} };
   document.addEventListener('DOMContentLoaded',()=>{installCreateOverride(); installAdmin(); installPublic(); setTimeout(()=>{installCreateOverride();installAdmin();installPublic();},700);});
@@ -3918,7 +3918,136 @@ body[data-apf-public="true"] .grid{gap:14px!important}
   async function loadPublic(){let list=[]; try{ if(typeof apfV81LoadPublicLive==='function') list=await apfV81LoadPublicLive()||[]; }catch(e){} if(!list.length) list=dbMatches(); cleanNav(); cleanHome(); cleanMarkersSection(); renderStable('homeLive',list); renderStable('allLive',list); renderStable('branchLive',list);}
   let oldRender=window.renderAll;
   window.renderAll=function(){ if(!isPublic()){try{oldRender&&oldRender();}catch(e){} return;} cleanNav(); cleanHome(); cleanMarkersSection(); loadPublic(); };
-  document.addEventListener('DOMContentLoaded',()=>{ if(!isPublic())return; cleanNav(); cleanHome(); cleanMarkersSection(); setTimeout(loadPublic,80); setInterval(loadPublic,5000); });
+  document.addEventListener('DOMContentLoaded',()=>{ if(!isPublic())return; cleanNav(); cleanHome(); cleanMarkersSection(); setTimeout(loadPublic,80); /* v88: recarga automática pública desactivada */ });
+})();
+</script>
+
+
+
+<style id="apfV88NoReloadAdminCleanStyles">
+/* APF v88 - sin recarga automática visual + admin limpio */
+body[data-apf-route="admin"] #tab-inicio,
+body[data-apf-route="admin"] #tab-accesos,
+body[data-apf-route="admin"] #tab-tv,
+body[data-apf-route="admin"] #tab-planillero,
+body[data-apf-route="admin"] #tab-masculino,
+body[data-apf-route="admin"] #tab-femenino{display:none!important}
+body[data-apf-route="admin"] #apfV84AdminPanel,
+body[data-apf-route="admin"] #adminMenu,
+body[data-apf-route="admin"] .admin-control-hero,
+body[data-apf-route="admin"] .admin-kpi-grid{display:none!important}
+body[data-apf-route="admin"] .nav{gap:10px!important;margin-bottom:18px!important}
+body[data-apf-route="admin"] #tab-marcadores::after{content:""}
+#apfV88AdminPanel{border:1px solid rgba(45,255,151,.30)!important;background:linear-gradient(180deg,rgba(8,34,22,.96),rgba(4,16,10,.96))!important;border-radius:24px!important;padding:18px!important;box-shadow:0 18px 55px rgba(0,0,0,.25)!important;margin-bottom:16px!important}
+.apf-v88-admin-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:15px}.apf-v88-admin-head h2{font-size:34px!important;margin:0!important}.apf-v88-admin-head p{margin:6px 0 0!important;color:#c8decf!important;font-size:15px!important}.apf-v88-badge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;background:#0d281b;border:1px solid rgba(45,255,151,.32);color:#eafff2;font-weight:900}.apf-v88-badge:before{content:"";width:9px;height:9px;border-radius:50%;background:#2dff97;box-shadow:0 0 12px #2dff97}.apf-v88-admin-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}.apf-v88-admin-card{border:1px solid rgba(255,255,255,.14)!important;background:rgba(255,255,255,.045)!important;border-radius:18px!important;padding:16px!important;min-height:112px!important;text-align:left!important;cursor:pointer!important;color:#eafff2!important}.apf-v88-admin-card:hover{border-color:rgba(45,255,151,.5)!important}.apf-v88-admin-card span{display:block;font-size:26px;margin-bottom:7px}.apf-v88-admin-card b{display:block;font-size:18px;line-height:1.1}.apf-v88-admin-card small{display:block;color:#c8decf;font-size:12px;line-height:1.3;margin-top:6px}.apf-v88-tip{margin-top:14px;background:rgba(45,255,151,.08);border:1px solid rgba(45,255,151,.20);border-radius:16px;padding:12px;color:#dfffea;font-size:14px;line-height:1.35}.apf-v88-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px}.apf-v88-manage-list{display:grid;gap:10px}.apf-v88-manage-card{border:1px solid rgba(255,255,255,.14);background:#071d13;border-radius:19px;padding:14px}.apf-v88-manage-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.apf-v88-manage-title{font-size:20px;font-weight:1000;color:#fff;line-height:1.15}.apf-v88-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.apf-v88-actions .btn{margin:0!important}.apf-v88-empty{border:1px dashed rgba(255,255,255,.22);border-radius:18px;padding:15px;color:#b9cabe;background:rgba(255,255,255,.035)}
+.apf-v88-refresh-strip{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;background:rgba(45,255,151,.07);border:1px solid rgba(45,255,151,.18);border-radius:16px;padding:10px 12px;margin:10px 0}.apf-v88-refresh-strip span{color:#c8decf;font-size:13px}.apf-v88-stable-note{font-size:12px;color:#b9cabe;margin-top:6px}
+body[data-apf-public="true"] .apf-v88-refresh-strip{margin:12px 0 14px}
+@media(max-width:900px){.apf-v88-admin-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:520px){.apf-v88-admin-grid{grid-template-columns:1fr!important}.apf-v88-admin-head h2{font-size:27px!important}}
+</style>
+<script id="apfV88NoReloadAdminCleanScript">
+/* APF v88 - marcador quieto, sin recarga automática visual; Admin sin duplicados */
+(function(){
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const route=()=>document.body?.getAttribute('data-apf-route')||'';
+  const isAdmin=()=>route()==='admin' || location.pathname.includes('/admin');
+  const isPublic=()=>document.body?.getAttribute('data-apf-public')==='true' || location.pathname==='/' || location.pathname.includes('/publico');
+  const getDB=()=>window.db||{matches:[],fixtures:[],competitions:[]};
+  const matches=()=>Array.isArray(getDB().matches)?getDB().matches:[];
+  let filter='activos';
+  let lastPublicSignature='';
+
+  function blockLateIntervals(){
+    const nativeSetInterval=window.setInterval;
+    window.setInterval=function(fn,delay){
+      const s=String(fn||'');
+      if(/loadPublic|renderAdmin|cleanPublic|patchAdmin|apfLoadLiveMatches|addAdminButton|loadPublicLive/.test(s)){
+        console.log('APF v88: intervalo visual bloqueado', delay);
+        return 0;
+      }
+      return nativeSetInterval.apply(window,arguments);
+    };
+  }
+  blockLateIntervals();
+
+  function clearVisualIntervals(){
+    // Limpia intervalos viejos que ya pudieran haberse creado en versiones anteriores.
+    for(let i=1;i<1200;i++){try{clearInterval(i)}catch(e){}}
+    // Reponemos solo el reloj interno si existe; no redibuja la pantalla completa.
+    if(typeof updateLiveTimeDisplays==='function'){
+      try{window.__apfClockInterval=setInterval(updateLiveTimeDisplays,1000)}catch(e){}
+    }
+  }
+
+  function adminCard(icon,title,desc,fn){return `<button class="apf-v88-admin-card" onclick="${fn}"><span>${icon}</span><b>${title}</b><small>${desc}</small></button>`}
+  function installCleanAdmin(){
+    if(!isAdmin())return;
+    document.querySelectorAll('#apfV84AdminPanel,#adminMenu,.admin-control-hero,.admin-kpi-grid').forEach(el=>{el.style.display='none'});
+    const tabs={
+      'tab-marcadores':'Marcadores','tab-fixture':'Fixture','tab-ranking':'Ranking','tab-admin':'Panel Admin'
+    };
+    Object.entries(tabs).forEach(([id,txt])=>{const b=document.getElementById(id); if(b)b.textContent=txt});
+    ['tab-inicio','tab-accesos','tab-tv','tab-planillero','tab-masculino','tab-femenino'].forEach(id=>{const b=document.getElementById(id); if(b)b.style.display='none'});
+    const grid=document.querySelector('#admin .grid'); if(!grid)return;
+    let old=document.getElementById('apfV85AdminPanel'); if(old)old.style.display='none';
+    let p=document.getElementById('apfV88AdminPanel');
+    if(!p){p=document.createElement('div');p.id='apfV88AdminPanel';p.className='card full';grid.insertBefore(p,grid.firstChild)}
+    p.innerHTML=`<div class="apf-v88-admin-head"><div><h2>Panel Admin APF</h2><p>Una sola entrada para manejar el torneo, sin paneles repetidos.</p></div><span class="apf-v88-badge">Admin activo</span></div><div class="apf-v88-admin-grid">${adminCard('🎾','Crear marcador','Cargá un partido nuevo con nombres, fotos y estado.',"openAdminModule('marcadores');setTimeout(()=>document.getElementById('matchTeam1')?.scrollIntoView({behavior:'smooth',block:'center'}),150)")}${adminCard('📋','Marcadores creados','Editá, eliminá, publicá, finalizá o abrí TV.',"openAdminModule('marcadores');setTimeout(()=>document.getElementById('adminMatches')?.scrollIntoView({behavior:'smooth',block:'center'}),150)")}${adminCard('🌎','Publicar al público','Mandá los marcadores al link que ve la gente.',"apfV88PublishAll()")}${adminCard('🔄','Actualizar marcadores','Actualización manual, sin parpadeo automático.',"apfV88ManualRefresh()")}${adminCard('📅','Fixture / Resultados','Partidos, horarios, canchas y resultados.',"openAdminModule('fixture')")}${adminCard('🏆','Competencias','Ligas, torneos, zonas y categorías.',"openAdminModule('competencias')")}${adminCard('👥','Jugadores / Parejas','Cargá jugadores, parejas y fotos.',"openAdminModule('jugadores')")}${adminCard('⚙️','Configuración / Público','Datos de APF, WhatsApp, Instagram y página pública.',"openAdminModule('publico')")}</div><div class="apf-v88-tip"><b>Orden recomendado:</b> crear marcador → cargar fotos → publicar al público → revisar fixture/ranking. La pantalla ya no se actualiza sola.</div>`;
+    renderAdminMatches();
+  }
+
+  function activeList(){
+    return matches().filter(m=>{
+      const st=String(m.status||'').toLowerCase();
+      if(filter==='todos')return true;
+      if(filter==='finalizados')return /finalizado|resultado|terminado/.test(st);
+      if(filter==='programados')return /programado/.test(st);
+      return !/finalizado|resultado|terminado/.test(st);
+    });
+  }
+  function meta(m){return [m.competitionName||'Sin competencia',m.category,m.complex||m.court||'Cancha sin definir'].filter(Boolean).join(' · ')}
+  function del(id){const m=matches().find(x=>String(x.id)===String(id)); const name=m?`${m.team1||'Pareja 1'} vs ${m.team2||'Pareja 2'}`:'este marcador'; if(!confirm('¿Eliminar '+name+'?'))return; getDB().matches=matches().filter(x=>String(x.id)!==String(id)); try{save&&save()}catch(e){} renderAdminMatches();}
+  function cleanTests(){const list=matches(); const keep=list.filter(m=>!(/^Pareja 1$/i.test(String(m.team1||'')) && /^Pareja 2$/i.test(String(m.team2||'')))); const removed=list.length-keep.length; if(!removed)return alert('No encontré marcadores de prueba tipo Pareja 1 vs Pareja 2.'); if(!confirm('Se van a borrar '+removed+' marcador/es de prueba. ¿Confirmás?'))return; getDB().matches=keep; try{save&&save()}catch(e){} renderAdminMatches(); alert('Marcadores de prueba borrados.');}
+  function publishOne(id){const m=matches().find(x=>String(x.id)===String(id)); if(!m)return; m.visible_publico=true;m.publicado=true;if(!m.status||m.status==='Programado')m.status='En juego';m.updatedAt=new Date().toISOString(); try{save&&save()}catch(e){} apfV88PublishAll(); alert('Marcador publicado.');}
+  function finishOne(id){const m=matches().find(x=>String(x.id)===String(id)); if(!m)return; m.status='Finalizado';m.updatedAt=new Date().toISOString();try{save&&save()}catch(e){}renderAdminMatches();}
+  window.apfV88Delete=del; window.apfV88CleanTests=cleanTests; window.apfV88PublishOne=publishOne; window.apfV88FinishOne=finishOne;
+  function card(m){return `<div class="apf-v88-manage-card"><div class="apf-v88-manage-top"><div><div class="apf-v88-manage-title">${esc(m.team1||'Pareja 1')} vs ${esc(m.team2||'Pareja 2')}</div><div class="muted">${esc(meta(m))}</div></div><span class="pill">${esc(m.status||'En juego')}</span></div><div class="apf-v88-actions"><button class="btn primary small" onclick="apfEditMatchV79&&apfEditMatchV79('${esc(m.id)}')">✏️ Editar</button><button class="btn danger small" onclick="apfV88Delete('${esc(m.id)}')">🗑 Eliminar</button><button class="btn small" onclick="apfV88PublishOne('${esc(m.id)}')">🌎 Publicar</button><button class="btn small" onclick="show('tv')">📺 TV</button><button class="btn warn small" onclick="apfV88FinishOne('${esc(m.id)}')">✅ Finalizar</button></div></div>`}
+  function renderAdminMatches(){
+    const el=document.getElementById('adminMatches'); if(!el)return;
+    el.classList.remove('live-grid');
+    const list=activeList();
+    el.innerHTML=`<div class="apf-v88-refresh-strip"><div><b>Marcadores creados</b><br><span>Lista estable: no se actualiza sola. Usá Actualizar cuando quieras refrescar.</span></div><button class="btn small" onclick="apfV88ManualRefresh()">Actualizar marcadores</button></div><div class="apf-v88-toolbar"><button class="btn small ${filter==='activos'?'primary':''}" onclick="apfV88SetFilter('activos')">Activos</button><button class="btn small ${filter==='programados'?'primary':''}" onclick="apfV88SetFilter('programados')">Programados</button><button class="btn small ${filter==='finalizados'?'primary':''}" onclick="apfV88SetFilter('finalizados')">Finalizados</button><button class="btn small ${filter==='todos'?'primary':''}" onclick="apfV88SetFilter('todos')">Todos</button><button class="btn danger small" onclick="apfV88CleanTests()">Borrar pruebas</button></div><div class="apf-v88-manage-list">${list.length?list.map(card).join(''):'<div class="apf-v88-empty">No hay marcadores para este filtro.</div>'}</div>`;
+    const parent=el.closest('.card'); if(parent){const h=parent.querySelector('h3'); if(h)h.textContent='Marcadores creados'; const p=parent.querySelector('p.muted'); if(p)p.textContent='Editá, eliminá, publicá o finalizá sin que la lista se refresque sola.';}
+  }
+  window.apfV88SetFilter=function(f){filter=f;renderAdminMatches()};
+
+  window.apfV88PublishAll=function(){try{ if(typeof apfV81PublishAll==='function')return apfV81PublishAll(); }catch(e){} try{ if(typeof save==='function')save(); }catch(e){} alert('Marcadores guardados/publicados.');};
+  window.apfV88ManualRefresh=function(){
+    clearVisualIntervals();
+    try{ if(typeof apfLoadLiveMatches==='function')apfLoadLiveMatches(); }catch(e){}
+    try{ if(typeof renderAll==='function')renderAll(); }catch(e){}
+    setTimeout(()=>{installCleanAdmin(); renderAdminMatches(); installPublicRefreshButton();},150);
+  };
+
+  function installPublicRefreshButton(){
+    if(!isPublic())return;
+    const targets=['homeLive','allLive','branchLive'].map(id=>document.getElementById(id)).filter(Boolean);
+    targets.forEach(el=>{
+      const card=el.closest('.card'); if(!card || card.querySelector('.apf-v88-refresh-strip'))return;
+      const strip=document.createElement('div'); strip.className='apf-v88-refresh-strip';
+      strip.innerHTML='<div><b>Marcadores en vivo</b><br><span>Actualización manual para que no parpadee ni cambie de tamaño.</span></div><button class="btn small" onclick="apfV88PublicRefresh()">Actualizar marcadores</button>';
+      card.insertBefore(strip, el);
+    });
+  }
+  window.apfV88PublicRefresh=async function(){
+    try{ if(typeof apfV85RenderPublic==='function'){ await apfV85RenderPublic(); } else if(typeof renderAll==='function'){ renderAll(); } }catch(e){console.warn(e)}
+    setTimeout(installPublicRefreshButton,100);
+  };
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    setTimeout(()=>{clearVisualIntervals(); installCleanAdmin(); renderAdminMatches(); installPublicRefreshButton();},650);
+    setTimeout(()=>{clearVisualIntervals(); installCleanAdmin(); installPublicRefreshButton();},1800);
+  });
 })();
 </script>
 
