@@ -4356,5 +4356,192 @@ body[data-apf-public="true"] #apfV81PublicStatus{display:none!important}
 })();
 </script>
 
+
+<!-- APF v94: orden móvil + limpieza definitiva de partido fantasma -->
+<style id="apf-v94-polish">
+:root{--apf-bg:#020807;--apf-card:#082619;--apf-card2:#0b321f;--apf-line:rgba(112,255,151,.24);--apf-green:#35ff7d;--apf-soft:#cfe7d6;}
+body{background:radial-gradient(circle at top right,rgba(30,255,126,.10),transparent 28%),linear-gradient(180deg,#020607,#06100d 55%,#020706)!important;}
+@media(max-width:760px){
+  .wrap,.container,main{padding-left:14px!important;padding-right:14px!important;max-width:100%!important;overflow-x:hidden!important}
+  .brand{display:flex!important;align-items:center!important;gap:14px!important;margin:14px 0 18px!important}
+  .brand img,.logo img,.brand .logo{width:76px!important;height:76px!important;border-radius:22px!important;object-fit:contain!important}
+  .brand h1{font-size:30px!important;line-height:1.05!important;margin:0!important}
+  .brand p{font-size:18px!important;line-height:1.25!important;margin-top:5px!important;color:rgba(255,255,255,.72)!important}
+  .status,.sync-status,.online-status,.connection-status,[id*="sync"],[class*="sync"]{font-size:13px!important}
+  .nav{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important;margin:14px 0 18px!important;overflow:visible!important}
+  .nav button{min-height:64px!important;border-radius:18px!important;font-size:18px!important;font-weight:900!important;white-space:normal!important;background:linear-gradient(145deg,#0b321f,#103d27)!important;border:1px solid rgba(85,255,137,.18)!important}
+  .card{border-radius:24px!important;background:linear-gradient(155deg,rgba(10,51,32,.92),rgba(4,22,15,.96))!important;border:1px solid var(--apf-line)!important;box-shadow:0 12px 34px rgba(0,0,0,.28)!important}
+  .card h2{font-size:31px!important;line-height:1.08!important}
+  .card h3{font-size:24px!important}
+  .row,.formgrid,.grid{max-width:100%!important}
+  .apf-v92-actions,.apf-v89-actions,.apf-v90-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:12px!important}
+  .apf-v92-actions .btn,.apf-v89-actions .btn,.apf-v90-actions .btn{min-height:62px!important;border-radius:18px!important;font-weight:900!important}
+}
+/* Público v94 */
+.apf-v94-public-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0 20px}
+.apf-v94-public-nav button{border:1px solid rgba(70,255,130,.22);background:linear-gradient(150deg,#0c321f,#092718);color:white;border-radius:20px;padding:22px 16px;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;gap:10px}
+.apf-v94-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.apf-v94-finished{border:1px solid rgba(126,255,151,.45);background:#0b2a1b;color:white;border-radius:16px;padding:12px 18px;font-weight:900}
+.apf-v94-empty{padding:22px;border:1px dashed rgba(135,255,160,.28);border-radius:20px;background:rgba(0,0,0,.16);color:rgba(255,255,255,.78)}
+.apf-v94-empty b{display:block;color:white;font-size:18px;margin-bottom:7px}
+.apf-v94-live-grid{display:grid;gap:16px}
+.apf-v94-live-card{border:1px solid rgba(80,255,140,.35);border-radius:24px;background:linear-gradient(160deg,rgba(5,25,16,.98),rgba(9,50,31,.86));padding:20px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+.apf-v94-live-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.apf-v94-live-top h3{margin:0;font-size:26px;line-height:1.08}
+.apf-v94-live-meta{color:rgba(255,255,255,.75);font-weight:700;margin-top:8px;line-height:1.35}
+.apf-v94-state{background:#98ffae;color:#06220f;border-radius:999px;padding:8px 13px;font-weight:950;white-space:nowrap}
+.apf-v94-duel{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;margin-top:14px}
+.apf-v94-pair{border:1px solid rgba(255,255,255,.14);border-radius:22px;background:rgba(255,255,255,.045);padding:15px;text-align:center;min-height:132px;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.apf-v94-pair b{font-size:20px;color:#80ff9a}
+.apf-v94-photos{display:flex;justify-content:center;gap:8px;min-height:48px}
+.apf-v94-photos img,.apf-v94-photos span{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid rgba(75,255,130,.55);background:rgba(255,255,255,.08);display:inline-block}
+.apf-v94-score-mid{display:flex;flex-direction:column;align-items:center;gap:10px}
+.apf-v94-vs{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(100,255,140,.7);font-weight:950;color:#8effa6;background:rgba(0,0,0,.2)}
+.apf-v94-score{font-size:44px;font-weight:1000;letter-spacing:2px;white-space:nowrap}
+.apf-v94-sets{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.apf-v94-sets span{border-radius:999px;padding:8px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font-weight:800}
+.apf-v94-info{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:14px}
+.apf-v94-info div{border:1px solid rgba(80,255,140,.22);border-radius:15px;padding:10px;text-align:center;background:rgba(0,0,0,.14);font-weight:800}
+.apf-v94-sponsor-strip{margin-top:14px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px}
+.apf-v94-sponsor-strip small{display:block;color:rgba(255,255,255,.65);font-weight:800;margin-bottom:8px}
+.apf-v94-sponsor-items{display:flex;gap:9px;align-items:center;overflow:hidden}
+.apf-v94-sponsor-items img{width:52px;height:52px;object-fit:contain;border-radius:12px;background:white;padding:5px}
+.apf-v94-sponsor-items span{border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:9px 12px;background:rgba(255,255,255,.06);font-weight:800}
+.apf-v94-comp-grid,.apf-v94-ranking-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.apf-v94-comp-card,.apf-v94-mini-card{border:1px solid rgba(97,255,145,.24);border-radius:18px;background:rgba(0,0,0,.18);padding:16px}
+@media(max-width:760px){
+  .apf-v94-public-nav{grid-template-columns:1fr 1fr;gap:12px}
+  .apf-v94-public-nav button{min-height:96px;justify-content:flex-start;font-size:20px;text-align:left;padding:18px}
+  .apf-v94-live-top{display:block}
+  .apf-v94-state{display:inline-block;margin-top:12px}
+  .apf-v94-duel{grid-template-columns:1fr;gap:12px}
+  .apf-v94-score-mid{flex-direction:row;justify-content:center}
+  .apf-v94-pair{min-height:96px}
+  .apf-v94-info{grid-template-columns:1fr 1fr}
+  .apf-v94-live-top h3{font-size:24px}
+}
+/* Admin v94 */
+body.apf-v94-admin .brand + .status,
+body.apf-v94-admin .brand + div[class*="status"]{display:none!important}
+.apf-v94-admin-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 18px}
+.apf-v94-admin-pill{background:rgba(16,93,48,.8);border:1px solid rgba(104,255,147,.35);border-radius:999px;padding:10px 14px;color:white;font-weight:900}
+.apf-v94-admin-quick-top{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:12px 0 20px}
+.apf-v94-admin-quick-top button{border:1px solid rgba(107,255,150,.2);background:linear-gradient(150deg,#0a2a1c,#092116);color:white;border-radius:22px;padding:22px 12px;font-weight:900;font-size:18px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.apf-v94-admin-hero{border-radius:26px;background:linear-gradient(135deg,rgba(8,51,31,.96),rgba(3,18,13,.98));border:1px solid rgba(104,255,147,.22);padding:28px;margin:18px 0}
+.apf-v94-admin-hero h2{font-size:42px;margin:0 0 12px}
+.apf-v94-admin-tabs{display:flex;overflow-x:auto;gap:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);border-radius:24px;padding:8px;margin-bottom:18px;scrollbar-width:none}
+.apf-v94-admin-tabs button{border:0;background:transparent;color:white;border-radius:18px;padding:13px 16px;white-space:nowrap;font-weight:850;font-size:16px}
+.apf-v94-admin-tabs button.active{background:#31ff7b;color:#04150b}
+.apf-v94-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.apf-v94-action-card{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.045);border-radius:22px;padding:18px;display:flex;align-items:center;gap:16px;min-height:94px;cursor:pointer}
+.apf-v94-action-card .ico{font-size:34px;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:rgba(73,255,130,.12)}
+.apf-v94-action-card b{font-size:21px;display:block}
+.apf-v94-action-card span{color:rgba(255,255,255,.68);font-weight:600}
+.apf-v94-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.apf-v94-stat{border:1px solid rgba(255,255,255,.13);border-radius:20px;background:rgba(0,0,0,.16);padding:22px;text-align:center}
+.apf-v94-stat b{font-size:42px;display:block}
+.apf-v94-stat span{color:rgba(255,255,255,.72);font-weight:800}
+@media(max-width:760px){
+  body.apf-v94-admin .brand{margin-top:8px!important}
+  body.apf-v94-admin .brand p{font-size:18px!important}
+  body.apf-v94-admin .nav{grid-template-columns:repeat(3,1fr)!important;gap:10px!important}
+  body.apf-v94-admin .nav button{min-height:82px!important;font-size:16px!important}
+  .apf-v94-admin-head{margin-top:0}
+  .apf-v94-admin-pill{font-size:13px;padding:8px 11px}
+  .apf-v94-admin-quick-top{grid-template-columns:repeat(3,1fr);gap:10px}
+  .apf-v94-admin-quick-top button{min-height:82px;padding:12px 8px;font-size:16px}
+  .apf-v94-admin-hero{padding:22px;margin:14px 0}
+  .apf-v94-admin-hero h2{font-size:34px}
+  .apf-v94-action-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .apf-v94-action-card{padding:15px;min-height:100px;align-items:flex-start;flex-direction:column}
+  .apf-v94-action-card .ico{width:46px;height:46px;font-size:28px}
+  .apf-v94-action-card b{font-size:19px}
+  .apf-v94-stats{grid-template-columns:repeat(3,1fr);gap:10px}
+  .apf-v94-stat{padding:17px 8px}
+  .apf-v94-stat b{font-size:36px}
+}
+</style>
+<script id="apf-v94-script">
+(function(){
+  const KEY='apf_v75_data';
+  const ADMIN_KEY='apf_v60_admin';
+  const t1=['Lu'+'cas','Je'+'re','Pe'+'la','Tu'+'le'];
+  const t2=['Torneo '+'Apertura 2026','Liga '+'APF 2026','Marcadores '+'públicos actualizados'];
+  const demoTokens=t1.concat(t2);
+  function hasDemo(v){try{const s=JSON.stringify(v); return demoTokens.some(x=>s.includes(x));}catch(e){return false}}
+  function cleanList(a){return Array.isArray(a)?a.filter(x=>!hasDemo(x)):[]}
+  function emptyDB(){return {competitions:[],players:[],matches:[],pairs:[],fixtures:[],results:[],standings:[],scorekeepers:[],assignments:[],sponsors:[],audit:[],categories:[],registrations:[],settings:{}}}
+  function readDB(){try{return Object.assign(emptyDB(),JSON.parse(localStorage.getItem(KEY)||'{}')||{})}catch(e){return emptyDB()}}
+  function writeDB(d){try{localStorage.setItem(KEY,JSON.stringify(d)); window.db=d;}catch(e){}}
+  function purgeGhost(){
+    try{
+      const d=readDB(); let changed=false;
+      ['matches','competitions','fixtures','results','standings','pairs','players','registrations'].forEach(k=>{
+        const before=(d[k]||[]).length; d[k]=cleanList(d[k]); if((d[k]||[]).length!==before)changed=true;
+      });
+      if(changed)writeDB(d);
+      if(window.db){['matches','competitions','fixtures','results','standings','pairs','players','registrations'].forEach(k=>{if(Array.isArray(window.db[k])) window.db[k]=cleanList(window.db[k]);});}
+    }catch(e){}
+  }
+  function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+  function isAdminPage(){return /admin/i.test(location.pathname)||document.body?.classList.contains('admin')||document.querySelector('#admin')}
+  function isPublicPage(){return !/admin|planillero|tv|fixture|ranking|accesos/i.test(location.pathname) || document.body?.getAttribute('data-apf-public')==='true'}
+  function pairName(m,n){
+    const keys=n===1?['team1','pareja1','pair1','equipo1','name1']:['team2','pareja2','pair2','equipo2','name2'];
+    for(const k of keys){if(m&&m[k])return m[k]}
+    const a=n===1?['player1','jugador1','p1']:['player3','jugador3','p3'];
+    const b=n===1?['player2','jugador2','p2']:['player4','jugador4','p4'];
+    const pA=m?.[a[0]]||m?.[a[1]]||m?.[a[2]]; const pB=m?.[b[0]]||m?.[b[1]]||m?.[b[2]];
+    return [pA,pB].filter(Boolean).join(' / ') || ('Pareja '+n);
+  }
+  function photo(m,k){const u=(m?.photos&&m.photos[k])||m?.['photo_'+k]||m?.[k+'Photo']||''; return u?'<img src="'+esc(u)+'" alt="">':'<span></span>'}
+  function sponsors(d){return cleanList(d.sponsors||[]).filter(s=>s&&s.active!==false&&!/inactivo/i.test(String(s.status||s.estado||'')))}
+  function sponsorStrip(d){
+    const list=sponsors(d); if(!list.length)return '<div class="apf-v94-empty"><b>No hay sponsors activos por el momento.</b><p>Cuando cargues sponsors desde Admin, aparecerán acá.</p></div>';
+    const max=innerWidth<760?3:5;
+    return '<div class="apf-v94-sponsor-items">'+list.slice(0,max).map(s=>s.logo?'<img src="'+esc(s.logo)+'" alt="'+esc(s.name||s.nombre||'Sponsor')+'">':'<span>'+esc(s.name||s.nombre||'Sponsor')+'</span>').join('')+'</div>';
+  }
+  function empty(title,body){return '<div class="apf-v94-empty"><b>'+esc(title)+'</b><p>'+esc(body||'')+'</p></div>'}
+  function liveCard(m,d){
+    const p1=pairName(m,1), p2=pairName(m,2), score=Array.isArray(m.points)?m.points:(Array.isArray(m.score)?m.score:[m.score1||0,m.score2||0]);
+    const sets=Array.isArray(m.sets)&&m.sets.length?m.sets:m.setsData||[[0,0],[0,0],[0,0]];
+    const meta=[m.competitionName||m.competencia||'Competencia APF',m.zona||m.zone,m.fecha||m.round||m.instancia,m.category||m.categoria,m.court||m.cancha,m.time||m.horario].filter(Boolean).join(' · ');
+    const server=String(m.server||m.saque||m.serverTeam||'');
+    return '<div class="apf-v94-live-card"><div class="apf-v94-live-top"><div><h3>'+esc(p1)+' vs '+esc(p2)+'</h3><div class="apf-v94-live-meta">'+esc(meta||'Partido publicado por APF')+'</div><div class="apf-v94-live-meta">Tiempo: '+esc(m.timer||m.tiempo||'00:00')+'</div></div><div class="apf-v94-state">● '+esc(m.status||m.estado||'En juego')+'</div></div><div class="apf-v94-duel"><div class="apf-v94-pair"><b>'+esc(p1)+(server==='1'?' 🎾':'')+'</b><div class="apf-v94-photos">'+photo(m,'p1')+photo(m,'p2')+'</div></div><div class="apf-v94-score-mid"><div class="apf-v94-vs">VS</div><div class="apf-v94-score">'+esc(score[0]??0)+' - '+esc(score[1]??0)+'</div></div><div class="apf-v94-pair"><b>'+esc(p2)+(server==='2'?' 🎾':'')+'</b><div class="apf-v94-photos">'+photo(m,'p3')+photo(m,'p4')+'</div></div></div><div class="apf-v94-sets">'+sets.slice(0,3).map((s,i)=>'<span>Set '+(i+1)+': '+esc((s&&s[0])||0)+'-'+esc((s&&s[1])||0)+'</span>').join('')+'</div><div class="apf-v94-info"><div>Cancha<br>'+esc(m.court||m.cancha||'-')+'</div><div>Horario<br>'+esc(m.time||m.horario||'-')+'</div><div>Instancia<br>'+esc(m.instancia||m.round||m.fecha||'-')+'</div><div>Categoría<br>'+esc(m.category||m.categoria||'-')+'</div></div><div class="apf-v94-sponsor-strip"><small>Acompañan este partido</small>'+sponsorStrip(d)+'</div></div>';
+  }
+  function renderPublicV94(){
+    if(!isPublicPage())return; purgeGhost();
+    const d=readDB();
+    const live=cleanList(d.matches||[]).filter(m=>m&&m.visible_publico!==false&&m.publicado!==false&&!/final/i.test(String(m.status||m.estado||'')));
+    const comps=cleanList(d.competitions||[]).filter(c=>c&&c.visible_publico!==false&&c.public!==false&&c.publicado!==false);
+    const liveHtml=live.length?'<div class="apf-v94-live-grid">'+live.map(m=>liveCard(m,d)).join('')+'</div>':empty('No hay marcadores publicados por el momento.','Cuando cargues y publiques un marcador desde Admin, aparecerá acá.');
+    const compHtml=comps.length?'<div class="apf-v94-comp-grid">'+comps.map(c=>'<div class="apf-v94-comp-card"><b>'+esc(c.name||c.nombre||'Competencia APF')+'</b><p>Estado: '+esc(c.status||c.estado||'Próxima')+' · '+esc(c.branch||c.rama||'')+' '+esc(c.category||c.categoria||'')+'</p><button class="btn small">Ver competencia</button></div>').join('')+'</div>':empty('No hay competencias visibles por el momento.','Cuando crees y publiques una competencia desde Admin, aparecerá acá.');
+    const finished='<button class="apf-v94-finished" onclick="alert(\'Partidos finalizados de hoy. Se reinicia todos los días a las 08:00 hs.\')">Finalizados</button>';
+    const nav=document.querySelector('.nav'); if(nav){nav.className='apf-v94-public-nav'; nav.innerHTML='<button onclick="show&&show(\'marcadores\')">📡 Marcadores en vivo</button><button onclick="document.getElementById(\'apfV94Competencias\')?.scrollIntoView({behavior:\'smooth\'})">🏆 Competencias APF</button><button onclick="show&&show(\'ranking\')">📊 Ranking APF</button><button onclick="document.getElementById(\'apfV94Inscribirme\')?.scrollIntoView({behavior:\'smooth\'})">👤 Inscribirme</button>'}
+    const grid=document.querySelector('#inicio .grid')||document.querySelector('main .grid')||document.querySelector('.grid');
+    if(grid){grid.innerHTML='<div class="card full"><h2>Toda la actividad del pádel friense</h2><p class="muted">Marcadores en vivo, competencias, ranking e inscripción en un solo lugar.</p></div><div class="card full"><div class="apf-v94-section-head"><h2>Marcadores en vivo</h2>'+finished+'</div>'+liveHtml+'</div><div class="card full" id="apfV94Competencias"><h2>Competencias APF</h2>'+compHtml+'</div><div class="card full"><h2>Ranking APF</h2><div class="apf-v94-ranking-grid"><div class="apf-v94-mini-card"><b>Ranking Masculino</b><p>Por categoría, de 8va a 1ra.</p></div><div class="apf-v94-mini-card"><b>Ranking Femenino</b><p>Por categoría, de 8va a 1ra.</p></div></div></div><div class="card full" id="apfV94Inscribirme"><h2>Inscribirme</h2><p>Consultá competencias abiertas por WhatsApp o Instagram.</p><div class="row"><button class="btn whatsapp" onclick="window.open(\'https://wa.me/5493854693517\',\'_blank\')">Sebastián</button><button class="btn whatsapp" onclick="window.open(\'https://wa.me/5493854400216\',\'_blank\')">Jeremías</button><button class="btn instagram" onclick="window.open(\'https://www.instagram.com/agrupacion.padel.friense\',\'_blank\')">Instagram APF</button></div></div><div class="card full"><h2>Sponsors APF</h2>'+sponsorStrip(d)+'</div>'}
+    const marc=document.querySelector('#marcadores .card.full'); if(marc)marc.innerHTML='<div class="apf-v94-section-head"><h2>Marcadores en vivo</h2>'+finished+'</div>'+liveHtml;
+  }
+  function renderAdminV94(){
+    if(!isAdminPage() || localStorage.getItem(ADMIN_KEY)!=='1')return;
+    document.body.classList.add('apf-v94-admin');
+    document.querySelectorAll('button,.pill,.status,div').forEach(el=>{
+      const tx=(el.textContent||'').trim();
+      if(tx.includes('Conectando marcadores')) el.style.display='none';
+    });
+    const oldGrid=document.querySelector('#admin .grid')||document.querySelector('section#admin .grid');
+    if(!oldGrid || oldGrid.dataset.v94==='1')return;
+    oldGrid.dataset.v94='1';
+    const d=readDB();
+    const live=cleanList(d.matches||[]).filter(m=>m&&m.visible_publico!==false&&!/final/i.test(String(m.status||m.estado||''))).length;
+    const comps=cleanList(d.competitions||[]).filter(c=>c&&c.visible_publico!==false).length;
+    const finals=cleanList(d.matches||[]).filter(m=>/final/i.test(String(m.status||m.estado||''))).length;
+    oldGrid.innerHTML='<div class="card full"><div class="apf-v94-admin-head"><span class="apf-v94-admin-pill">● Admin activo</span><button class="btn danger" onclick="logout&&logout()">Salir admin</button></div><div class="apf-v94-admin-quick-top"><button onclick="show&&show(\'marcadores\')">▦<span>Marcadores</span></button><button onclick="show&&show(\'fixture\')">▣<span>Fixture</span></button><button onclick="show&&show(\'ranking\')">🏆<span>Ranking</span></button></div><div class="apf-v94-admin-hero"><h2>Panel Admin APF</h2><p>Gestión general de competencias, marcadores, rankings y configuración del sistema.</p></div><div class="apf-v94-admin-tabs"><button class="active">▦ Panel</button><button>🏆 Competencias</button><button>👥 Participantes</button><button>📍 Zonas</button><button>📅 Fixture</button><button>🤝 Sponsors</button><button>⚙ Público</button></div><h3>⚡ Acción rápida</h3><div class="apf-v94-action-grid"><div class="apf-v94-action-card" onclick="openAdminModule&&openAdminModule(\'competencias\')"><div class="ico">🏆</div><div><b>Crear competencia</b><span>Crear torneo o liga nueva.</span></div></div><div class="apf-v94-action-card" onclick="show&&show(\'marcadores\')"><div class="ico">🎾</div><div><b>Abrir marcador</b><span>Desde fixture o marcador rápido.</span></div></div><div class="apf-v94-action-card" onclick="openAdminModule&&openAdminModule(\'parejas\')"><div class="ico">👥</div><div><b>Cargar participantes</b><span>Importar o gestionar jugadores.</span></div></div><div class="apf-v94-action-card" onclick="openAdminModule&&openAdminModule(\'sponsors\')"><div class="ico">🤝</div><div><b>Agregar sponsor</b><span>Cargar comercio y logo.</span></div></div></div><div class="apf-v94-stats"><div class="apf-v94-stat"><b>'+comps+'</b><span>Competencias activas</span></div><div class="apf-v94-stat"><b>'+live+'</b><span>Marcadores en vivo</span></div><div class="apf-v94-stat"><b>'+finals+'</b><span>Partidos finalizados</span></div></div></div>';
+  }
+  function tick(){purgeGhost(); renderPublicV94(); renderAdminV94();}
+  document.addEventListener('DOMContentLoaded',()=>{tick(); setTimeout(tick,120); setTimeout(tick,800); setInterval(tick,1500);});
+})();
+</script>
+
 </body>
 </html>
