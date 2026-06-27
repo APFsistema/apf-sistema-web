@@ -1,0 +1,13 @@
+APF v96 ADMIN ORDENADO + VOLVER
+
+Base: v95 completa recuperada.
+Correcciones:
+- Orden del inicio Admin en bloques: Acciones rápidas, Hoy/En vivo, Gestión APF.
+- Botón flotante VOLVER en Admin y Público para no tener que recargar la página.
+- Mantiene tablero, planillero, público, TV, ranking, fixture y sponsors.
+
+Rutas:
+- /admin o /admin.html
+- /planillero o /planillero.html
+- /publico o /publico.html
+- /tv o /tv.html

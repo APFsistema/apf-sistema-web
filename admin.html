@@ -4455,5 +4455,220 @@ body[data-apf-public="true"] #apfV81PublicStatus{display:none!important}
 })();
 </script>
 
+
+<!-- APF v96: Admin ordenado + botón Volver para Admin/Público -->
+<style id="apf-v96-admin-back-style">
+.apf-v96-top-panel{
+  background:linear-gradient(180deg,rgba(19,45,34,.98),rgba(9,25,18,.98));
+  border:1px solid rgba(183,255,60,.18);
+  border-radius:22px;
+  padding:16px;
+  margin:14px 0;
+  box-shadow:0 12px 30px rgba(0,0,0,.25);
+}
+.apf-v96-top-panel h2{margin:0 0 5px;font-size:22px}
+.apf-v96-top-panel p{margin:0;color:var(--muted,#a8c0b4);font-size:13px}
+.apf-v96-group-title{margin:16px 0 8px;color:var(--lime,#b7ff3c);font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.apf-v96-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.apf-v96-tile{
+  border:1px solid rgba(183,255,60,.14);
+  background:#10291f;
+  border-radius:18px;
+  padding:13px;
+  cursor:pointer;
+  min-height:82px;
+}
+.apf-v96-tile:hover{border-color:rgba(183,255,60,.5)}
+.apf-v96-tile b{display:block;font-size:14px}
+.apf-v96-tile span{display:block;color:var(--muted,#a8c0b4);font-size:12px;margin-top:3px}
+.apf-v96-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.apf-v96-stat{background:#091b14;border:1px solid rgba(183,255,60,.12);border-radius:15px;padding:10px}
+.apf-v96-stat strong{display:block;color:var(--lime,#b7ff3c);font-size:20px}
+.apf-v96-back{
+  position:fixed;
+  left:14px;
+  bottom:14px;
+  z-index:99999;
+  display:none;
+  align-items:center;
+  gap:7px;
+  border:1px solid rgba(183,255,60,.35);
+  background:rgba(9,25,18,.96);
+  color:#f4fff8;
+  border-radius:999px;
+  padding:11px 14px;
+  font-weight:900;
+  box-shadow:0 12px 28px rgba(0,0,0,.35);
+}
+.apf-v96-back.show{display:flex}
+.apf-v96-breadcrumb{
+  display:none;
+  margin:8px 0 12px;
+  color:var(--muted,#a8c0b4);
+  font-size:12px;
+}
+.apf-v96-breadcrumb.show{display:block}
+@media(max-width:760px){
+  .apf-v96-top-panel{border-radius:18px;padding:13px;margin:10px 0}
+  .apf-v96-top-panel h2{font-size:20px}
+  .apf-v96-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .apf-v96-tile{min-height:76px;padding:11px}
+  .apf-v96-tile b{font-size:13px}
+  .apf-v96-tile span{font-size:11px}
+  .apf-v96-stats{grid-template-columns:repeat(2,1fr)}
+  .apf-v96-back{left:10px;bottom:10px;padding:10px 13px;font-size:13px}
+  body{padding-bottom:62px}
+}
+</style>
+<script id="apf-v96-admin-back-script">
+(function(){
+  var stack=[];
+  var lastView='inicio';
+  function textCount(arr){return Array.isArray(arr)?arr.length:0}
+  function getDB(){
+    try{
+      if(window.db && typeof window.db==='object') return window.db;
+      var raw=localStorage.getItem('apf_v75_data')||localStorage.getItem('apf_base_estable_v1');
+      return raw?JSON.parse(raw):{};
+    }catch(e){return {}}
+  }
+  function countLive(d){
+    var m=Array.isArray(d.matches)?d.matches:[];
+    return m.filter(function(x){return x && x.publicado!==false && x.visible_publico!==false && !/final/i.test(String(x.status||x.estado||''));}).length;
+  }
+  function go(target){
+    if(!target)return;
+    stack.push(lastView);
+    lastView=target;
+    try{
+      if(typeof window.openAdminModule==='function' && ['competencias','parejas','participantes','zonas','fixture','marcadores','ranking','sponsors','inscripciones','configuracion','publico','base'].indexOf(target)>-1){
+        window.openAdminModule(target);
+      }
+    }catch(e){}
+    try{ if(typeof window.show==='function') window.show(target); }catch(e){}
+    try{
+      var el=document.querySelector('[data-admin-module="'+target+'"]') || document.getElementById(target) || document.querySelector('#'+target);
+      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(e){}
+    updateBack();
+  }
+  function back(){
+    var prev=stack.pop();
+    if(!prev){
+      try{
+        var publicLike=/publico|ranking|fixture/.test(location.pathname);
+        if(publicLike){ location.href='index.html'; return; }
+      }catch(e){}
+      window.scrollTo({top:0,behavior:'smooth'});
+      lastView='inicio';
+    }else{
+      try{ if(typeof window.show==='function') window.show(prev); }catch(e){}
+      try{
+        var el=document.querySelector('[data-admin-module="'+prev+'"]') || document.getElementById(prev);
+        if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+        else window.scrollTo({top:0,behavior:'smooth'});
+      }catch(e){}
+      lastView=prev;
+    }
+    updateBack();
+  }
+  function updateBack(){
+    var b=document.getElementById('apfV96Back');
+    if(!b)return;
+    var y=window.scrollY||document.documentElement.scrollTop||0;
+    if(stack.length || y>260) b.classList.add('show'); else b.classList.remove('show');
+  }
+  function makeBack(){
+    if(document.getElementById('apfV96Back'))return;
+    var btn=document.createElement('button');
+    btn.id='apfV96Back';
+    btn.className='apf-v96-back';
+    btn.type='button';
+    btn.innerHTML='← Volver';
+    btn.onclick=back;
+    document.body.appendChild(btn);
+    window.addEventListener('scroll',updateBack,{passive:true});
+  }
+  function tile(label,sub,target,extra){
+    return '<div class="apf-v96-tile" onclick="'+(extra||("apfV96Go('"+target+"')"))+'"><b>'+label+'</b><span>'+sub+'</span></div>';
+  }
+  function makeAdminPanel(){
+    if(!/admin/.test(location.pathname) && !(document.body && document.body.innerText && document.body.innerText.indexOf('Panel Admin APF')>-1)) return;
+    if(document.getElementById('apfV96AdminPanel')) return;
+    var d=getDB();
+    var comps=textCount(d.competitions), sponsors=textCount((d.sponsors||[]).filter?d.sponsors.filter(function(s){return String(s.status||s.estado||'Activo')!=='Inactivo'}):d.sponsors), live=countLive(d);
+    var panel=document.createElement('div');
+    panel.id='apfV96AdminPanel';
+    panel.className='apf-v96-top-panel';
+    panel.innerHTML=
+      '<h2>Panel Admin APF</h2>'+
+      '<p>Centro de mando ordenado para trabajar desde celular o computadora.</p>'+
+      '<div class="apf-v96-stats">'+
+        '<div class="apf-v96-stat"><strong>'+comps+'</strong>Competencias</div>'+
+        '<div class="apf-v96-stat"><strong>'+live+'</strong>En vivo</div>'+
+        '<div class="apf-v96-stat"><strong>'+sponsors+'</strong>Sponsors</div>'+
+        '<div class="apf-v96-stat"><strong>Visible</strong>Público</div>'+
+      '</div>'+
+      '<div class="apf-v96-group-title">Acciones rápidas</div>'+
+      '<div class="apf-v96-grid">'+
+        tile('Crear competencia','Torneo o liga','competencias')+
+        tile('Abrir marcador','Control del partido','marcadores')+
+        tile('Cargar participante','Parejas y jugadores','parejas')+
+        tile('Agregar sponsor','Comercios APF','sponsors')+
+      '</div>'+
+      '<div class="apf-v96-group-title">Hoy / En vivo</div>'+
+      '<div class="apf-v96-grid">'+
+        tile('Marcadores en vivo','Partidos activos','marcadores')+
+        tile('Próximos partidos','Desde fixture','fixture')+
+        tile('Finalizados de hoy','Resultados del día','resultados')+
+        tile('Planilleros','Asignaciones','asignaciones')+
+      '</div>'+
+      '<div class="apf-v96-group-title">Gestión APF</div>'+
+      '<div class="apf-v96-grid">'+
+        tile('Competencias','Formato, estado y publicación','competencias')+
+        tile('Zonas','Grupos y clasificados','zonas')+
+        tile('Fixture','Horarios y cancha','fixture')+
+        tile('Ranking APF','Puntos y categorías','ranking')+
+        tile('Sponsors','Logos y comercios','sponsors')+
+        tile('Inscripciones','Cupos y pagos','inscripciones')+
+        tile('Público','Qué ve la gente','publico')+
+        tile('Ver público','Abrir página pública','publico',"location.href='publico.html'")+
+      '</div>';
+    var place=document.querySelector('.wrap') || document.body;
+    var header=document.querySelector('.header');
+    if(header && header.parentNode) header.parentNode.insertBefore(panel, header.nextSibling);
+    else place.insertBefore(panel, place.firstChild);
+  }
+  function makePublicCrumbs(){
+    if(!/publico|ranking|fixture/.test(location.pathname)) return;
+    if(document.getElementById('apfV96PublicCrumb')) return;
+    var crumb=document.createElement('div');
+    crumb.id='apfV96PublicCrumb';
+    crumb.className='apf-v96-breadcrumb show';
+    crumb.innerHTML='APF Público · Usá “Volver” para regresar a la sección anterior';
+    var place=document.querySelector('.wrap') || document.body;
+    var header=document.querySelector('.header');
+    if(header && header.parentNode) header.parentNode.insertBefore(crumb, header.nextSibling);
+  }
+  window.apfV96Go=go;
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest && e.target.closest('button');
+    if(!btn)return;
+    var txt=(btn.innerText||'').trim();
+    if(/Marcadores en vivo|Competencias APF|Ranking APF|Inscribirme|Fixture|Sponsors|Competencias|Marcadores/.test(txt)){
+      stack.push(lastView);
+      lastView=txt;
+      setTimeout(updateBack,80);
+    }
+  },true);
+  document.addEventListener('DOMContentLoaded',function(){
+    makeBack();
+    setTimeout(makeAdminPanel,120);
+    setTimeout(makePublicCrumbs,120);
+    setTimeout(updateBack,300);
+  });
+})();
+</script>
+
 </body>
 </html>
