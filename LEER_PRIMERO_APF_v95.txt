@@ -1,0 +1,12 @@
+APF v95 COMPLETO RECUPERADO
+
+Esta versión recupera la base completa anterior (tablero, admin, planillero, público, TV, sponsors, ranking y competencias) y agrega:
+- limpieza segura del partido fantasma en público;
+- ajuste móvil más ordenado;
+- no elimina el tablero ni módulos construidos.
+
+Rutas:
+- /admin o /admin.html
+- /planillero o /planillero.html
+- /publico o /publico.html
+- /tv o /tv.html
