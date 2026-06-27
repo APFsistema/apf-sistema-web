@@ -1,0 +1,11 @@
+APF v97 ADMIN POR MÓDULOS
+
+Base: v96 completa.
+Cambios:
+- Admin ordenado con 13 módulos principales.
+- Sin accesos rápidos arriba.
+- Crear competencia con rama, tipo y categoría libre.
+- Categoría con campo libre + sugerencias rápidas.
+- TV queda dentro de Marcadores / Planillero.
+- Nuevo módulo Fotos y Videos.
+- Mantiene tablero, público, planillero, TV y módulos anteriores.
