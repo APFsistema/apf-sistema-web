@@ -1,0 +1,12 @@
+APF v100 - COMPETENCIA REAL FUNCIONAL
+
+Base limpia: v95 completa recuperada.
+Objetivo único:
+- Crear competencia.
+- Guardar.
+- Ver inmediatamente en Admin, debajo de Competencias creadas.
+- Editar / ocultar-publicar / eliminar.
+- Ver en Público si está publicada.
+
+No se reordenó todo el Admin.
+No se toca tablero, planillero ni TV.
