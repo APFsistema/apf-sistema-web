@@ -1,0 +1,29 @@
+APF SISTEMA REAL v1 - LIMPIO CON SUPABASE
+
+Esta versión arranca de cero la parte interna.
+No usa parches viejos ni localStorage para los datos principales.
+
+INCLUYE:
+- admin.html: crear competencia, listar, ver, editar, ocultar/publicar, eliminar y cargar parejas.
+- publico.html: muestra competencias publicadas desde la misma base.
+- supabase-schema.sql: tablas de Supabase.
+- config.js: pegar URL y ANON KEY de Supabase.
+
+PASOS:
+1) Crear proyecto en Supabase.
+2) Ir a SQL Editor.
+3) Copiar y ejecutar supabase-schema.sql.
+4) Ir a Project Settings > API.
+5) Copiar Project URL y anon public key.
+6) Pegar esos datos en config.js.
+7) Subir todo a GitHub y esperar Vercel Ready.
+8) Probar /admin.html.
+   Usuario: admin
+   Clave: APF2026
+
+PRUEBA:
+- Crear competencia en Admin.
+- Debe aparecer en Competencias creadas.
+- Abrir /publico.html.
+- Debe aparecer la misma competencia.
+- En Admin tocar Ver y cargar pareja.
