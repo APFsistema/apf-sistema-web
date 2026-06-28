@@ -1,0 +1,11 @@
+APF v99 - CREAR COMPETENCIA FUNCIONAL
+
+Base: v95 completa recuperada.
+Objetivo único:
+- Crear competencia
+- Guardar
+- Ver en Admin en Competencias creadas
+- Editar / ocultar-publicar / eliminar
+- Ver en Público si está publicada
+
+No toca tablero, planillero, TV ni demás módulos.

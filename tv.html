@@ -4373,651 +4373,180 @@ body[data-apf-public="true"] #apfV81PublicStatus{display:none!important}
 </script>
 
 
-<!-- APF v96: Admin ordenado + botón Volver para Admin/Público -->
-<style id="apf-v96-admin-back-style">
-.apf-v96-top-panel{
-  background:linear-gradient(180deg,rgba(19,45,34,.98),rgba(9,25,18,.98));
-  border:1px solid rgba(183,255,60,.18);
-  border-radius:22px;
-  padding:16px;
-  margin:14px 0;
-  box-shadow:0 12px 30px rgba(0,0,0,.25);
-}
-.apf-v96-top-panel h2{margin:0 0 5px;font-size:22px}
-.apf-v96-top-panel p{margin:0;color:var(--muted,#a8c0b4);font-size:13px}
-.apf-v96-group-title{margin:16px 0 8px;color:var(--lime,#b7ff3c);font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
-.apf-v96-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.apf-v96-tile{
-  border:1px solid rgba(183,255,60,.14);
-  background:#10291f;
-  border-radius:18px;
-  padding:13px;
-  cursor:pointer;
-  min-height:82px;
-}
-.apf-v96-tile:hover{border-color:rgba(183,255,60,.5)}
-.apf-v96-tile b{display:block;font-size:14px}
-.apf-v96-tile span{display:block;color:var(--muted,#a8c0b4);font-size:12px;margin-top:3px}
-.apf-v96-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
-.apf-v96-stat{background:#091b14;border:1px solid rgba(183,255,60,.12);border-radius:15px;padding:10px}
-.apf-v96-stat strong{display:block;color:var(--lime,#b7ff3c);font-size:20px}
-.apf-v96-back{
-  position:fixed;
-  left:14px;
-  bottom:14px;
-  z-index:99999;
-  display:none;
-  align-items:center;
-  gap:7px;
-  border:1px solid rgba(183,255,60,.35);
-  background:rgba(9,25,18,.96);
-  color:#f4fff8;
-  border-radius:999px;
-  padding:11px 14px;
-  font-weight:900;
-  box-shadow:0 12px 28px rgba(0,0,0,.35);
-}
-.apf-v96-back.show{display:flex}
-.apf-v96-breadcrumb{
-  display:none;
-  margin:8px 0 12px;
-  color:var(--muted,#a8c0b4);
-  font-size:12px;
-}
-.apf-v96-breadcrumb.show{display:block}
-@media(max-width:760px){
-  .apf-v96-top-panel{border-radius:18px;padding:13px;margin:10px 0}
-  .apf-v96-top-panel h2{font-size:20px}
-  .apf-v96-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-  .apf-v96-tile{min-height:76px;padding:11px}
-  .apf-v96-tile b{font-size:13px}
-  .apf-v96-tile span{font-size:11px}
-  .apf-v96-stats{grid-template-columns:repeat(2,1fr)}
-  .apf-v96-back{left:10px;bottom:10px;padding:10px 13px;font-size:13px}
-  body{padding-bottom:62px}
-}
-</style>
-<script id="apf-v96-admin-back-script">
-(function(){
-  var stack=[];
-  var lastView='inicio';
-  function textCount(arr){return Array.isArray(arr)?arr.length:0}
-  function getDB(){
-    try{
-      if(window.db && typeof window.db==='object') return window.db;
-      var raw=localStorage.getItem('apf_v75_data')||localStorage.getItem('apf_base_estable_v1');
-      return raw?JSON.parse(raw):{};
-    }catch(e){return {}}
-  }
-  function countLive(d){
-    var m=Array.isArray(d.matches)?d.matches:[];
-    return m.filter(function(x){return x && x.publicado!==false && x.visible_publico!==false && !/final/i.test(String(x.status||x.estado||''));}).length;
-  }
-  function go(target){
-    if(!target)return;
-    stack.push(lastView);
-    lastView=target;
-    try{
-      if(typeof window.openAdminModule==='function' && ['competencias','parejas','participantes','zonas','fixture','marcadores','ranking','sponsors','inscripciones','configuracion','publico','base'].indexOf(target)>-1){
-        window.openAdminModule(target);
-      }
-    }catch(e){}
-    try{ if(typeof window.show==='function') window.show(target); }catch(e){}
-    try{
-      var el=document.querySelector('[data-admin-module="'+target+'"]') || document.getElementById(target) || document.querySelector('#'+target);
-      if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
-    }catch(e){}
-    updateBack();
-  }
-  function back(){
-    var prev=stack.pop();
-    if(!prev){
-      try{
-        var publicLike=/publico|ranking|fixture/.test(location.pathname);
-        if(publicLike){ location.href='index.html'; return; }
-      }catch(e){}
-      window.scrollTo({top:0,behavior:'smooth'});
-      lastView='inicio';
-    }else{
-      try{ if(typeof window.show==='function') window.show(prev); }catch(e){}
-      try{
-        var el=document.querySelector('[data-admin-module="'+prev+'"]') || document.getElementById(prev);
-        if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
-        else window.scrollTo({top:0,behavior:'smooth'});
-      }catch(e){}
-      lastView=prev;
-    }
-    updateBack();
-  }
-  function updateBack(){
-    var b=document.getElementById('apfV96Back');
-    if(!b)return;
-    var y=window.scrollY||document.documentElement.scrollTop||0;
-    if(stack.length || y>260) b.classList.add('show'); else b.classList.remove('show');
-  }
-  function makeBack(){
-    if(document.getElementById('apfV96Back'))return;
-    var btn=document.createElement('button');
-    btn.id='apfV96Back';
-    btn.className='apf-v96-back';
-    btn.type='button';
-    btn.innerHTML='← Volver';
-    btn.onclick=back;
-    document.body.appendChild(btn);
-    window.addEventListener('scroll',updateBack,{passive:true});
-  }
-  function tile(label,sub,target,extra){
-    return '<div class="apf-v96-tile" onclick="'+(extra||("apfV96Go('"+target+"')"))+'"><b>'+label+'</b><span>'+sub+'</span></div>';
-  }
-  function makeAdminPanel(){
-    if(!/admin/.test(location.pathname) && !(document.body && document.body.innerText && document.body.innerText.indexOf('Panel Admin APF')>-1)) return;
-    if(document.getElementById('apfV96AdminPanel')) return;
-    var d=getDB();
-    var comps=textCount(d.competitions), sponsors=textCount((d.sponsors||[]).filter?d.sponsors.filter(function(s){return String(s.status||s.estado||'Activo')!=='Inactivo'}):d.sponsors), live=countLive(d);
-    var panel=document.createElement('div');
-    panel.id='apfV96AdminPanel';
-    panel.className='apf-v96-top-panel';
-    panel.innerHTML=
-      '<h2>Panel Admin APF</h2>'+
-      '<p>Centro de mando ordenado para trabajar desde celular o computadora.</p>'+
-      '<div class="apf-v96-stats">'+
-        '<div class="apf-v96-stat"><strong>'+comps+'</strong>Competencias</div>'+
-        '<div class="apf-v96-stat"><strong>'+live+'</strong>En vivo</div>'+
-        '<div class="apf-v96-stat"><strong>'+sponsors+'</strong>Sponsors</div>'+
-        '<div class="apf-v96-stat"><strong>Visible</strong>Público</div>'+
-      '</div>'+
-      '<div class="apf-v96-group-title">Acciones rápidas</div>'+
-      '<div class="apf-v96-grid">'+
-        tile('Crear competencia','Torneo o liga','competencias')+
-        tile('Abrir marcador','Control del partido','marcadores')+
-        tile('Cargar participante','Parejas y jugadores','parejas')+
-        tile('Agregar sponsor','Comercios APF','sponsors')+
-      '</div>'+
-      '<div class="apf-v96-group-title">Hoy / En vivo</div>'+
-      '<div class="apf-v96-grid">'+
-        tile('Marcadores en vivo','Partidos activos','marcadores')+
-        tile('Próximos partidos','Desde fixture','fixture')+
-        tile('Finalizados de hoy','Resultados del día','resultados')+
-        tile('Planilleros','Asignaciones','asignaciones')+
-      '</div>'+
-      '<div class="apf-v96-group-title">Gestión APF</div>'+
-      '<div class="apf-v96-grid">'+
-        tile('Competencias','Formato, estado y publicación','competencias')+
-        tile('Zonas','Grupos y clasificados','zonas')+
-        tile('Fixture','Horarios y cancha','fixture')+
-        tile('Ranking APF','Puntos y categorías','ranking')+
-        tile('Sponsors','Logos y comercios','sponsors')+
-        tile('Inscripciones','Cupos y pagos','inscripciones')+
-        tile('Público','Qué ve la gente','publico')+
-        tile('Ver público','Abrir página pública','publico',"location.href='publico.html'")+
-      '</div>';
-    var place=document.querySelector('.wrap') || document.body;
-    var header=document.querySelector('.header');
-    if(header && header.parentNode) header.parentNode.insertBefore(panel, header.nextSibling);
-    else place.insertBefore(panel, place.firstChild);
-  }
-  function makePublicCrumbs(){
-    if(!/publico|ranking|fixture/.test(location.pathname)) return;
-    if(document.getElementById('apfV96PublicCrumb')) return;
-    var crumb=document.createElement('div');
-    crumb.id='apfV96PublicCrumb';
-    crumb.className='apf-v96-breadcrumb show';
-    crumb.innerHTML='APF Público · Usá “Volver” para regresar a la sección anterior';
-    var place=document.querySelector('.wrap') || document.body;
-    var header=document.querySelector('.header');
-    if(header && header.parentNode) header.parentNode.insertBefore(crumb, header.nextSibling);
-  }
-  window.apfV96Go=go;
-  document.addEventListener('click',function(e){
-    var btn=e.target.closest && e.target.closest('button');
-    if(!btn)return;
-    var txt=(btn.innerText||'').trim();
-    if(/Marcadores en vivo|Competencias APF|Ranking APF|Inscribirme|Fixture|Sponsors|Competencias|Marcadores/.test(txt)){
-      stack.push(lastView);
-      lastView=txt;
-      setTimeout(updateBack,80);
-    }
-  },true);
-  document.addEventListener('DOMContentLoaded',function(){
-    makeBack();
-    setTimeout(makeAdminPanel,120);
-    setTimeout(makePublicCrumbs,120);
-    setTimeout(updateBack,300);
-  });
-})();
-</script>
-
-
-<!-- APF v97: Admin por módulos ordenados -->
-<style id="apf-v97-admin-modulos-style">
-.apf-v97-admin-shell{
+<!-- APF v99: CREAR COMPETENCIA FUNCIONAL REAL -->
+<style id="apf-v99-comp-style">
+.apf-v99-box{
   background:linear-gradient(180deg,rgba(15,35,27,.98),rgba(7,19,15,.98));
-  border:1px solid rgba(183,255,60,.18);
+  border:1px solid rgba(183,255,60,.22);
   border-radius:24px;
   padding:16px;
   margin:14px 0;
-  box-shadow:0 14px 34px rgba(0,0,0,.28);
+  box-shadow:0 12px 32px rgba(0,0,0,.28);
 }
-.apf-v97-admin-shell h2{margin:0 0 5px;font-size:24px}
-.apf-v97-admin-shell p{margin:0;color:var(--muted,#a8c0b4);font-size:13px}
-.apf-v97-section-title{
-  margin:16px 0 10px;
-  color:var(--lime,#b7ff3c);
-  font-size:12px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
-.apf-v97-module-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:10px;
-}
-.apf-v97-module-card{
+.apf-v99-box h2,.apf-v99-box h3{margin:0 0 7px}
+.apf-v99-box p{color:var(--muted,#a8c0b4);font-size:13px;margin:0 0 10px}
+.apf-v99-tabs,.apf-v99-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.apf-v99-tab,.apf-v99-btn{
+  border:1px solid rgba(183,255,60,.22);
   background:#10291f;
-  border:1px solid rgba(183,255,60,.16);
-  border-radius:19px;
-  padding:13px;
-  min-height:94px;
-  cursor:pointer;
-  transition:.15s ease;
-}
-.apf-v97-module-card:hover{
-  transform:translateY(-1px);
-  border-color:rgba(183,255,60,.45);
-  background:#143224;
-}
-.apf-v97-module-card .ico{font-size:22px;margin-bottom:5px}
-.apf-v97-module-card b{display:block;font-size:14px;line-height:1.2}
-.apf-v97-module-card span{display:block;color:var(--muted,#a8c0b4);font-size:12px;margin-top:4px;line-height:1.25}
-.apf-v97-module-view{
-  background:linear-gradient(180deg,#10291f,#091b14);
-  border:1px solid rgba(183,255,60,.18);
-  border-radius:24px;
-  padding:16px;
-  margin:14px 0;
-  box-shadow:0 14px 34px rgba(0,0,0,.28);
-}
-.apf-v97-module-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
-  border-bottom:1px solid rgba(183,255,60,.12);
-  padding-bottom:12px;
-  margin-bottom:12px;
-}
-.apf-v97-module-head h2{margin:0;font-size:23px}
-.apf-v97-module-head p{margin:4px 0 0;color:var(--muted,#a8c0b4);font-size:13px}
-.apf-v97-chips{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-.apf-v97-chip{
-  border:1px solid rgba(183,255,60,.18);
-  background:#071913;
   color:#f4fff8;
-  border-radius:999px;
-  padding:9px 12px;
+  border-radius:14px;
+  padding:10px 12px;
   font-weight:800;
   cursor:pointer;
-  font-size:12px;
 }
-.apf-v97-chip.active{
+.apf-v99-tab.active,.apf-v99-btn.primary{
   background:linear-gradient(135deg,var(--lime,#b7ff3c),var(--green,#19c46b));
-  color:#06110d;
-  border:0;
+  color:#06110d;border:0;
 }
-.apf-v97-panel{
-  background:#071913;
-  border:1px solid rgba(183,255,60,.12);
-  border-radius:18px;
-  padding:13px;
-  margin-top:12px;
+.apf-v99-btn.warn{background:#3a2d11;color:#ffe58a;border-color:#6b551d}
+.apf-v99-btn.danger{background:#421a1a;color:#ffd0d0;border-color:#783333}
+.apf-v99-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.apf-v99-field label{display:block;color:var(--muted,#a8c0b4);font-size:12px;margin:0 0 5px}
+.apf-v99-field input,.apf-v99-field select,.apf-v99-field textarea{
+  width:100%;padding:11px;border-radius:13px;border:1px solid rgba(183,255,60,.18);
+  background:#06130e;color:#f4fff8;
 }
-.apf-v97-formgrid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;
+.apf-v99-field textarea{min-height:70px}
+.apf-v99-list{display:grid;gap:10px;margin-top:12px}
+.apf-v99-card{
+  background:#0b1f17;border:1px solid rgba(183,255,60,.15);border-radius:18px;padding:13px;
 }
-.apf-v97-formgrid label{
-  display:block;
-  color:var(--muted,#a8c0b4);
-  font-size:12px;
-  margin-bottom:5px;
-}
-.apf-v97-formgrid input,.apf-v97-formgrid select,.apf-v97-formgrid textarea{
-  width:100%;
-  border:1px solid rgba(183,255,60,.18);
-  background:#06130e;
-  color:#f4fff8;
-  border-radius:13px;
-  padding:11px;
-}
-.apf-v97-formgrid textarea{min-height:72px}
-.apf-v97-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-.apf-v97-note{
-  color:var(--muted,#a8c0b4);
-  font-size:12px;
-  border-left:3px solid var(--lime,#b7ff3c);
-  padding-left:10px;
-  margin-top:10px;
-}
-.apf-v97-mini-list{display:grid;gap:8px;margin-top:10px}
-.apf-v97-mini-item{
-  background:#0b1f17;
-  border:1px solid rgba(183,255,60,.12);
-  border-radius:15px;
-  padding:11px;
-}
-.apf-v97-mini-item b{display:block}
-.apf-v97-mini-item span{color:var(--muted,#a8c0b4);font-size:12px}
-.apf-v97-admin-original-toggle{
-  margin-top:12px;
-  text-align:center;
-}
+.apf-v99-card b{display:block;font-size:15px}
+.apf-v99-card span{display:block;color:var(--muted,#a8c0b4);font-size:12px;margin-top:4px}
+.apf-v99-pill{display:inline-block;background:rgba(183,255,60,.12);color:var(--lime,#b7ff3c);border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900;margin-top:8px}
+.apf-v99-empty{border:1px dashed rgba(183,255,60,.18);border-radius:17px;padding:15px;color:var(--muted,#a8c0b4);text-align:center}
+.apf-v99-note{font-size:12px;color:var(--muted,#a8c0b4);border-left:3px solid var(--lime,#b7ff3c);padding-left:9px;margin-top:10px}
 @media(max-width:760px){
-  .apf-v97-admin-shell,.apf-v97-module-view{border-radius:18px;padding:13px;margin:10px 0}
-  .apf-v97-admin-shell h2,.apf-v97-module-head h2{font-size:20px}
-  .apf-v97-module-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-  .apf-v97-module-card{min-height:90px;padding:11px;border-radius:17px}
-  .apf-v97-module-card b{font-size:13px}
-  .apf-v97-module-card span{font-size:11px}
-  .apf-v97-module-head{display:block}
-  .apf-v97-formgrid{grid-template-columns:1fr}
-  .apf-v97-chip{font-size:11px;padding:8px 10px}
+  .apf-v99-box{border-radius:18px;padding:13px;margin:10px 0}
+  .apf-v99-grid{grid-template-columns:1fr}
+  .apf-v99-tab,.apf-v99-btn{font-size:12px;padding:9px 10px}
 }
 </style>
-
-<script id="apf-v97-admin-modulos-script">
+<script id="apf-v99-comp-script">
 (function(){
-  var state={rama:'Masculino',tipo:'Torneo',categoria:'',filtro:'Todas'};
-  var modules=[
-    ['crear','🏆','Crear competencia','Crear torneo o liga desde cero.'],
-    ['creadas','📁','Competencias creadas','Gestionar activas, próximas y finalizadas.'],
-    ['participantes','👥','Participantes / Parejas','Cargar jugadores, fotos, pagos y estado.'],
-    ['zonas','🧩','Zonas','Armar grupos y mover parejas.'],
-    ['fixture','📅','Fixture','Crear partidos, horarios, cancha e instancia.'],
-    ['marcadores','📺','Marcadores','En vivo, programados, finalizados y TV.'],
-    ['resultados','✅','Resultados','Confirmar, editar y revisar partidos terminados.'],
-    ['ranking','📊','Ranking APF','Masculino/Femenino por categoría.'],
-    ['sponsors','🤝','Sponsors APF','Comercios, logos y ubicaciones.'],
-    ['inscripciones','📝','Inscripciones','Pendientes, confirmadas, pagos y cupos.'],
-    ['planilleros','🔐','Planilleros','Usuarios, permisos y partidos asignados.'],
-    ['media','📸','Fotos y Videos','Registro de jugadores, partidos y torneos.'],
-    ['config','⚙️','Configuración pública','Contactos, visibilidad y textos públicos.']
-  ];
-  function isAdmin(){
-    return /admin/.test(location.pathname) || (document.body && (document.body.innerText||'').indexOf('Panel Admin APF')>-1);
-  }
-  function getDB(){
-    try{
-      if(window.db && typeof window.db==='object') return window.db;
-      var raw=localStorage.getItem('apf_v75_data')||localStorage.getItem('apf_base_estable_v1');
-      return raw?JSON.parse(raw):{competitions:[],matches:[],sponsors:[],media:[]};
-    }catch(e){return {competitions:[],matches:[],sponsors:[],media:[]}}
-  }
-  function setDB(d){
-    try{
-      if(window.db && typeof window.db==='object'){
-        Object.assign(window.db,d);
-        if(typeof window.save==='function'){ window.save(); return; }
-      }
-      localStorage.setItem('apf_v75_data',JSON.stringify(d));
-    }catch(e){console.warn('APF v97 guardar',e)}
-  }
+  var KEY='apf_v99_competencias_reales';
+  var OLD='apf_v75_data';
+  var state={rama:'Masculino',tipo:'Torneo'};
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
-  function id(){return 'v97_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-  function btn(label,sub,key){
-    return '<div class="apf-v97-module-card" onclick="apfV97OpenModule(\''+key+'\')"><div class="ico">'+label[0]+'</div><b>'+label.slice(1)+'</b><span>'+sub+'</span></div>';
+  function id(){return 'c_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+  function read(){
+    try{var a=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return []}
   }
-  function buildHome(){
-    if(!isAdmin())return;
-    if(document.getElementById('apfV97AdminHome'))return;
-    var shell=document.createElement('div');
-    shell.id='apfV97AdminHome';
-    shell.className='apf-v97-admin-shell';
-    var html='<h2>Admin APF</h2><p>Elegí un módulo para trabajar. Cada tarea tiene su propio espacio, sin mezclar todo en una sola pantalla.</p>';
-    html+='<div class="apf-v97-section-title">Módulos principales</div><div class="apf-v97-module-grid">';
-    modules.forEach(function(m){html+=btn(m[1]+m[2],m[3],m[0])});
-    html+='</div><div class="apf-v97-admin-original-toggle"><button class="btn" onclick="apfV97ToggleOriginal()">Mostrar / ocultar panel anterior</button></div>';
-    shell.innerHTML=html;
+  function write(list){
+    localStorage.setItem(KEY,JSON.stringify(list));
+    // espejo en base vieja para que otros módulos la puedan leer
+    try{
+      var d=JSON.parse(localStorage.getItem(OLD)||'{}');
+      if(!d || typeof d!=='object') d={};
+      d.competitions=list.map(function(c){return {
+        id:c.id,name:c.nombre,nombre:c.nombre,branch:c.rama,rama:c.rama,type:c.tipo,tipo:c.tipo,
+        category:c.categoria,categoria:c.categoria,status:c.estado,estado:c.estado,
+        fecha:c.fecha,sede:c.sede,inscripcion:c.inscripcion,premio:c.premio,
+        formato:c.formato,playoffs:c.playoffs,descripcion:c.descripcion,
+        publicado:c.publicado,visible_publico:c.publicado,public:c.publicado,createdAt:c.createdAt
+      }});
+      localStorage.setItem(OLD,JSON.stringify(d));
+      try{window.db=d}catch(e){}
+    }catch(e){}
+  }
+  function setRama(r){state.rama=r;renderAdmin()}
+  function setTipo(t){state.tipo=t;renderAdmin()}
+  function val(id,f){var el=document.getElementById(id);return el?(el.value||'').trim():(f||'')}
+  function saveComp(){
+    var list=read();
+    var nombre=val('v99_nombre','Competencia APF');
+    var categoria=val('v99_categoria','');
+    var c={
+      id:id(),nombre:nombre||'Competencia APF',rama:state.rama,tipo:state.tipo,categoria:categoria,
+      estado:val('v99_estado','Próxima'),fecha:val('v99_fecha',''),sede:val('v99_sede',''),
+      inscripcion:val('v99_inscripcion',''),premio:val('v99_premio',''),formato:val('v99_formato',''),
+      playoffs:val('v99_playoffs',''),descripcion:val('v99_desc',''),publicado:true,createdAt:Date.now()
+    };
+    list.push(c);write(list);renderAdmin();alert('Competencia guardada y publicada: '+c.nombre);
+  }
+  function editComp(i){
+    var list=read(), c=list[i]; if(!c)return;
+    var n=prompt('Editar nombre',c.nombre); if(n!==null&&n.trim())c.nombre=n.trim();
+    var cat=prompt('Editar categoría',c.categoria||''); if(cat!==null)c.categoria=cat.trim();
+    write(list);renderAdmin();
+  }
+  function toggleComp(i){
+    var list=read(), c=list[i]; if(!c)return;
+    c.publicado=!c.publicado;write(list);renderAdmin();
+  }
+  function delComp(i){
+    if(!confirm('¿Eliminar esta competencia del Admin y del Público?'))return;
+    var list=read();list.splice(i,1);write(list);renderAdmin();
+  }
+  function card(c,i,admin){
+    return '<div class="apf-v99-card"><b>'+esc(c.nombre)+'</b>'+
+      '<span>'+esc(c.tipo)+' · '+esc(c.rama)+' · '+esc(c.categoria||'Sin categoría')+'</span>'+
+      '<span>Estado: '+esc(c.estado)+' · '+(c.publicado?'Pública':'Oculta')+'</span>'+
+      (c.fecha?'<span>Fecha: '+esc(c.fecha)+'</span>':'')+
+      (c.sede?'<span>Sede: '+esc(c.sede)+'</span>':'')+
+      '<span class="apf-v99-pill">'+(admin?'Gestionar':'Ver competencia')+'</span>'+
+      (admin?'<div class="apf-v99-row"><button class="apf-v99-btn" onclick="apfV99Edit('+i+')">Editar</button><button class="apf-v99-btn warn" onclick="apfV99Toggle('+i+')">'+(c.publicado?'Ocultar':'Publicar')+'</button><button class="apf-v99-btn danger" onclick="apfV99Delete('+i+')">Eliminar</button></div>':'')+
+      '</div>';
+  }
+  function formHtml(){
+    var catBtns=['Suma 9','Suma 11','Suma 13','Suma 15','8va','7ma','6ta'].map(function(x){
+      return '<button class="apf-v99-tab" onclick="document.getElementById(\\'v99_categoria\\').value=\\''+x+'\\'">'+x+'</button>';
+    }).join('');
+    return '<div class="apf-v99-box" id="apfV99AdminBox"><h2>Crear competencia</h2><p>Esta parte sí guarda de verdad: aparece en Competencias creadas y en Público si está publicada.</p>'+
+      '<h3>Rama</h3><div class="apf-v99-tabs">'+
+      ['Masculino','Femenino','Mixto'].map(function(r){return '<button class="apf-v99-tab '+(state.rama===r?'active':'')+'" onclick="apfV99Rama(\\''+r+'\\')">'+r+'</button>'}).join('')+
+      '</div><h3>Tipo</h3><div class="apf-v99-tabs">'+
+      ['Torneo','Liga'].map(function(t){return '<button class="apf-v99-tab '+(state.tipo===t?'active':'')+'" onclick="apfV99Tipo(\\''+t+'\\')">'+t+'</button>'}).join('')+
+      '</div><div class="apf-v99-grid">'+
+      '<div class="apf-v99-field"><label>Nombre competencia</label><input id="v99_nombre" placeholder="Ej: Torneo Apertura 2026"></div>'+
+      '<div class="apf-v99-field"><label>Categoría libre</label><input id="v99_categoria" placeholder="Ej: Suma 13, Damas B, Mixto inicial"></div>'+
+      '<div class="apf-v99-field"><label>Estado</label><select id="v99_estado"><option>Inscripción abierta</option><option>Próxima</option><option>En juego</option><option>Finalizada</option></select></div>'+
+      '<div class="apf-v99-field"><label>Fecha inicio</label><input id="v99_fecha" type="date"></div>'+
+      '<div class="apf-v99-field"><label>Sede / Canchas</label><input id="v99_sede" placeholder="Complejo APF"></div>'+
+      '<div class="apf-v99-field"><label>Inscripción</label><input id="v99_inscripcion" placeholder="$"></div>'+
+      '<div class="apf-v99-field"><label>Premio</label><input id="v99_premio" placeholder="$ / trofeo"></div>'+
+      '<div class="apf-v99-field"><label>Formato</label><select id="v99_formato"><option>Zonas + Playoffs</option><option>Liga</option><option>Eliminación directa</option><option>Liga + Playoffs</option></select></div>'+
+      '<div class="apf-v99-field"><label>Playoffs desde</label><select id="v99_playoffs"><option>Sin playoffs</option><option>Final</option><option>Semifinal</option><option>Cuartos de final</option><option>Octavos de final</option><option>16avos de final</option></select></div>'+
+      '<div class="apf-v99-field" style="grid-column:1/-1"><label>Descripción</label><textarea id="v99_desc" placeholder="Descripción corta para público"></textarea></div>'+
+      '</div><div class="apf-v99-tabs">'+catBtns+'</div><div class="apf-v99-note">La categoría es libre: podés escribir Suma 13, Suma 9, Damas C, Caballeros B o la que quieras.</div>'+
+      '<div class="apf-v99-row"><button class="apf-v99-btn primary" onclick="apfV99Save()">Guardar competencia</button></div></div>';
+  }
+  function renderAdmin(){
+    if(!/admin/.test(location.pathname))return;
+    var old=document.getElementById('apfV99Wrapper'); if(old)old.remove();
+    var list=read();
+    var html='<div id="apfV99Wrapper">'+formHtml()+
+      '<div class="apf-v99-box"><h2>Competencias creadas</h2><p>Desde acá podés editar, ocultar/publicar o eliminar.</p><div class="apf-v99-list">'+
+      (list.length?list.map(function(c,i){return card(c,i,true)}).join(''):'<div class="apf-v99-empty">Todavía no hay competencias creadas.</div>')+
+      '</div></div></div>';
     var place=document.querySelector('.wrap')||document.body;
     var header=document.querySelector('.header');
-    if(header && header.parentNode) header.parentNode.insertBefore(shell,header.nextSibling);
-    else place.insertBefore(shell,place.firstChild);
-    hideOriginalAdmin();
+    var div=document.createElement('div'); div.innerHTML=html;
+    if(header && header.parentNode) header.parentNode.insertBefore(div.firstChild,header.nextSibling);
+    else place.insertBefore(div.firstChild,place.firstChild);
   }
-  function hideOriginalAdmin(){
-    document.querySelectorAll('#apfV96AdminPanel').forEach(function(e){e.style.display='none'});
-    var shell=document.getElementById('apfV97AdminHome');
-    var all=[].slice.call(document.querySelectorAll('.card.full.admin-module,.admin-module,[data-admin-module]'));
-    all.forEach(function(e){ if(!e.closest('#apfV97ModuleView')) e.style.display='none'; });
+  function renderPublic(){
+    if(!/publico|index|fixture|ranking/.test(location.pathname) && !(document.body&&document.body.getAttribute('data-apf-public')==='true'))return;
+    var list=read().filter(function(c){return c.publicado});
+    var html='<div class="apf-v99-box" id="apfV99PublicComps"><h2>Competencias APF</h2><p>Competencias creadas y publicadas desde Admin.</p><div class="apf-v99-list">'+
+      (list.length?list.map(function(c,i){return card(c,i,false)}).join(''):'<div class="apf-v99-empty">No hay competencias visibles por el momento.</div>')+
+      '</div></div>';
+    var existing=document.getElementById('apfV99PublicComps'); if(existing)existing.remove();
+    var target=document.getElementById('apfV92Competencias')||document.getElementById('apfV89Competitions')||document.getElementById('compPub');
+    if(target){target.innerHTML=html; return;}
+    var place=document.querySelector('.wrap')||document.body;
+    var header=document.querySelector('.header');
+    var div=document.createElement('div'); div.innerHTML=html;
+    if(header && header.parentNode) header.parentNode.insertBefore(div.firstChild,header.nextSibling);
+    else place.insertBefore(div.firstChild,place.firstChild);
   }
-  function showOriginalAdmin(){
-    document.querySelectorAll('#apfV96AdminPanel,.card.full.admin-module,.admin-module,[data-admin-module]').forEach(function(e){e.style.display=''});
-  }
-  window.apfV97ToggleOriginal=function(){
-    var anyHidden=[].slice.call(document.querySelectorAll('.admin-module,[data-admin-module]')).some(function(e){return e.style.display==='none'});
-    if(anyHidden) showOriginalAdmin(); else hideOriginalAdmin();
-  }
-  function chip(label,group,value){
-    return '<button class="apf-v97-chip '+(state[group]===value?'active':'')+'" onclick="apfV97Set(\''+group+'\',\''+value+'\')">'+label+'</button>';
-  }
-  window.apfV97Set=function(group,value){
-    state[group]=value;
-    var view=document.getElementById('apfV97ModuleView');
-    if(view && view.dataset.module) window.apfV97OpenModule(view.dataset.module,true);
-  }
-  function moduleShell(key,title,desc,body){
-    var old=document.getElementById('apfV97ModuleView');
-    if(old)old.remove();
-    var view=document.createElement('div');
-    view.id='apfV97ModuleView';
-    view.dataset.module=key;
-    view.className='apf-v97-module-view';
-    view.innerHTML='<div class="apf-v97-module-head"><div><h2>'+title+'</h2><p>'+desc+'</p></div><button class="btn" onclick="apfV97CloseModule()">← Volver a módulos</button></div>'+body;
-    var home=document.getElementById('apfV97AdminHome');
-    home.parentNode.insertBefore(view,home.nextSibling);
-    view.scrollIntoView({behavior:'smooth',block:'start'});
-  }
-  window.apfV97CloseModule=function(){
-    var old=document.getElementById('apfV97ModuleView');
-    if(old)old.remove();
-    var home=document.getElementById('apfV97AdminHome');
-    if(home)home.scrollIntoView({behavior:'smooth',block:'start'});
-  }
-  function crearCompetencia(){
-    var cats=['Suma 9','Suma 11','Suma 13','Suma 15','8va','7ma','6ta','5ta'];
-    var body='<div class="apf-v97-section-title">Rama</div><div class="apf-v97-chips">'+
-      chip('Masculino','rama','Masculino')+chip('Femenino','rama','Femenino')+chip('Mixto','rama','Mixto')+'</div>'+
-      '<div class="apf-v97-section-title">Tipo</div><div class="apf-v97-chips">'+chip('Torneo','tipo','Torneo')+chip('Liga','tipo','Liga')+'</div>'+
-      '<div class="apf-v97-section-title">Categoría libre</div>'+
-      '<div class="apf-v97-panel"><div class="apf-v97-formgrid"><div><label>Escribí la categoría</label><input id="apfV97Categoria" value="'+esc(state.categoria||'')+'" placeholder="Ej: Suma 13, Damas B, Mixto inicial"></div><div><label>Nombre competencia</label><input id="apfV97NombreComp" placeholder="Ej: Torneo Apertura 2026"></div><div><label>Estado</label><select id="apfV97EstadoComp"><option>Inscripción abierta</option><option>Próxima</option><option>En juego</option><option>Finalizada</option></select></div></div>'+
-      '<div class="apf-v97-chips">'+cats.map(function(c){return '<button class="apf-v97-chip" onclick="document.getElementById(\'apfV97Categoria\').value=\''+c+'\'">'+c+'</button>'}).join('')+'</div>'+
-      '<div class="apf-v97-note">La categoría es libre: podés escribir Suma 9, Suma 13, Suma 17, Damas C, Caballeros B o cualquier nombre que uses.</div></div>'+
-      '<div class="apf-v97-section-title">Datos y formato</div><div class="apf-v97-panel"><div class="apf-v97-formgrid">'+
-      '<div><label>Fecha de inicio</label><input id="apfV97Fecha" type="date"></div><div><label>Sede / canchas</label><input id="apfV97Sede" placeholder="Complejo APF"></div><div><label>Inscripción</label><input id="apfV97Inscripcion" placeholder="$"></div>'+
-      '<div><label>Premio</label><input id="apfV97Premio" placeholder="$ / trofeo"></div><div><label>Formato</label><select id="apfV97Formato"><option>Zonas + Playoffs</option><option>Liga</option><option>Eliminación directa</option><option>Liga + Playoffs</option></select></div><div><label>Playoffs desde</label><select id="apfV97Playoffs"><option>Sin playoffs</option><option>Final</option><option>Semifinal</option><option>Cuartos de final</option><option>Octavos de final</option><option>16avos de final</option></select></div>'+
-      '</div><div class="apf-v97-row"><button class="btn primary" onclick="apfV97SaveCompetition()">Guardar competencia</button><button class="btn" onclick="apfV97OpenModule(\'participantes\')">Guardar y cargar participantes</button></div></div>';
-    moduleShell('crear','🏆 Crear competencia','Creá una competencia paso a paso: rama, tipo, categoría libre, formato y publicación.',body);
-  }
-  window.apfV97SaveCompetition=function(){
-    var d=getDB(); d.competitions=d.competitions||[];
-    var cat=(document.getElementById('apfV97Categoria')||{}).value||state.categoria||'';
-    var obj={id:id(),name:(document.getElementById('apfV97NombreComp')||{}).value||'Competencia APF',nombre:(document.getElementById('apfV97NombreComp')||{}).value||'Competencia APF',branch:state.rama,rama:state.rama,type:state.tipo,tipo:state.tipo,category:cat,categoria:cat,status:(document.getElementById('apfV97EstadoComp')||{}).value||'Próxima',estado:(document.getElementById('apfV97EstadoComp')||{}).value||'Próxima',fecha:(document.getElementById('apfV97Fecha')||{}).value||'',sede:(document.getElementById('apfV97Sede')||{}).value||'',inscripcion:(document.getElementById('apfV97Inscripcion')||{}).value||'',premio:(document.getElementById('apfV97Premio')||{}).value||'',formato:(document.getElementById('apfV97Formato')||{}).value||'',playoffs:(document.getElementById('apfV97Playoffs')||{}).value||'',visible_publico:true,publicado:true};
-    d.competitions.push(obj); setDB(d);
-    alert('Competencia guardada: '+obj.nombre+' · '+obj.rama+' · '+obj.categoria);
-  }
-  function genericModule(key,title,desc,filters,content){
-    var body='';
-    if(filters) body+='<div class="apf-v97-section-title">Filtros principales</div><div class="apf-v97-chips">'+filters+'</div>';
-    body+='<div class="apf-v97-panel">'+content+'</div>';
-    moduleShell(key,title,desc,body);
-  }
-  function existingList(kind){
-    var d=getDB(), arr=d[kind]||[];
-    if(!arr.length)return '<div class="apf-v97-mini-item"><b>No hay datos cargados todavía.</b><span>Cuando cargues información desde Admin, aparecerá acá.</span></div>';
-    return arr.slice(-8).reverse().map(function(x){return '<div class="apf-v97-mini-item"><b>'+esc(x.name||x.nombre||x.p1||x.team1||'Registro APF')+'</b><span>'+esc(x.estado||x.status||x.categoria||x.category||x.tipo||'')+'</span></div>'}).join('');
-  }
-  function renderMedia(){
-    var d=getDB(); d.media=d.media||[];
-    return '<div class="apf-v97-section-title">Subir o registrar material</div><div class="apf-v97-panel"><div class="apf-v97-formgrid">'+
-      '<div><label>Tipo</label><select id="apfV97MediaTipo"><option>Foto</option><option>Video</option></select></div>'+
-      '<div><label>Asociar a</label><select id="apfV97MediaAsociar"><option>Jugador</option><option>Pareja</option><option>Competencia</option><option>Partido</option><option>Sponsor</option><option>General APF</option></select></div>'+
-      '<div><label>Mostrar en público</label><select id="apfV97MediaPublico"><option>Sí</option><option>No</option></select></div>'+
-      '<div><label>Título</label><input id="apfV97MediaTitulo" placeholder="Ej: Campeones Suma 13"></div>'+
-      '<div><label>Archivo</label><input id="apfV97MediaFile" type="file" accept="image/*,video/*"></div>'+
-      '<div><label>Competencia / jugador / partido</label><input id="apfV97MediaRef" placeholder="Referencia"></div>'+
-      '<div style="grid-column:1/-1"><label>Descripción</label><textarea id="apfV97MediaDesc" placeholder="Detalle del material"></textarea></div>'+
-      '</div><div class="apf-v97-row"><button class="btn primary" onclick="apfV97SaveMedia()">Guardar registro</button></div><div class="apf-v97-note">Para no romper la web con videos pesados, esta primera etapa guarda el registro y vista previa. Después conectamos almacenamiento online real para videos grandes.</div></div>'+
-      '<div class="apf-v97-section-title">Galería / archivo</div><div class="apf-v97-mini-list">'+(d.media.length?d.media.slice(-8).reverse().map(function(m){return '<div class="apf-v97-mini-item"><b>'+esc(m.title)+'</b><span>'+esc(m.type)+' · '+esc(m.assoc)+' · Público: '+esc(m.publico)+'</span></div>'}).join(''):'<div class="apf-v97-mini-item"><b>No hay fotos o videos cargados todavía.</b><span>Cuando subas material, aparecerá en esta galería.</span></div>')+'</div>';
-  }
-  window.apfV97SaveMedia=function(){
-    var d=getDB(); d.media=d.media||[];
-    var item={id:id(),type:(document.getElementById('apfV97MediaTipo')||{}).value||'Foto',assoc:(document.getElementById('apfV97MediaAsociar')||{}).value||'General APF',publico:(document.getElementById('apfV97MediaPublico')||{}).value||'Sí',title:(document.getElementById('apfV97MediaTitulo')||{}).value||'Material APF',ref:(document.getElementById('apfV97MediaRef')||{}).value||'',desc:(document.getElementById('apfV97MediaDesc')||{}).value||'',createdAt:Date.now()};
-    d.media.push(item); setDB(d); alert('Registro guardado en Fotos y Videos.'); window.apfV97OpenModule('media',true);
-  }
-  window.apfV97OpenModule=function(key,skipScroll){
-    var fRama=chip('Masculino','rama','Masculino')+chip('Femenino','rama','Femenino')+chip('Mixto','rama','Mixto');
-    var fEstado=chip('Todas','filtro','Todas')+chip('Activas','filtro','Activas')+chip('Próximas','filtro','Próximas')+chip('Finalizadas','filtro','Finalizadas');
-    if(key==='crear') return crearCompetencia();
-    if(key==='creadas') return genericModule('creadas','📁 Competencias creadas','Gestioná competencias ya creadas: editar, publicar, ocultar o eliminar.',fEstado,'<div class="apf-v97-mini-list">'+existingList('competitions')+'</div>');
-    if(key==='participantes') return genericModule('participantes','👥 Participantes / Parejas','Elegí competencia y cargá parejas, fotos, teléfono, pago y estado.',fRama,'<div class="apf-v97-note">Primero elegís la competencia, después cargás las parejas. Próximo paso: conectar este módulo al formulario completo de parejas.</div><div class="apf-v97-mini-list">'+existingList('pairs')+'</div>');
-    if(key==='zonas') return genericModule('zonas','🧩 Zonas','Crear Zona A, B, C, D, asignar parejas y generar fixture.',null,'<div class="apf-v97-note">Primero elegís competencia. Luego generás zonas automático o manual y movés parejas.</div>');
-    if(key==='fixture') return genericModule('fixture','📅 Fixture','Programar partidos por competencia, instancia, cancha y horario.',null,'<div class="apf-v97-mini-list">'+existingList('fixtures')+'</div><div class="apf-v97-note">Desde cada partido se podrá abrir marcador.</div>');
-    if(key==='marcadores') return genericModule('marcadores','📺 Marcadores','Marcadores en vivo, programados, finalizados y acceso TV para planillero.',chip('En vivo','filtro','En vivo')+chip('Programados','filtro','Programados')+chip('Finalizados','filtro','Finalizados')+chip('Todos','filtro','Todos'),'<div class="apf-v97-mini-list">'+existingList('matches')+'</div><div class="apf-v97-note">El acceso TV queda dentro de cada marcador/partido, no como acceso rápido general.</div>');
-    if(key==='resultados') return genericModule('resultados','✅ Resultados','Revisar, confirmar y editar resultados por competencia.',null,'<div class="apf-v97-mini-list">'+existingList('results')+'</div>');
-    if(key==='ranking') return genericModule('ranking','📊 Ranking APF','Ranking separado por rama y categoría.',fRama,'<div class="apf-v97-chips">'+['8va','7ma','6ta','5ta','4ta','3ra','2da','1ra'].map(function(c){return '<button class="apf-v97-chip">'+c+'</button>'}).join('')+'</div><div class="apf-v97-note">Ranking por jugador, puntos y edición manual.</div>');
-    if(key==='sponsors') return genericModule('sponsors','🤝 Sponsors APF','Cargar comercios, logos y dónde aparecen.',chip('General APF','filtro','General APF')+chip('Competencia','filtro','Competencia')+chip('Marcador','filtro','Marcador'),'<div class="apf-v97-mini-list">'+existingList('sponsors')+'</div>');
-    if(key==='inscripciones') return genericModule('inscripciones','📝 Inscripciones','Competencias abiertas, pendientes, confirmadas, pagos y lista de espera.',chip('Pendientes','filtro','Pendientes')+chip('Confirmadas','filtro','Confirmadas')+chip('Pagos','filtro','Pagos')+chip('Lista de espera','filtro','Lista'),'<div class="apf-v97-mini-list">'+existingList('registrations')+'</div>');
-    if(key==='planilleros') return genericModule('planilleros','🔐 Planilleros','Crear usuarios, asignar partidos y limitar permisos.',null,'<div class="apf-v97-note">El planillero ve solo los partidos asignados y desde ahí controla marcador y TV.</div><div class="apf-v97-mini-list">'+existingList('scorekeepers')+'</div>');
-    if(key==='media') return moduleShell('media','📸 Fotos y Videos','Subí o registrá material para jugadores, partidos, competencias y galería pública.',renderMedia());
-    if(key==='config') return genericModule('config','⚙️ Configuración pública','Contactos, Instagram, secciones visibles y página pública.',null,'<div class="apf-v97-note">Configuración de lo que ve la gente: WhatsApp, Instagram, sponsors, inscripciones y textos principales.</div>');
-  }
+  window.apfV99Save=saveComp; window.apfV99Edit=editComp; window.apfV99Toggle=toggleComp; window.apfV99Delete=delComp;
+  window.apfV99Rama=setRama; window.apfV99Tipo=setTipo;
   document.addEventListener('DOMContentLoaded',function(){
-    setTimeout(buildHome,180);
-    setTimeout(hideOriginalAdmin,400);
-  });
-})();
-</script>
-
-
-<!-- APF v98 FIX: Crear competencia guarda, aparece en Admin y Público -->
-<style id="apf-v98-fix-style">
-.apf-v98-public-comp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
-.apf-v98-comp-card{background:#0b1f17;border:1px solid rgba(183,255,60,.16);border-radius:17px;padding:12px}
-.apf-v98-comp-card b{display:block;font-size:15px}
-.apf-v98-comp-card span{display:block;color:var(--muted,#a8c0b4);font-size:12px;margin-top:4px}
-.apf-v98-comp-card .pill2{display:inline-block;margin-top:8px;border-radius:999px;padding:5px 9px;background:rgba(183,255,60,.12);color:var(--lime,#b7ff3c);font-size:11px;font-weight:900}
-.apf-v98-mini-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
-</style>
-<script id="apf-v98-fix-script">
-(function(){
-  var KEYS=['apf_v75_data','apf_base_estable_v1','apf_public_data'];
-  function emptyDB(){return {competitions:[],matches:[],sponsors:[],pairs:[],players:[],fixtures:[],results:[],standings:[],registrations:[],media:[],settings:{}}}
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
-  function id(){return 'comp_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
-  function readDB(){
-    var d=null;
-    try{if(window.db && typeof window.db==='object')d=window.db;}catch(e){}
-    if(!d){for(var i=0;i<KEYS.length;i++){try{var raw=localStorage.getItem(KEYS[i]);if(raw){d=JSON.parse(raw);break;}}catch(e){}}}
-    d=Object.assign(emptyDB(),d||{});
-    ['competitions','matches','sponsors','pairs','players','fixtures','results','standings','registrations','media'].forEach(function(k){if(!Array.isArray(d[k]))d[k]=[]});
-    d.settings=d.settings||{};
-    return d;
-  }
-  function writeDB(d){
-    try{window.db=d;}catch(e){}
-    KEYS.forEach(function(k){try{localStorage.setItem(k,JSON.stringify(d));}catch(e){}});
-    try{if(typeof window.renderAll==='function')window.renderAll();else if(typeof window.render==='function')window.render();}catch(e){}
-  }
-  function val(id,fallback){var el=document.getElementById(id);return el?(el.value||'').trim():(fallback||'')}
-  function activeTxt(options,fallback){
-    var chips=[].slice.call(document.querySelectorAll('.apf-v97-chip.active')).map(function(x){return (x.innerText||'').trim()});
-    for(var i=0;i<options.length;i++){if(chips.indexOf(options[i])>-1)return options[i];}
-    return fallback;
-  }
-  function buildCompetition(){
-    var nombre=val('apfV97NombreComp','Competencia APF');
-    var categoria=val('apfV97Categoria','');
-    var estado=val('apfV97EstadoComp','Próxima');
-    var rama=activeTxt(['Masculino','Femenino','Mixto'],'Masculino');
-    var tipo=activeTxt(['Torneo','Liga'],'Torneo');
-    return {
-      id:id(), name:nombre, nombre:nombre,
-      branch:rama, rama:rama, type:tipo, tipo:tipo,
-      category:categoria, categoria:categoria,
-      status:estado, estado:estado,
-      fecha:val('apfV97Fecha',''), sede:val('apfV97Sede',''),
-      inscripcion:val('apfV97Inscripcion',''), premio:val('apfV97Premio',''),
-      formato:val('apfV97Formato',''), playoffs:val('apfV97Playoffs',''),
-      visible_publico:true, publicado:true, public:true, createdAt:Date.now()
-    };
-  }
-  function saveCompetition(goParticipants){
-    var d=readDB(), obj=buildCompetition();
-    d.competitions=d.competitions||[];
-    d.competitions.push(obj);
-    writeDB(d);
-    renderCreatedList();
-    alert('Competencia guardada: '+obj.nombre+' · '+obj.rama+' · '+(obj.categoria||'Sin categoría'));
-    if(goParticipants && typeof window.apfV97OpenModule==='function')setTimeout(function(){window.apfV97OpenModule('participantes')},150);
-    else if(typeof window.apfV97OpenModule==='function')setTimeout(function(){window.apfV97OpenModule('creadas')},150);
-  }
-  function compLine(c,i){
-    var hidden=(c.publicado===false||c.visible_publico===false||c.public===false);
-    return '<div class="apf-v97-mini-item apf-v98-comp-item"><b>'+esc(c.nombre||c.name||'Competencia APF')+'</b><span>'+esc(c.tipo||c.type||'')+' · '+esc(c.rama||c.branch||'')+' · '+esc(c.categoria||c.category||'')+' · '+esc(c.estado||c.status||'')+(hidden?' · Oculta':' · Pública')+'</span><div class="apf-v98-mini-actions"><button class="btn small" onclick="apfV98EditComp('+i+')">Editar</button><button class="btn small warn" onclick="apfV98ToggleComp('+i+')">'+(hidden?'Publicar':'Ocultar')+'</button><button class="btn small danger" onclick="apfV98DeleteComp('+i+')">Eliminar</button></div></div>';
-  }
-  function renderCreatedList(){
-    var d=readDB();
-    var html=d.competitions.length?d.competitions.map(compLine).join(''):'<div class="apf-v97-mini-item"><b>No hay competencias creadas todavía.</b><span>Cuando guardes una competencia, aparecerá acá.</span></div>';
-    document.querySelectorAll('#apfV97ModuleView .apf-v97-mini-list').forEach(function(el){
-      var view=el.closest('#apfV97ModuleView');
-      if(view && view.dataset.module==='creadas')el.innerHTML=html;
-    });
-  }
-  window.apfV98EditComp=function(i){
-    var d=readDB(), c=d.competitions[i]; if(!c)return;
-    var nuevo=prompt('Editar nombre de competencia', c.nombre||c.name||'');
-    if(nuevo!==null && nuevo.trim()){c.nombre=c.name=nuevo.trim();writeDB(d);renderCreatedList();renderPublicCompetitions();}
-  };
-  window.apfV98ToggleComp=function(i){
-    var d=readDB(), c=d.competitions[i]; if(!c)return;
-    var visible=(c.publicado===false||c.visible_publico===false||c.public===false);
-    c.publicado=visible;c.visible_publico=visible;c.public=visible;writeDB(d);renderCreatedList();renderPublicCompetitions();
-  };
-  window.apfV98DeleteComp=function(i){
-    if(!confirm('¿Eliminar esta competencia del Admin y del Público?'))return;
-    var d=readDB();d.competitions.splice(i,1);writeDB(d);renderCreatedList();renderPublicCompetitions();
-  };
-  window.apfV97SaveCompetition=function(){saveCompetition(false)};
-  window.apfV98SaveCompetition=saveCompetition;
-  function patchButtons(){
-    document.querySelectorAll('button').forEach(function(b){
-      var t=(b.innerText||'').trim();
-      if(t==='Guardar competencia')b.setAttribute('onclick','apfV98SaveCompetition(false)');
-      if(t==='Guardar y cargar participantes')b.setAttribute('onclick','apfV98SaveCompetition(true)');
-    });
-  }
-  function renderPublicCompetitions(){
-    var isPub=/publico|index|fixture|ranking/.test(location.pathname)||(document.body&&document.body.getAttribute('data-apf-public')==='true');
-    if(!isPub)return;
-    var d=readDB();
-    var comps=(d.competitions||[]).filter(function(c){return c&&c.publicado!==false&&c.visible_publico!==false&&c.public!==false});
-    var html=comps.length?'<div class="apf-v98-public-comp-grid">'+comps.map(function(c){
-      return '<div class="apf-v98-comp-card"><b>'+esc(c.nombre||c.name||'Competencia APF')+'</b><span>'+esc(c.tipo||c.type||'')+' · '+esc(c.rama||c.branch||'')+' · '+esc(c.categoria||c.category||'')+'</span><span>Estado: '+esc(c.estado||c.status||'Próxima')+'</span><span class="pill2">Ver competencia</span></div>';
-    }).join('')+'</div>':'<div class="apf-v92-empty empty"><b>No hay competencias visibles por el momento.</b><p>Cuando crees y publiques una competencia desde Admin, aparecerá acá.</p></div>';
-    ['apfV92Competencias','apfV91Competitions','apfV89Competitions','compPub'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML=html;});
-    document.querySelectorAll('.card.full,.card').forEach(function(card){
-      var h=card.querySelector('h3,h2');
-      if(h&&/Competencias APF/.test(h.innerText||'')){
-        var holder=card.querySelector('.apf-v98-public-comp-holder');
-        if(!holder){holder=document.createElement('div');holder.className='apf-v98-public-comp-holder';card.appendChild(holder);}
-        holder.innerHTML=html;
-      }
-    });
-  }
-  function tick(){patchButtons();renderCreatedList();renderPublicCompetitions();}
-  document.addEventListener('DOMContentLoaded',function(){
-    setTimeout(tick,100);setTimeout(tick,500);setTimeout(tick,1200);setInterval(tick,1200);
+    setTimeout(renderAdmin,100); setTimeout(renderPublic,100);
+    setTimeout(renderAdmin,600); setTimeout(renderPublic,600);
+    setInterval(function(){renderPublic()},2000);
   });
 })();
 </script>
