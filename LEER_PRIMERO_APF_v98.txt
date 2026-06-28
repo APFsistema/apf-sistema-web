@@ -1,0 +1,9 @@
+APF v98 - COMPETENCIAS GUARDAN Y PUBLICAN
+
+Base: v97.
+Correcciones:
+- Crear competencia guarda de verdad.
+- Guardar y cargar participantes ahora guarda antes de cambiar de módulo.
+- Competencias creadas muestra la competencia guardada.
+- Público muestra la competencia publicada.
+- Editar, ocultar/publicar y eliminar desde Competencias creadas.

@@ -4927,5 +4927,128 @@ body[data-apf-public="true"] #apfV81PublicStatus{display:none!important}
 })();
 </script>
 
+
+<!-- APF v98 FIX: Crear competencia guarda, aparece en Admin y Público -->
+<style id="apf-v98-fix-style">
+.apf-v98-public-comp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.apf-v98-comp-card{background:#0b1f17;border:1px solid rgba(183,255,60,.16);border-radius:17px;padding:12px}
+.apf-v98-comp-card b{display:block;font-size:15px}
+.apf-v98-comp-card span{display:block;color:var(--muted,#a8c0b4);font-size:12px;margin-top:4px}
+.apf-v98-comp-card .pill2{display:inline-block;margin-top:8px;border-radius:999px;padding:5px 9px;background:rgba(183,255,60,.12);color:var(--lime,#b7ff3c);font-size:11px;font-weight:900}
+.apf-v98-mini-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+</style>
+<script id="apf-v98-fix-script">
+(function(){
+  var KEYS=['apf_v75_data','apf_base_estable_v1','apf_public_data'];
+  function emptyDB(){return {competitions:[],matches:[],sponsors:[],pairs:[],players:[],fixtures:[],results:[],standings:[],registrations:[],media:[],settings:{}}}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+  function id(){return 'comp_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+  function readDB(){
+    var d=null;
+    try{if(window.db && typeof window.db==='object')d=window.db;}catch(e){}
+    if(!d){for(var i=0;i<KEYS.length;i++){try{var raw=localStorage.getItem(KEYS[i]);if(raw){d=JSON.parse(raw);break;}}catch(e){}}}
+    d=Object.assign(emptyDB(),d||{});
+    ['competitions','matches','sponsors','pairs','players','fixtures','results','standings','registrations','media'].forEach(function(k){if(!Array.isArray(d[k]))d[k]=[]});
+    d.settings=d.settings||{};
+    return d;
+  }
+  function writeDB(d){
+    try{window.db=d;}catch(e){}
+    KEYS.forEach(function(k){try{localStorage.setItem(k,JSON.stringify(d));}catch(e){}});
+    try{if(typeof window.renderAll==='function')window.renderAll();else if(typeof window.render==='function')window.render();}catch(e){}
+  }
+  function val(id,fallback){var el=document.getElementById(id);return el?(el.value||'').trim():(fallback||'')}
+  function activeTxt(options,fallback){
+    var chips=[].slice.call(document.querySelectorAll('.apf-v97-chip.active')).map(function(x){return (x.innerText||'').trim()});
+    for(var i=0;i<options.length;i++){if(chips.indexOf(options[i])>-1)return options[i];}
+    return fallback;
+  }
+  function buildCompetition(){
+    var nombre=val('apfV97NombreComp','Competencia APF');
+    var categoria=val('apfV97Categoria','');
+    var estado=val('apfV97EstadoComp','Próxima');
+    var rama=activeTxt(['Masculino','Femenino','Mixto'],'Masculino');
+    var tipo=activeTxt(['Torneo','Liga'],'Torneo');
+    return {
+      id:id(), name:nombre, nombre:nombre,
+      branch:rama, rama:rama, type:tipo, tipo:tipo,
+      category:categoria, categoria:categoria,
+      status:estado, estado:estado,
+      fecha:val('apfV97Fecha',''), sede:val('apfV97Sede',''),
+      inscripcion:val('apfV97Inscripcion',''), premio:val('apfV97Premio',''),
+      formato:val('apfV97Formato',''), playoffs:val('apfV97Playoffs',''),
+      visible_publico:true, publicado:true, public:true, createdAt:Date.now()
+    };
+  }
+  function saveCompetition(goParticipants){
+    var d=readDB(), obj=buildCompetition();
+    d.competitions=d.competitions||[];
+    d.competitions.push(obj);
+    writeDB(d);
+    renderCreatedList();
+    alert('Competencia guardada: '+obj.nombre+' · '+obj.rama+' · '+(obj.categoria||'Sin categoría'));
+    if(goParticipants && typeof window.apfV97OpenModule==='function')setTimeout(function(){window.apfV97OpenModule('participantes')},150);
+    else if(typeof window.apfV97OpenModule==='function')setTimeout(function(){window.apfV97OpenModule('creadas')},150);
+  }
+  function compLine(c,i){
+    var hidden=(c.publicado===false||c.visible_publico===false||c.public===false);
+    return '<div class="apf-v97-mini-item apf-v98-comp-item"><b>'+esc(c.nombre||c.name||'Competencia APF')+'</b><span>'+esc(c.tipo||c.type||'')+' · '+esc(c.rama||c.branch||'')+' · '+esc(c.categoria||c.category||'')+' · '+esc(c.estado||c.status||'')+(hidden?' · Oculta':' · Pública')+'</span><div class="apf-v98-mini-actions"><button class="btn small" onclick="apfV98EditComp('+i+')">Editar</button><button class="btn small warn" onclick="apfV98ToggleComp('+i+')">'+(hidden?'Publicar':'Ocultar')+'</button><button class="btn small danger" onclick="apfV98DeleteComp('+i+')">Eliminar</button></div></div>';
+  }
+  function renderCreatedList(){
+    var d=readDB();
+    var html=d.competitions.length?d.competitions.map(compLine).join(''):'<div class="apf-v97-mini-item"><b>No hay competencias creadas todavía.</b><span>Cuando guardes una competencia, aparecerá acá.</span></div>';
+    document.querySelectorAll('#apfV97ModuleView .apf-v97-mini-list').forEach(function(el){
+      var view=el.closest('#apfV97ModuleView');
+      if(view && view.dataset.module==='creadas')el.innerHTML=html;
+    });
+  }
+  window.apfV98EditComp=function(i){
+    var d=readDB(), c=d.competitions[i]; if(!c)return;
+    var nuevo=prompt('Editar nombre de competencia', c.nombre||c.name||'');
+    if(nuevo!==null && nuevo.trim()){c.nombre=c.name=nuevo.trim();writeDB(d);renderCreatedList();renderPublicCompetitions();}
+  };
+  window.apfV98ToggleComp=function(i){
+    var d=readDB(), c=d.competitions[i]; if(!c)return;
+    var visible=(c.publicado===false||c.visible_publico===false||c.public===false);
+    c.publicado=visible;c.visible_publico=visible;c.public=visible;writeDB(d);renderCreatedList();renderPublicCompetitions();
+  };
+  window.apfV98DeleteComp=function(i){
+    if(!confirm('¿Eliminar esta competencia del Admin y del Público?'))return;
+    var d=readDB();d.competitions.splice(i,1);writeDB(d);renderCreatedList();renderPublicCompetitions();
+  };
+  window.apfV97SaveCompetition=function(){saveCompetition(false)};
+  window.apfV98SaveCompetition=saveCompetition;
+  function patchButtons(){
+    document.querySelectorAll('button').forEach(function(b){
+      var t=(b.innerText||'').trim();
+      if(t==='Guardar competencia')b.setAttribute('onclick','apfV98SaveCompetition(false)');
+      if(t==='Guardar y cargar participantes')b.setAttribute('onclick','apfV98SaveCompetition(true)');
+    });
+  }
+  function renderPublicCompetitions(){
+    var isPub=/publico|index|fixture|ranking/.test(location.pathname)||(document.body&&document.body.getAttribute('data-apf-public')==='true');
+    if(!isPub)return;
+    var d=readDB();
+    var comps=(d.competitions||[]).filter(function(c){return c&&c.publicado!==false&&c.visible_publico!==false&&c.public!==false});
+    var html=comps.length?'<div class="apf-v98-public-comp-grid">'+comps.map(function(c){
+      return '<div class="apf-v98-comp-card"><b>'+esc(c.nombre||c.name||'Competencia APF')+'</b><span>'+esc(c.tipo||c.type||'')+' · '+esc(c.rama||c.branch||'')+' · '+esc(c.categoria||c.category||'')+'</span><span>Estado: '+esc(c.estado||c.status||'Próxima')+'</span><span class="pill2">Ver competencia</span></div>';
+    }).join('')+'</div>':'<div class="apf-v92-empty empty"><b>No hay competencias visibles por el momento.</b><p>Cuando crees y publiques una competencia desde Admin, aparecerá acá.</p></div>';
+    ['apfV92Competencias','apfV91Competitions','apfV89Competitions','compPub'].forEach(function(id){var el=document.getElementById(id);if(el)el.innerHTML=html;});
+    document.querySelectorAll('.card.full,.card').forEach(function(card){
+      var h=card.querySelector('h3,h2');
+      if(h&&/Competencias APF/.test(h.innerText||'')){
+        var holder=card.querySelector('.apf-v98-public-comp-holder');
+        if(!holder){holder=document.createElement('div');holder.className='apf-v98-public-comp-holder';card.appendChild(holder);}
+        holder.innerHTML=html;
+      }
+    });
+  }
+  function tick(){patchButtons();renderCreatedList();renderPublicCompetitions();}
+  document.addEventListener('DOMContentLoaded',function(){
+    setTimeout(tick,100);setTimeout(tick,500);setTimeout(tick,1200);setInterval(tick,1200);
+  });
+})();
+</script>
+
 </body>
 </html>
