@@ -4638,5 +4638,319 @@ body[data-apf-public="true"] #apfV81PublicStatus{display:none!important}
 })();
 </script>
 
+
+<!-- APF v101 - Competencia conectada: ver, parejas y público -->
+<style id="apf-v101-style">
+#apfV101Admin,#apfV101Public{background:linear-gradient(180deg,#10291f,#071913);border:1px solid rgba(183,255,60,.24);border-radius:22px;padding:16px;margin:14px 0;box-shadow:0 10px 28px rgba(0,0,0,.30)}
+#apfV101Admin h2,#apfV101Public h2{margin:0 0 6px;font-size:23px}
+#apfV101Admin p,#apfV101Public p{margin:0 0 12px;color:#a8c0b4;font-size:13px}
+.apf101Grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.apf101Field label{display:block;color:#a8c0b4;font-size:12px;margin-bottom:5px}
+.apf101Field input,.apf101Field select,.apf101Field textarea{width:100%;box-sizing:border-box;background:#06130e;color:#f4fff8;border:1px solid rgba(183,255,60,.18);border-radius:13px;padding:11px}
+.apf101Field textarea{min-height:68px}
+.apf101Chips,.apf101Actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.apf101Chip,.apf101Btn{border:1px solid rgba(183,255,60,.22);background:#0b1f17;color:#f4fff8;border-radius:13px;padding:9px 11px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}
+.apf101Chip.active,.apf101Btn.primary{background:linear-gradient(135deg,#b7ff3c,#19c46b);color:#06110d;border:0}
+.apf101Btn.warn{background:#34270d;color:#ffe08a;border-color:#6b551d}
+.apf101Btn.danger{background:#401515;color:#ffd0d0;border-color:#743030}
+.apf101List{display:grid;gap:10px;margin-top:12px}
+.apf101Card{background:#0b1f17;border:1px solid rgba(183,255,60,.15);border-radius:17px;padding:12px}
+.apf101Card b{display:block;font-size:15px}
+.apf101Card span{display:block;color:#a8c0b4;font-size:12px;margin-top:4px}
+.apf101Empty{border:1px dashed rgba(183,255,60,.22);border-radius:16px;padding:14px;text-align:center;color:#a8c0b4}
+.apf101Sep{border:0;border-top:1px solid rgba(183,255,60,.14);margin:16px 0}
+.apf101Badge{display:inline-block;background:rgba(183,255,60,.13);color:#b7ff3c;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900;margin-top:8px}
+@media(max-width:760px){.apf101Grid{grid-template-columns:1fr}#apfV101Admin,#apfV101Public{border-radius:17px;padding:13px}.apf101Chip,.apf101Btn{font-size:12px;padding:8px 10px}}
+</style>
+
+<script id="apf-v101-script">
+(function(){
+  var COMP_KEY = "apf_competencias_reales_v100";
+  var PAIR_KEY = "apf_parejas_reales_v101";
+  var ramaActual = "Masculino";
+  var tipoActual = "Torneo";
+
+  function el(id){ return document.getElementById(id); }
+  function esc(v){
+    return String(v == null ? "" : v).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function js(v){ return String(v == null ? "" : v).replace(/\\/g,"\\\\").replace(/'/g,"\\'"); }
+  function uid(prefix){ return prefix + "_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8); }
+  function readJson(key, fallback){
+    try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch(e){ return fallback; }
+  }
+  function readComps(){
+    var list = readJson(COMP_KEY, []);
+    if(!Array.isArray(list)){ list = []; }
+    if(!list.length){
+      try{
+        var old = JSON.parse(localStorage.getItem("apf_v75_data") || "{}");
+        if(old && Array.isArray(old.competitions)){
+          list = old.competitions.map(function(c){
+            return {
+              id:c.id || uid("comp"),
+              nombre:c.nombre || c.name || "Competencia APF",
+              rama:c.rama || c.branch || "Masculino",
+              tipo:c.tipo || c.type || "Torneo",
+              categoria:c.categoria || c.category || "",
+              estado:c.estado || c.status || "Próxima",
+              fecha:c.fecha || "", sede:c.sede || "", inscripcion:c.inscripcion || "",
+              premio:c.premio || "", formato:c.formato || "Zonas + Playoffs",
+              playoffs:c.playoffs || "Sin playoffs", descripcion:c.descripcion || "",
+              publicado:c.publicado !== false && c.visible_publico !== false && c.public !== false,
+              createdAt:c.createdAt || Date.now()
+            };
+          });
+          writeComps(list);
+        }
+      }catch(e){}
+    }
+    return list;
+  }
+  function readPairs(){
+    var list = readJson(PAIR_KEY, []);
+    return Array.isArray(list) ? list : [];
+  }
+  function writeComps(list){
+    localStorage.setItem(COMP_KEY, JSON.stringify(list));
+    var mapped = list.map(function(c){
+      return {id:c.id,name:c.nombre,nombre:c.nombre,branch:c.rama,rama:c.rama,type:c.tipo,tipo:c.tipo,category:c.categoria,categoria:c.categoria,status:c.estado,estado:c.estado,fecha:c.fecha,sede:c.sede,inscripcion:c.inscripcion,premio:c.premio,formato:c.formato,playoffs:c.playoffs,descripcion:c.descripcion,publicado:c.publicado,visible_publico:c.publicado,public:c.publicado,createdAt:c.createdAt};
+    });
+    ["apf_v75_data","apf_base_estable_v1","apf_public_data","apf_v92_data"].forEach(function(key){
+      try{
+        var d = JSON.parse(localStorage.getItem(key) || "{}");
+        if(!d || typeof d !== "object"){ d = {}; }
+        d.competitions = mapped;
+        d.competencias = mapped;
+        localStorage.setItem(key, JSON.stringify(d));
+        window.db = d;
+      }catch(e){}
+    });
+    populateEveryCompetitionSelect();
+  }
+  function writePairs(list){
+    localStorage.setItem(PAIR_KEY, JSON.stringify(list));
+    try{
+      var d = JSON.parse(localStorage.getItem("apf_v75_data") || "{}");
+      if(!d || typeof d !== "object"){ d = {}; }
+      d.pairs = list;
+      d.parejas = list;
+      localStorage.setItem("apf_v75_data", JSON.stringify(d));
+      localStorage.setItem("apf_base_estable_v1", JSON.stringify(d));
+      window.db = d;
+    }catch(e){}
+  }
+  function value(id, fallback){
+    var x = el(id);
+    return x ? String(x.value || "").trim() : (fallback || "");
+  }
+  function setRama(v){ ramaActual = v; renderAdmin(); }
+  function setTipo(v){ tipoActual = v; renderAdmin(); }
+  function setCategoria(v){ var x = el("apf101Categoria"); if(x){ x.value = v; } }
+
+  function saveCompetition(){
+    var list = readComps();
+    var c = {
+      id:uid("comp"),
+      nombre:value("apf101Nombre","Competencia APF") || "Competencia APF",
+      rama:ramaActual, tipo:tipoActual, categoria:value("apf101Categoria",""),
+      estado:value("apf101Estado","Inscripción abierta"),
+      fecha:value("apf101Fecha",""), sede:value("apf101Sede",""),
+      inscripcion:value("apf101Inscripcion",""), premio:value("apf101Premio",""),
+      formato:value("apf101Formato","Zonas + Playoffs"),
+      playoffs:value("apf101Playoffs","Sin playoffs"),
+      descripcion:value("apf101Descripcion",""),
+      publicado:true, createdAt:Date.now()
+    };
+    list.push(c);
+    writeComps(list);
+    renderAdmin();
+    renderPublic();
+    alert("Competencia guardada y conectada: " + c.nombre);
+  }
+  function editComp(i){
+    var list = readComps(), c = list[i]; if(!c){ return; }
+    var n = prompt("Editar nombre", c.nombre || ""); if(n !== null && n.trim()){ c.nombre = n.trim(); }
+    var cat = prompt("Editar categoría", c.categoria || ""); if(cat !== null){ c.categoria = cat.trim(); }
+    var est = prompt("Editar estado", c.estado || ""); if(est !== null && est.trim()){ c.estado = est.trim(); }
+    writeComps(list); renderAdmin(); renderPublic();
+  }
+  function toggleComp(i){
+    var list = readComps(); if(!list[i]){ return; }
+    list[i].publicado = !list[i].publicado;
+    writeComps(list); renderAdmin(); renderPublic();
+  }
+  function deleteComp(i){
+    if(!confirm("¿Eliminar esta competencia?")){ return; }
+    var list = readComps(); list.splice(i,1);
+    writeComps(list); renderAdmin(); renderPublic();
+  }
+  function viewComp(i){
+    var list = readComps(), c = list[i]; if(!c){ return; }
+    var detail = el("apf101Detalle"); if(!detail){ return; }
+    var pairs = readPairs().filter(function(p){ return p.competitionId === c.id; });
+    var pairHtml = pairs.length ? pairs.map(function(p){
+      return '<div class="apf101Card"><b>'+esc(p.nombre)+'</b><span>'+esc(p.j1)+' / '+esc(p.j2)+'</span></div>';
+    }).join("") : '<div class="apf101Empty">Todavía no hay parejas cargadas en esta competencia.</div>';
+    detail.innerHTML = '<h2>'+esc(c.nombre)+'</h2><p>'+esc(c.tipo)+' · '+esc(c.rama)+' · '+esc(c.categoria || "Sin categoría")+'</p>'+
+      '<div class="apf101Actions"><button class="apf101Btn primary" onclick="apfV101FocusPairs(\''+js(c.id)+'\')">Agregar pareja a esta competencia</button></div>'+
+      '<h2>Parejas cargadas</h2><div class="apf101List">'+pairHtml+'</div>';
+    detail.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+  function focusPairs(compId){
+    var select = el("apf101PairComp");
+    if(select){ select.value = compId; }
+    var box = el("apf101PairsBox");
+    if(box){ box.scrollIntoView({behavior:"smooth", block:"start"}); }
+  }
+  function savePair(){
+    var compId = value("apf101PairComp","");
+    if(!compId){ alert("Primero elegí una competencia."); return; }
+    var comps = readComps();
+    var comp = comps.find(function(c){ return c.id === compId; });
+    var pairs = readPairs();
+    var p = {
+      id:uid("pair"), competitionId:compId, competitionName:comp ? comp.nombre : "",
+      nombre:value("apf101PairName","Pareja APF") || "Pareja APF",
+      j1:value("apf101J1","Jugador 1"), j2:value("apf101J2","Jugador 2"),
+      telefono:value("apf101Tel",""), estado:value("apf101PairEstado","Confirmada"), createdAt:Date.now()
+    };
+    pairs.push(p);
+    writePairs(pairs);
+    renderAdmin();
+    alert("Pareja guardada en: " + p.competitionName);
+  }
+  function chip(label, active, onclick){
+    return '<button type="button" class="apf101Chip '+(active?'active':'')+'" onclick="'+onclick+'">'+esc(label)+'</button>';
+  }
+  function compOptions(selected){
+    var comps = readComps();
+    if(!comps.length){ return '<option value="">No hay competencias creadas</option>'; }
+    return '<option value="">Elegir competencia</option>' + comps.map(function(c){
+      return '<option value="'+esc(c.id)+'" '+(selected===c.id?'selected':'')+'>'+esc(c.nombre)+' · '+esc(c.categoria || "Sin categoría")+'</option>';
+    }).join("");
+  }
+  function formHtml(){
+    var cats = ["Suma 9","Suma 11","Suma 13","Suma 15","8va","7ma","6ta"].map(function(cat){
+      return chip(cat,false,"apfV101Categoria('"+js(cat)+"')");
+    }).join("");
+    return '<h2>Crear competencia</h2><p>Al guardar queda conectada con Competencias creadas, Parejas y Público.</p>'+
+      '<div class="apf101Chips">'+chip("Masculino",ramaActual==="Masculino","apfV101Rama('Masculino')")+chip("Femenino",ramaActual==="Femenino","apfV101Rama('Femenino')")+chip("Mixto",ramaActual==="Mixto","apfV101Rama('Mixto')")+'</div>'+
+      '<div class="apf101Chips">'+chip("Torneo",tipoActual==="Torneo","apfV101Tipo('Torneo')")+chip("Liga",tipoActual==="Liga","apfV101Tipo('Liga')")+'</div>'+
+      '<div class="apf101Grid">'+
+      '<div class="apf101Field"><label>Nombre competencia</label><input id="apf101Nombre" placeholder="Torneo Apertura 2026"></div>'+
+      '<div class="apf101Field"><label>Categoría libre</label><input id="apf101Categoria" placeholder="Suma 13, Damas B, Mixto inicial"></div>'+
+      '<div class="apf101Field"><label>Estado</label><select id="apf101Estado"><option>Inscripción abierta</option><option>Próxima</option><option>En juego</option><option>Finalizada</option></select></div>'+
+      '<div class="apf101Field"><label>Fecha inicio</label><input id="apf101Fecha" type="date"></div>'+
+      '<div class="apf101Field"><label>Sede / Canchas</label><input id="apf101Sede" placeholder="Complejo APF"></div>'+
+      '<div class="apf101Field"><label>Inscripción</label><input id="apf101Inscripcion" placeholder="$"></div>'+
+      '<div class="apf101Field"><label>Premio</label><input id="apf101Premio" placeholder="$ / trofeo"></div>'+
+      '<div class="apf101Field"><label>Formato</label><select id="apf101Formato"><option>Zonas + Playoffs</option><option>Liga</option><option>Eliminación directa</option><option>Liga + Playoffs</option></select></div>'+
+      '<div class="apf101Field"><label>Playoffs desde</label><select id="apf101Playoffs"><option>Sin playoffs</option><option>Final</option><option>Semifinal</option><option>Cuartos de final</option><option>Octavos de final</option><option>16avos de final</option></select></div>'+
+      '<div class="apf101Field" style="grid-column:1/-1"><label>Descripción</label><textarea id="apf101Descripcion" placeholder="Descripción corta para el público"></textarea></div>'+
+      '</div><div class="apf101Chips">'+cats+'</div>'+
+      '<div class="apf101Actions"><button type="button" class="apf101Btn primary" onclick="apfV101SaveComp()">Guardar competencia</button></div>';
+  }
+  function compCard(c,i,admin){
+    var html = '<div class="apf101Card"><b>'+esc(c.nombre)+'</b>'+
+      '<span>'+esc(c.tipo)+' · '+esc(c.rama)+' · '+esc(c.categoria || "Sin categoría")+'</span>'+
+      '<span>Estado: '+esc(c.estado || "Próxima")+' · '+(c.publicado?'Pública':'Oculta')+'</span>'+
+      (c.fecha?'<span>Fecha: '+esc(c.fecha)+'</span>':'')+(c.sede?'<span>Sede: '+esc(c.sede)+'</span>':'');
+    if(admin){
+      html += '<div class="apf101Actions"><button type="button" class="apf101Btn primary" onclick="apfV101ViewComp('+i+')">Ver</button><button type="button" class="apf101Btn" onclick="apfV101EditComp('+i+')">Editar</button><button type="button" class="apf101Btn warn" onclick="apfV101ToggleComp('+i+')">'+(c.publicado?'Ocultar':'Publicar')+'</button><button type="button" class="apf101Btn danger" onclick="apfV101DeleteComp('+i+')">Eliminar</button></div>';
+    }else{
+      html += '<span class="apf101Badge">Competencia APF</span>';
+    }
+    return html + '</div>';
+  }
+  function pairsBox(){
+    var pairs = readPairs();
+    var pairHtml = pairs.length ? pairs.map(function(p){
+      return '<div class="apf101Card"><b>'+esc(p.nombre)+'</b><span>'+esc(p.j1)+' / '+esc(p.j2)+'</span><span>'+esc(p.competitionName)+' · '+esc(p.estado)+'</span></div>';
+    }).join("") : '<div class="apf101Empty">No hay parejas cargadas todavía.</div>';
+    return '<div id="apf101PairsBox"><h2>Participantes / Parejas</h2><p>Elegí la competencia creada y cargá la pareja.</p>'+
+      '<div class="apf101Grid">'+
+      '<div class="apf101Field"><label>Competencia</label><select id="apf101PairComp">'+compOptions("")+'</select></div>'+
+      '<div class="apf101Field"><label>Nombre de pareja</label><input id="apf101PairName" placeholder="Ej: Seba / Jere"></div>'+
+      '<div class="apf101Field"><label>Estado</label><select id="apf101PairEstado"><option>Confirmada</option><option>Pendiente</option><option>Baja</option></select></div>'+
+      '<div class="apf101Field"><label>Jugador 1</label><input id="apf101J1" placeholder="Nombre jugador 1"></div>'+
+      '<div class="apf101Field"><label>Jugador 2</label><input id="apf101J2" placeholder="Nombre jugador 2"></div>'+
+      '<div class="apf101Field"><label>Teléfono interno</label><input id="apf101Tel" placeholder="Opcional"></div>'+
+      '</div><div class="apf101Actions"><button type="button" class="apf101Btn primary" onclick="apfV101SavePair()">Guardar pareja</button></div>'+
+      '<div class="apf101List">'+pairHtml+'</div></div>';
+  }
+  function renderAdmin(){
+    if(location.pathname.indexOf("admin") === -1){ return; }
+    var old = el("apfV101Admin"); if(old){ old.remove(); }
+    var comps = readComps();
+    var listHtml = comps.length ? comps.map(function(c,i){ return compCard(c,i,true); }).join("") : '<div class="apf101Empty">Todavía no hay competencias creadas.</div>';
+    var wrap = document.createElement("div");
+    wrap.id = "apfV101Admin";
+    wrap.innerHTML = formHtml()+
+      '<hr class="apf101Sep"><h2>Competencias creadas</h2><p>El botón Ver abre el detalle y desde ahí podés cargar parejas.</p><div class="apf101List">'+listHtml+'</div>'+
+      '<div id="apf101Detalle" class="apf101List"></div>'+
+      '<hr class="apf101Sep">'+pairsBox();
+    var header = document.querySelector(".header");
+    var place = document.querySelector(".wrap") || document.body;
+    if(header && header.parentNode){ header.parentNode.insertBefore(wrap, header.nextSibling); }
+    else{ place.insertBefore(wrap, place.firstChild); }
+    populateEveryCompetitionSelect();
+  }
+  function renderPublic(){
+    var isPublic = location.pathname.indexOf("publico") !== -1 || location.pathname === "/" || location.pathname.indexOf("index") !== -1;
+    if(!isPublic){ return; }
+    var old = el("apfV101Public"); if(old){ old.remove(); }
+    var comps = readComps().filter(function(c){ return c.publicado; });
+    var cards = comps.length ? comps.map(function(c,i){ return compCard(c,i,false); }).join("") : '<div class="apf101Empty">No hay competencias visibles por el momento.</div>';
+    var wrap = document.createElement("div");
+    wrap.id = "apfV101Public";
+    wrap.innerHTML = '<h2>Competencias APF</h2><p>Competencias publicadas desde el Admin.</p><div class="apf101List">'+cards+'</div>';
+    var targets = ["apfV92Competencias","apfV89Competitions","apfV91Competitions","compPub"];
+    for(var i=0;i<targets.length;i++){
+      var t = el(targets[i]);
+      if(t){ t.innerHTML = ""; t.appendChild(wrap); return; }
+    }
+    var header = document.querySelector(".header");
+    var place = document.querySelector(".wrap") || document.body;
+    if(header && header.parentNode){ header.parentNode.insertBefore(wrap, header.nextSibling); }
+    else{ place.insertBefore(wrap, place.firstChild); }
+  }
+  function populateEveryCompetitionSelect(){
+    var comps = readComps();
+    if(!comps.length){ return; }
+    Array.prototype.slice.call(document.querySelectorAll("select")).forEach(function(s){
+      var text = ((s.id || "") + " " + (s.name || "") + " " + (s.parentElement ? s.parentElement.innerText : "")).toLowerCase();
+      if(text.indexOf("competencia") === -1 && text.indexOf("torneo") === -1 && text.indexOf("liga") === -1){ return; }
+      var hasAny = false;
+      for(var i=0;i<s.options.length;i++){ if(s.options[i].value && s.options[i].value.indexOf("comp_") === 0){ hasAny = true; break; } }
+      if(!hasAny){
+        var first = document.createElement("option"); first.value = ""; first.textContent = "Elegir competencia"; s.appendChild(first);
+        comps.forEach(function(c){ var opt = document.createElement("option"); opt.value = c.id; opt.textContent = c.nombre + " · " + (c.categoria || "Sin categoría"); s.appendChild(opt); });
+      }
+    });
+  }
+
+  window.apfV101SaveComp = saveCompetition;
+  window.apfV101EditComp = editComp;
+  window.apfV101ToggleComp = toggleComp;
+  window.apfV101DeleteComp = deleteComp;
+  window.apfV101ViewComp = viewComp;
+  window.apfV101FocusPairs = focusPairs;
+  window.apfV101SavePair = savePair;
+  window.apfV101Rama = setRama;
+  window.apfV101Tipo = setTipo;
+  window.apfV101Categoria = setCategoria;
+
+  document.addEventListener("DOMContentLoaded", function(){
+    renderAdmin(); renderPublic();
+    setTimeout(renderAdmin,300); setTimeout(renderPublic,300);
+    setTimeout(populateEveryCompetitionSelect,700);
+    setInterval(function(){ renderPublic(); populateEveryCompetitionSelect(); },2000);
+  });
+})();
+</script>
+
 </body>
 </html>

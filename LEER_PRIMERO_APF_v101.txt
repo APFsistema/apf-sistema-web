@@ -1,0 +1,9 @@
+APF v101 - COMPETENCIA + PAREJAS + PÚBLICO
+
+Corrección:
+- La competencia creada se ve en Admin.
+- El botón Ver abre el detalle de esa competencia.
+- Participantes / Parejas tiene selector de competencia y muestra la competencia creada.
+- Permite cargar parejas asociadas a esa competencia.
+- Público muestra Competencias APF publicadas.
+- Guarda espejo en claves antiguas para conectar con módulos existentes.
