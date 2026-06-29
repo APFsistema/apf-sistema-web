@@ -3531,5 +3531,358 @@ setInterval(updateLiveTimeDisplays,1000);
   }catch(e){ console.warn('APF móvil cache fix', e); }
 })();
 </script>
+
+<!-- APF v81: eliminar marcadores creados sin borrar lo demás -->
+<style id="apf-v81-delete-marker-style">
+.apf-v81-delete-marker{
+  border:1px solid rgba(255,120,120,.35)!important;
+  background:#3b1515!important;
+  color:#ffd1d1!important;
+  border-radius:12px!important;
+  padding:8px 10px!important;
+  font-weight:900!important;
+  cursor:pointer!important;
+  margin:4px!important;
+}
+.apf-v81-delete-marker:hover{filter:brightness(1.12)}
+.apf-v81-marker-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+</style>
+<script id="apf-v81-delete-marker-script">
+(function(){
+  var markerWords = ['marcador','partido','cancha','pareja','jugador','suma','set','punto'];
+  var storeKeys = [
+    'apf_v75_data','apf_base_estable_v1','apf_public_data','apf_v92_data',
+    'apf_marker_admin_v1','apf_marker_tv_v2','apf_live_matches',
+    'matches','markers','apf_matches','apf_marcadores'
+  ];
+
+  function lowerText(el){ return (el && (el.innerText || el.textContent) || '').toLowerCase(); }
+  function looksLikeMarker(el){
+    var t = lowerText(el);
+    if(!t) return false;
+    var score = 0;
+    markerWords.forEach(function(w){ if(t.indexOf(w)>-1) score++; });
+    if(t.indexOf('vs')>-1) score++;
+    if(t.indexOf('saca')>-1) score++;
+    if(t.indexOf('set')>-1) score++;
+    return score >= 2;
+  }
+  function findCard(btn){
+    var el = btn;
+    for(var i=0;i<8 && el;i++,el=el.parentElement){
+      if(el.classList && (
+        el.classList.contains('card') ||
+        el.classList.contains('match') ||
+        el.classList.contains('match-card') ||
+        el.classList.contains('marker') ||
+        el.classList.contains('item') ||
+        el.classList.contains('fixture-card') ||
+        el.getAttribute('data-match-id') ||
+        el.getAttribute('data-id')
+      )) return el;
+    }
+    return btn.closest('div');
+  }
+  function getIdFromCard(card){
+    if(!card) return '';
+    return card.getAttribute('data-match-id') ||
+      card.getAttribute('data-marker-id') ||
+      card.getAttribute('data-id') ||
+      card.dataset.matchId ||
+      card.dataset.markerId ||
+      card.dataset.id ||
+      '';
+  }
+  function normalize(s){
+    return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
+  }
+  function removeFromObjectArrays(obj,id,text){
+    var changed = false;
+    if(!obj || typeof obj !== 'object') return false;
+    Object.keys(obj).forEach(function(k){
+      if(Array.isArray(obj[k])){
+        var before = obj[k].length;
+        obj[k] = obj[k].filter(function(item){
+          if(!item || typeof item !== 'object') return true;
+          var itemId = item.id || item.matchId || item.markerId || item.uid || item._id || '';
+          var itemText = normalize(JSON.stringify(item));
+          if(id && String(itemId) === String(id)) return false;
+          if(text && itemText && text.length>20 && itemText.indexOf(text.slice(0,80))>-1) return false;
+          return true;
+        });
+        if(obj[k].length !== before) changed = true;
+      }
+    });
+    return changed;
+  }
+  function deleteFromStorage(id, cardText){
+    var changed = false;
+    var shortText = normalize(cardText).slice(0,120);
+    storeKeys.forEach(function(key){
+      try{
+        var raw = localStorage.getItem(key);
+        if(!raw) return;
+        var data = JSON.parse(raw);
+        if(Array.isArray(data)){
+          var before = data.length;
+          data = data.filter(function(item){
+            if(!item || typeof item !== 'object') return true;
+            var itemId = item.id || item.matchId || item.markerId || item.uid || item._id || '';
+            var itemText = normalize(JSON.stringify(item));
+            if(id && String(itemId) === String(id)) return false;
+            if(shortText && itemText.indexOf(shortText.slice(0,80))>-1) return false;
+            return true;
+          });
+          if(data.length !== before){ localStorage.setItem(key,JSON.stringify(data)); changed = true; }
+        }else if(data && typeof data === 'object'){
+          if(removeFromObjectArrays(data,id,shortText)){
+            localStorage.setItem(key,JSON.stringify(data)); changed = true;
+          }
+        }
+      }catch(e){}
+    });
+
+    try{
+      if(window.db && typeof window.db === 'object'){
+        if(removeFromObjectArrays(window.db,id,shortText)) changed = true;
+        if(typeof window.save === 'function') window.save();
+        if(typeof window.saveDB === 'function') window.saveDB();
+      }
+    }catch(e){}
+    return changed;
+  }
+  function attachButtons(){
+    var candidates = Array.prototype.slice.call(document.querySelectorAll('.card,.match,.match-card,.marker,.item,.fixture-card,[data-match-id],[data-marker-id],[data-id]'));
+    candidates.forEach(function(card){
+      if(card.id && card.id.indexOf('apf')===0 && card.id.indexOf('V81')>-1) return;
+      if(card.querySelector('.apf-v81-delete-marker')) return;
+      if(!looksLikeMarker(card)) return;
+      var t = lowerText(card);
+      if(t.indexOf('crear marcador')>-1 || t.indexOf('datos del partido')>-1 || t.indexOf('control')>-1) return;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'apf-v81-delete-marker';
+      btn.textContent = 'Eliminar marcador';
+      btn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        var c = findCard(btn);
+        var id = getIdFromCard(c);
+        var text = c ? (c.innerText || c.textContent || '') : '';
+        if(!confirm('¿Eliminar este marcador?')) return;
+        deleteFromStorage(id,text);
+        if(c) c.remove();
+        try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch(e){}
+        try{ if(typeof window.render === 'function') window.render(); }catch(e){}
+        try{ if(typeof window.loadMatches === 'function') window.loadMatches(); }catch(e){}
+        alert('Marcador eliminado de esta vista. Si seguía apareciendo por caché, actualizá la página.');
+      };
+      var actions = card.querySelector('.actions,.row,.btns,.buttons') || card;
+      actions.appendChild(btn);
+    });
+  }
+  function addGlobalCleaner(){
+    if(document.getElementById('apfV81ClearAllMarkers')) return;
+    var isAdmin = /admin|planillero/.test(location.pathname);
+    if(!isAdmin) return;
+    var holder = document.querySelector('.header .row,.header,.nav') || document.body;
+    var b = document.createElement('button');
+    b.id = 'apfV81ClearAllMarkers';
+    b.type='button';
+    b.className='apf-v81-delete-marker';
+    b.textContent='Borrar marcadores';
+    b.onclick=function(){
+      if(!confirm('¿Borrar todos los marcadores/partidos guardados en este navegador?')) return;
+      storeKeys.forEach(function(key){
+        try{
+          var raw=localStorage.getItem(key); if(!raw) return;
+          var data=JSON.parse(raw);
+          if(Array.isArray(data)) localStorage.setItem(key,'[]');
+          else if(data && typeof data==='object'){
+            ['matches','markers','marcadores','partidos','liveMatches','fixtures'].forEach(function(k){
+              if(Array.isArray(data[k])) data[k]=[];
+            });
+            localStorage.setItem(key,JSON.stringify(data));
+          }
+        }catch(e){}
+      });
+      try{ if(window.db){ ['matches','markers','marcadores','partidos','fixtures'].forEach(function(k){ if(Array.isArray(window.db[k])) window.db[k]=[]; }); if(typeof window.save==='function') window.save(); }}catch(e){}
+      alert('Marcadores borrados. Actualizá la página si hace falta.');
+      location.reload();
+    };
+    holder.appendChild(b);
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    setTimeout(function(){attachButtons();addGlobalCleaner();},300);
+    setTimeout(function(){attachButtons();addGlobalCleaner();},1000);
+    setInterval(attachButtons,2000);
+  });
+})();
+</script>
+
+
+<!-- APF v82: Marcador TV más limpio -->
+<style id="apf-v82-tv-clean-style">
+/* Mejora visual solo para pantalla TV / marcador, sin borrar funciones */
+body:has(.scoreboard),
+body:has(.tv),
+body:has([class*="marcador"]),
+body:has([id*="marker"]),
+body:has([id*="score"]) {
+  background: radial-gradient(circle at top, #1a4f67 0%, #142c6f 38%, #0a102a 100%) !important;
+}
+
+/* Sacar textos de control que no deben verse en TV */
+.apf-v82-hide-tv-control,
+button.apf-v82-hide-tv-control,
+[role="button"].apf-v82-hide-tv-control {
+  display: none !important;
+}
+
+/* Puntos más protagonistas */
+[id*="point"], [class*="point"], [class*="punto"], [id*="punto"] {
+  text-shadow: 0 0 22px rgba(0, 225, 255, .35) !important;
+}
+
+/* Fotos más grandes y con presencia */
+[class*="photo"], [class*="foto"], [id*="photo"], [id*="foto"],
+[class*="avatar"], [class*="player-img"], [class*="playerPhoto"] {
+  min-width: 94px !important;
+  min-height: 94px !important;
+  border-radius: 18px !important;
+  object-fit: cover !important;
+}
+
+/* En pantalla grande, agrandar más */
+@media (min-width: 900px){
+  [class*="photo"], [class*="foto"], [id*="photo"], [id*="foto"],
+  [class*="avatar"], [class*="player-img"], [class*="playerPhoto"] {
+    min-width: 118px !important;
+    min-height: 118px !important;
+  }
+}
+
+/* Nombres más claros */
+[class*="pair"], [class*="pareja"], [id*="pair"], [id*="pareja"] {
+  letter-spacing: .01em !important;
+}
+
+/* Sponsor más elegante */
+.apf-v82-sponsor-strip {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(183,255,60,.45);
+  background: linear-gradient(90deg, rgba(4,20,35,.65), rgba(20,30,100,.42), rgba(4,20,35,.65));
+  color: #f4fff8;
+  text-align: center;
+  font-weight: 1000;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  box-shadow: 0 0 24px rgba(0,225,255,.13);
+}
+.apf-v82-sponsor-strip small {
+  display:block;
+  color:#b7ff3c;
+  letter-spacing:.08em;
+  font-size:11px;
+  margin-bottom:3px;
+}
+
+/* Reducir saturación de cajas superiores de control */
+.apf-v82-muted-box {
+  opacity: .78 !important;
+}
+</style>
+
+<script id="apf-v82-tv-clean-script">
+(function(){
+  function txt(el){ return (el && (el.innerText || el.textContent) || '').trim(); }
+  function low(el){ return txt(el).toLowerCase(); }
+
+  function isTvPage(){
+    var path = location.pathname.toLowerCase();
+    var body = (document.body && document.body.innerText || '').toLowerCase();
+    return path.indexOf('tv') > -1 || body.indexOf('marcador en vivo') > -1 || body.indexOf('apf pádel') > -1;
+  }
+
+  function hideControlTexts(){
+    if(!isTvPage()) return;
+    var words = ['abrir menú','tocar'];
+    document.querySelectorAll('button, a, div, span, small, p').forEach(function(el){
+      var t = low(el);
+      if(!t) return;
+      if(words.indexOf(t) > -1){
+        el.classList.add('apf-v82-hide-tv-control');
+      }
+    });
+  }
+
+  function simplifyRepeatedPairTexts(){
+    if(!isTvPage()) return;
+    // Evita que textos genéricos repetidos pesen visualmente: Pareja 1 / Pareja 2 chicos.
+    document.querySelectorAll('div, span, p, small, b').forEach(function(el){
+      var t = txt(el);
+      if(t === 'Pareja 1' || t === 'Pareja 2'){
+        var parentText = low(el.parentElement);
+        if(parentText.indexOf('/jugador') > -1 || parentText.indexOf('jugador') > -1){
+          el.style.opacity = '.72';
+          el.style.fontSize = '12px';
+        }
+      }
+    });
+  }
+
+  function improveSponsor(){
+    if(!isTvPage()) return;
+    var found = false;
+    document.querySelectorAll('div, section, footer, span').forEach(function(el){
+      var t = low(el);
+      if(t === 'espacio sponsor' || t.indexOf('espacio sponsor') > -1){
+        found = true;
+        if(!el.classList.contains('apf-v82-sponsor-strip')){
+          el.classList.add('apf-v82-sponsor-strip');
+          el.innerHTML = '<small>Acompañan este partido</small>ESPACIO SPONSOR';
+        }
+      }
+    });
+    if(!found){
+      var main = document.querySelector('.scoreboard,.tv,[class*="marker"],[class*="marcador"],body');
+      if(main && !document.getElementById('apfV82SponsorStrip')){
+        var strip = document.createElement('div');
+        strip.id = 'apfV82SponsorStrip';
+        strip.className = 'apf-v82-sponsor-strip';
+        strip.innerHTML = '<small>Acompañan este partido</small>ESPACIO SPONSOR';
+        main.appendChild(strip);
+      }
+    }
+  }
+
+  function muteTopControls(){
+    if(!isTvPage()) return;
+    document.querySelectorAll('div, span').forEach(function(el){
+      var t = low(el);
+      if(t.indexOf('calentamiento') > -1 || t.indexOf('pre partido') > -1){
+        el.classList.add('apf-v82-muted-box');
+      }
+    });
+  }
+
+  function run(){
+    hideControlTexts();
+    simplifyRepeatedPairTexts();
+    improveSponsor();
+    muteTopControls();
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(run, 250);
+    setTimeout(run, 900);
+    setInterval(run, 2000);
+  });
+})();
+</script>
+
 </body>
 </html>

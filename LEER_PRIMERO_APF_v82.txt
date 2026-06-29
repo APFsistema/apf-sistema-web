@@ -1,0 +1,15 @@
+APF v82 - MARCADOR TV MÁS LIMPIO
+
+Base: v81 (que venía de v80).
+Cambios:
+- Limpieza visual del marcador TV.
+- Oculta textos de control como 'Abrir menú' y 'TOCAR' en pantalla TV.
+- Agranda fotos/avatares de jugadores.
+- Ordena textos repetidos de parejas.
+- Mejora la franja de sponsor: 'Acompañan este partido'.
+- No borra módulos ni funciones de la versión anterior.
+
+Probar:
+1) Abrir /tv.html
+2) Revisar que la pantalla se vea más limpia.
+3) Crear/abrir marcador desde Admin/Planillero y ver la TV.

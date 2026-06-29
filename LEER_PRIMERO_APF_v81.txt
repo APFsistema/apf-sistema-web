@@ -1,0 +1,12 @@
+APF v81 - ELIMINAR MARCADORES
+
+Base: v80 Público Móvil Actualizado.
+Cambio aplicado:
+- Se agrega botón 'Eliminar marcador' en tarjetas/listados de marcadores o partidos.
+- Se agrega botón global 'Borrar marcadores' en Admin/Planillero para limpiar marcadores guardados.
+- No se borra ni se reestructura lo que ya funcionaba en v80.
+Prueba:
+1) Crear marcador.
+2) Ver que aparece en la lista.
+3) Tocar 'Eliminar marcador'.
+4) Confirmar que desaparece.
