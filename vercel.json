@@ -1,16 +1,12 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "rewrites": [
-    {"source": "/admin", "destination": "/admin.html"},
-    {"source": "/administrador", "destination": "/admin.html"},
-    {"source": "/planillero", "destination": "/planillero.html"},
-    {"source": "/tv", "destination": "/tv.html"},
-    {"source": "/television", "destination": "/tv.html"},
-    {"source": "/publico", "destination": "/publico.html"},
-    {"source": "/fixture", "destination": "/fixture.html"},
-    {"source": "/ranking", "destination": "/ranking.html"},
-    {"source": "/clasificacion", "destination": "/ranking.html"},
-    {"source": "/accesos", "destination": "/accesos.html"}
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
+      ]
+    }
   ]
 }
