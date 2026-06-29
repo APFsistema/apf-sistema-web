@@ -1,432 +1,62 @@
-const STORAGE_KEY = 'apf_scoreboard_v3';
-const channel = 'BroadcastChannel' in window ? new BroadcastChannel('apf_scoreboard_channel_v3') : null;
 
-function defaultState() {
-  return {
-    eventName: 'TORNEO APERTURA APF',
-    category: 'SUMA 11 MASCULINO',
-    court: 'CANCHA 1',
-    matchState: 'EN JUEGO',
-    goldenPoint: true,
-    serve: 'A',
-    logoData: '',
-    teamAName: 'PAREJA A',
-    teamBName: 'PAREJA B',
-    a1: 'Jugador A1',
-    a2: 'Jugador A2',
-    b1: 'Jugador B1',
-    b2: 'Jugador B2',
-    a1Photo: '',
-    a2Photo: '',
-    b1Photo: '',
-    b2Photo: '',
-    pointsA: 0,
-    pointsB: 0,
-    gamesA: [0,0,0],
-    gamesB: [0,0,0],
-    currentSet: 0,
-    winner: ''
-  };
+(function(){
+const labels=["0","15","30","40"];
+const $=id=>document.getElementById(id);
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function configured(){return window.APF_FIREBASE_CONFIG&&window.APF_FIREBASE_CONFIG.apiKey&&!String(window.APF_FIREBASE_CONFIG.apiKey).includes("PEGAR_")}
+function db(){if(!configured()||!window.firebase)return null;if(!firebase.apps.length)firebase.initializeApp(window.APF_FIREBASE_CONFIG);return firebase.database()}
+function status(t,ok){let e=$("status");if(e){e.className="status "+(ok?"ok":"bad");e.textContent=t}}
+function uid(){return "m_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8)}
+function pointText(m,t){let p=m.points||[0,0];return p[0]===3&&p[1]===3?"ORO":(labels[p[t]||0]||"0")}
+function title(m){return (m.team1||"Pareja A")+" vs "+(m.team2||"Pareja B")}
+function info(m){return [m.competition||"Sin competencia",m.branch||"",m.category||"",m.court||"",m.phase||"",m.timeText||""].filter(Boolean).join(" · ")}
+function fmt(s){s=s||0;return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
+function normalize(m){return Object.assign({points:[0,0],games:[[0,0],[0,0],[0,0]],currentSet:0,setsWon:[0,0],seconds:0,serving:0,status:"Programado",publicVisible:false,running:false},m||{})}
+async function update(id,patch){let d=db();if(!d)return alert("Falta configurar Firebase en config.js");await d.ref("matches/"+id).update(Object.assign({},patch,{updatedAt:Date.now()}))}
+function listenAll(cb){let d=db();if(!d){status("Firebase no configurado. Pegá los datos en config.js.",false);cb([]);return;}status("Conectado a marcador online",true);d.ref("matches").on("value",snap=>{let val=snap.val()||{};let arr=Object.keys(val).map(id=>normalize(Object.assign({id},val[id]))).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));cb(arr)})}
+function card(m,mode){
+let done=m.status==="Finalizado",live=m.status==="En vivo",sc=live?"live":done?"done":"";
+let set=m.currentSet||0;
+let controls=mode==="planillero"?`<div class="row"><button class="btn small primary" data-act="point" data-team="0" data-id="${esc(m.id)}">+ Punto A</button><button class="btn small primary" data-act="point" data-team="1" data-id="${esc(m.id)}">+ Punto B</button><button class="btn small" data-act="game" data-team="0" data-id="${esc(m.id)}">+ Juego A</button><button class="btn small" data-act="game" data-team="1" data-id="${esc(m.id)}">+ Juego B</button><button class="btn small warn" data-act="serve" data-id="${esc(m.id)}">Cambiar saque</button></div>`:"";
+return `<div class="item"><b>${esc(title(m))}</b><span>${esc(info(m))}</span><span>${esc((m.p1||"Jugador A1")+" / "+(m.p2||"Jugador A2")+" vs "+(m.p3||"Jugador B1")+" / "+(m.p4||"Jugador B2"))}</span><span class="badge ${sc}">${esc(m.status)}</span><span class="badge">${esc(m.format||"Mejor de 3 sets")}</span><div class="score"><div><span>${esc(m.team1||"Pareja A")}: Set ${set+1} · ${(m.games&&m.games[set]?m.games[set][0]:0)} games</span><span>${esc(m.team2||"Pareja B")}: Set ${set+1} · ${(m.games&&m.games[set]?m.games[set][1]:0)} games</span></div><div class="points">${esc(pointText(m,0))} - ${esc(pointText(m,1))}</div></div>${controls}<div class="row"><a class="btn small primary" href="tv.html#${esc(m.id)}" target="_blank">TV</a>${!done?`<button class="btn small primary" data-act="start" data-id="${esc(m.id)}">Arrancar / En vivo</button><button class="btn small warn" data-act="pause" data-id="${esc(m.id)}">${m.running?"Pausar":"Reanudar"}</button><button class="btn small danger" data-act="finish" data-id="${esc(m.id)}">Finalizar</button>`:""}${mode==="admin"?`<button class="btn small danger" data-act="delete" data-id="${esc(m.id)}">Eliminar</button>`:""}</div></div>`
 }
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? { ...defaultState(), ...JSON.parse(raw) } : defaultState();
-  } catch (e) {
-    return defaultState();
-  }
+function attachActions(root,matches){
+root.querySelectorAll("[data-act]").forEach(b=>b.onclick=async()=>{
+let id=b.dataset.id, act=b.dataset.act, team=Number(b.dataset.team||0), m=matches.find(x=>x.id===id); if(!m)return;
+if(act==="delete"){if(confirm("¿Eliminar marcador?")) await db().ref("matches/"+id).remove(); return}
+if(act==="start"){await update(id,{status:"En vivo",publicVisible:true,running:true,startedAt:m.startedAt||Date.now()}); return}
+if(act==="pause"){await update(id,{running:!m.running}); return}
+if(act==="finish"){if(confirm("¿Finalizar partido?")) await update(id,{status:"Finalizado",publicVisible:false,running:false,finishedAt:Date.now()}); return}
+if(act==="serve"){await update(id,{serving:m.serving===0?1:0}); return}
+if(act==="point"){await scorePoint(m,team); return}
+if(act==="game"){await scoreGame(m,team); return}
+})
 }
-
-let state = loadState();
-
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  if (channel) channel.postMessage(state);
+async function scorePoint(m,team){
+if(m.status==="Programado"){m.status="En vivo";m.publicVisible=true;m.running=true;m.startedAt=m.startedAt||Date.now()}
+let other=team?0:1, p=m.points||[0,0];
+if(p[0]===3&&p[1]===3){await scoreGame(m,team);return}
+if(p[team]===3&&p[other]<3){await scoreGame(m,team);return}
+p[team]=Math.min(3,(p[team]||0)+1);
+await update(m.id,{points:p,status:m.status,publicVisible:m.publicVisible,running:m.running,startedAt:m.startedAt||null})
 }
-
-function resetState() {
-  state = defaultState();
-  saveState();
+async function scoreGame(m,team){
+let games=m.games||[[0,0],[0,0],[0,0]], set=m.currentSet||0, sets=m.setsWon||[0,0];
+games[set][team]=(games[set][team]||0)+1;
+let a=games[set][0], b=games[set][1], mx=Math.max(a,b), df=Math.abs(a-b);
+let patch={games,points:[0,0],serving:m.serving===0?1:0};
+if((mx>=6&&df>=2)||mx>=7){sets[team]++;patch.setsWon=sets;if(sets[team]>=2||set>=2){patch.status="Finalizado";patch.publicVisible=false;patch.running=false;patch.finishedAt=Date.now()}else{patch.currentSet=set+1}}
+await update(m.id,patch)
 }
-
-function readFileAsDataURL(file) {
-  return new Promise((resolve) => {
-    if (!file) return resolve('');
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result || '');
-    reader.readAsDataURL(file);
-  });
+function tick(){let d=db();if(!d)return;d.ref("matches").once("value",snap=>{let val=snap.val()||{};Object.keys(val).forEach(id=>{let m=val[id];if(m&&m.running&&m.status==="En vivo"){d.ref("matches/"+id+"/seconds").transaction(v=>(v||0)+1)}})})}
+function renderAdmin(){
+if(!$("adminApp"))return;
+$("adminApp").innerHTML=`<div class="wrap"><div class="header"><div class="brand"><div class="logo">APF</div><div><h1>APF Marcador Online</h1><p>Admin: crear marcador y controlar estado.</p></div></div><div class="nav"><a class="btn" href="planillero.html">Planillero</a><a class="btn" href="publico.html" target="_blank">Público</a><a class="btn" href="tv.html" target="_blank">TV</a></div></div><div id="status" class="status">Conectando...</div><div class="card"><h2>Crear marcador</h2><p>Cargá el partido. Aparecerá en Planillero. El público lo verá cuando arranque.</p><div class="grid"><div class="field"><label>Competencia</label><input id="competition" placeholder="Torneo Apertura APF"></div><div class="field"><label>Rama</label><select id="branch"><option>Masculino</option><option>Femenino</option><option>Mixto</option></select></div><div class="field"><label>Categoría</label><input id="category" placeholder="Suma 13"></div><div class="field"><label>Cancha</label><input id="court" placeholder="Cancha 1"></div><div class="field"><label>Instancia</label><input id="phase" placeholder="Grupo / Final"></div><div class="field"><label>Hora</label><input id="timeText" placeholder="14:00 hs"></div><div class="field"><label>Formato</label><select id="format"><option>Mejor de 3 sets</option><option>2 sets + super tiebreak</option><option>1 set</option></select></div><div class="field"><label>Pareja A</label><input id="team1"></div><div class="field"><label>Pareja B</label><input id="team2"></div><div class="field"><label>Jugador A1</label><input id="p1"></div><div class="field"><label>Jugador A2</label><input id="p2"></div><div class="field"><label>Jugador B1</label><input id="p3"></div><div class="field"><label>Jugador B2</label><input id="p4"></div><div class="field"><label>Sponsor texto</label><input id="sponsor" placeholder="Nombre sponsor"></div><div class="field"><label>Logo sponsor URL</label><input id="sponsorLogo" placeholder="https://..."></div></div><div class="row"><button class="btn primary" id="createBtn">Crear marcador</button></div></div><div class="card"><h2>Marcadores creados</h2><div id="adminList" class="list"></div></div><div class="card"><h2>Historial / Finalizados</h2><div id="doneList" class="list"></div></div><div class="footer">Agrupación Pádel Friense</div></div>`;
+$("createBtn").onclick=async()=>{let d=db();if(!d)return alert("Falta configurar Firebase en config.js");let m={competition:$("competition").value.trim()||"Sin competencia",branch:$("branch").value,category:$("category").value.trim(),court:$("court").value.trim(),phase:$("phase").value.trim(),timeText:$("timeText").value.trim(),format:$("format").value,team1:$("team1").value.trim()||"Pareja A",team2:$("team2").value.trim()||"Pareja B",p1:$("p1").value.trim()||"Jugador A1",p2:$("p2").value.trim()||"Jugador A2",p3:$("p3").value.trim()||"Jugador B1",p4:$("p4").value.trim()||"Jugador B2",sponsor:$("sponsor").value.trim()||"ESPACIO SPONSOR",sponsorLogo:$("sponsorLogo").value.trim(),status:"Programado",publicVisible:false,running:false,points:[0,0],games:[[0,0],[0,0],[0,0]],currentSet:0,setsWon:[0,0],serving:0,seconds:0,createdAt:Date.now()};await d.ref("matches/"+uid()).set(m);alert("Marcador creado. Ya aparece en Planillero.");};
+listenAll(arr=>{let active=arr.filter(m=>m.status!=="Finalizado"),done=arr.filter(m=>m.status==="Finalizado");$("adminList").innerHTML=active.length?active.map(m=>card(m,"admin")).join(""):`<div class="empty">No hay marcadores creados.</div>`;$("doneList").innerHTML=done.length?done.map(m=>card(m,"admin")).join(""):`<div class="empty">No hay finalizados.</div>`;attachActions(document,arr)})
 }
-
-function scoreLabel(p, other, goldenPoint = true) {
-  if (goldenPoint) {
-    if (p <= 0) return '0';
-    if (p === 1) return '15';
-    if (p === 2) return '30';
-    if (p === 3 && other < 3) return '40';
-    if (p >= 3 && other >= 3) return 'ORO';
-    return '40';
-  }
-
-  const map = ['0','15','30','40'];
-  if (p <= 3 && other <= 3 && !(p === 3 && other === 3)) return map[p];
-  if (p === 3 && other === 3) return '40';
-  if (p > other && p >= 4) return 'AD';
-  return '40';
-}
-
-function currentSetIndex() {
-  return Math.min(state.currentSet, 2);
-}
-
-function setsWon(side) {
-  const my = side === 'A' ? state.gamesA : state.gamesB;
-  const opp = side === 'A' ? state.gamesB : state.gamesA;
-  let won = 0;
-  for (let i=0;i<3;i++) {
-    const a = my[i], b = opp[i];
-    if ((a >= 6 && a - b >= 2) || (a === 7 && (b === 5 || b === 6))) won++;
-  }
-  return won;
-}
-
-function setWonForCurrentSet() {
-  const i = currentSetIndex();
-  const a = state.gamesA[i];
-  const b = state.gamesB[i];
-  if ((a >= 6 && a - b >= 2) || (a === 7 && (b === 5 || b === 6))) return 'A';
-  if ((b >= 6 && b - a >= 2) || (b === 7 && (a === 5 || a === 6))) return 'B';
-  return '';
-}
-
-function advanceGame(side) {
-  const i = currentSetIndex();
-  if (side === 'A') state.gamesA[i] += 1;
-  else state.gamesB[i] += 1;
-
-  state.pointsA = 0;
-  state.pointsB = 0;
-
-  const setWinner = setWonForCurrentSet();
-  if (setWinner) {
-    if (setsWon(setWinner) >= 2) {
-      state.winner = setWinner;
-      state.matchState = 'FINALIZADO';
-    } else if (state.currentSet < 2) {
-      state.currentSet += 1;
-    }
-  }
-}
-
-function pointTo(side) {
-  if (state.matchState === 'FINALIZADO') return;
-
-  if (state.goldenPoint) {
-    if (state.pointsA >= 3 && state.pointsB >= 3) {
-      advanceGame(side);
-      return;
-    }
-    if (side === 'A') state.pointsA += 1;
-    else state.pointsB += 1;
-    if (state.pointsA >= 4 && state.pointsB <= 2) advanceGame('A');
-    if (state.pointsB >= 4 && state.pointsA <= 2) advanceGame('B');
-  } else {
-    if (side === 'A') state.pointsA += 1;
-    else state.pointsB += 1;
-
-    if (state.pointsA >= 4 || state.pointsB >= 4) {
-      const diff = state.pointsA - state.pointsB;
-      if (diff >= 2) advanceGame('A');
-      if (diff <= -2) advanceGame('B');
-    }
-  }
-  saveState();
-}
-
-function undoPoint(side) {
-  if (side === 'A') state.pointsA = Math.max(0, state.pointsA - 1);
-  else state.pointsB = Math.max(0, state.pointsB - 1);
-  state.winner = '';
-  if (state.matchState === 'FINALIZADO') state.matchState = 'EN JUEGO';
-  saveState();
-}
-
-function addGame(side, delta) {
-  const i = currentSetIndex();
-  if (side === 'A') state.gamesA[i] = Math.max(0, state.gamesA[i] + delta);
-  else state.gamesB[i] = Math.max(0, state.gamesB[i] + delta);
-  state.winner = '';
-  if (state.matchState === 'FINALIZADO') state.matchState = 'EN JUEGO';
-  saveState();
-}
-
-function resetPoints() {
-  state.pointsA = 0;
-  state.pointsB = 0;
-  saveState();
-}
-
-function swapSides() {
-  const keys = [
-    ['teamAName','teamBName'],['a1','b1'],['a2','b2'],['a1Photo','b1Photo'],['a2Photo','b2Photo']
-  ];
-  keys.forEach(([k1,k2]) => {
-    const tmp = state[k1];
-    state[k1] = state[k2];
-    state[k2] = tmp;
-  });
-  const ga = state.gamesA; state.gamesA = state.gamesB; state.gamesB = ga;
-  const pa = state.pointsA; state.pointsA = state.pointsB; state.pointsB = pa;
-  if (state.serve === 'A') state.serve = 'B'; else if (state.serve === 'B') state.serve = 'A';
-  if (state.winner === 'A') state.winner = 'B'; else if (state.winner === 'B') state.winner = 'A';
-  saveState();
-}
-
-function saveSetupFromForm() {
-  const ids = ['eventName','category','court','matchState','teamAName','teamBName','a1','a2','b1','b2'];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) state[id] = (el.value || '').toUpperCase();
-  });
-  const golden = document.getElementById('goldenPoint');
-  if (golden) state.goldenPoint = golden.checked;
-  saveState();
-}
-
-async function saveFilesFromForm() {
-  const map = [
-    ['logoFile','logoData'],['a1Photo','a1Photo'],['a2Photo','a2Photo'],['b1Photo','b1Photo'],['b2Photo','b2Photo']
-  ];
-  for (const [inputId, stateKey] of map) {
-    const input = document.getElementById(inputId);
-    if (input && input.files && input.files[0]) {
-      state[stateKey] = await readFileAsDataURL(input.files[0]);
-    }
-  }
-  saveState();
-}
-
-function renderScoreboard(target) {
-  const sA = setsWon('A');
-  const sB = setsWon('B');
-  const pointA = scoreLabel(state.pointsA, state.pointsB, state.goldenPoint);
-  const pointB = scoreLabel(state.pointsB, state.pointsA, state.goldenPoint);
-
-  const card = `
-    <section class="scoreboard-screen">
-      <header class="screen-top">
-        <div class="brand-wrap">
-          <div class="logo-holder">${state.logoData ? `<img src="${state.logoData}" alt="Logo APF" />` : `<div class="logo-fallback">APF</div>`}</div>
-          <div class="brand-meta">
-            <div class="small">${escapeHtml(state.category)} · ${escapeHtml(state.court)}</div>
-            <div class="title">${escapeHtml(state.eventName)}</div>
-          </div>
-        </div>
-        <div class="match-badges">
-          <div class="match-badge">Estado: ${escapeHtml(state.matchState)}</div>
-          ${state.goldenPoint ? `<div class="match-badge">Punto de oro</div>` : ``}
-        </div>
-      </header>
-
-      <div class="screen-main">
-        ${teamMarkup('A', state.teamAName, state.a1, state.a2, state.a1Photo, state.a2Photo, pointA, state.serve === 'A')}
-
-        <div class="center-board">
-          <div>
-            <div class="sets-label">Sets</div>
-            <div class="sets-total">${sA} - ${sB}</div>
-          </div>
-          <div class="versus">VS</div>
-          <table class="mini-table">
-            <thead>
-              <tr><th></th><th>S1</th><th>S2</th><th>S3</th></tr>
-            </thead>
-            <tbody>
-              <tr><td class="row-head">A</td><td>${state.gamesA[0]}</td><td>${state.gamesA[1]}</td><td>${state.gamesA[2]}</td></tr>
-              <tr><td class="row-head">B</td><td>${state.gamesB[0]}</td><td>${state.gamesB[1]}</td><td>${state.gamesB[2]}</td></tr>
-            </tbody>
-          </table>
-          <div class="center-footer">
-            <div class="status-pill ${state.matchState === 'FINALIZADO' ? 'finish' : ''}">${escapeHtml(state.matchState)}</div>
-            ${state.goldenPoint ? `<div class="golden-pill">Si llegan a 40-40, se juega punto de oro</div>` : ``}
-          </div>
-        </div>
-
-        ${teamMarkup('B', state.teamBName, state.b1, state.b2, state.b1Photo, state.b2Photo, pointB, state.serve === 'B')}
-      </div>
-
-      <footer class="bottom-bar">
-        <div class="bottom-chip">Saque: ${state.serve === 'A' ? escapeHtml(state.teamAName) : escapeHtml(state.teamBName)}</div>
-        ${state.winner ? `<div class="bottom-chip">Ganador: ${state.winner === 'A' ? escapeHtml(state.teamAName) : escapeHtml(state.teamBName)}</div>` : `<div class="bottom-chip">Marcador APF en vivo</div>`}
-      </footer>
-    </section>
-  `;
-  target.innerHTML = card;
-}
-
-function teamMarkup(side, teamName, p1, p2, photo1, photo2, point, serving) {
-  return `
-    <article class="team-card ${serving ? 'serving' : ''}">
-      <div class="team-header">
-        <div class="team-name">${escapeHtml(teamName)}</div>
-        <div class="serve-indicator">Saque</div>
-      </div>
-      <div class="players-row">
-        ${playerMarkup(p1, photo1)}
-        ${playerMarkup(p2, photo2)}
-      </div>
-      <div class="score-box">
-        <div class="point-value">${point}</div>
-      </div>
-    </article>
-  `;
-}
-
-function playerMarkup(name, photo) {
-  const initials = getInitials(name || 'J');
-  return `
-    <div class="player-box">
-      <div class="player-photo">${photo ? `<img src="${photo}" alt="${escapeHtml(name)}" />` : `<div class="player-fallback">${initials}</div>`}</div>
-      <div class="player-name">${escapeHtml(name)}</div>
-    </div>
-  `;
-}
-
-function getInitials(name) {
-  return (name || 'J').split(' ').filter(Boolean).slice(0,2).map(v => v[0]).join('').toUpperCase();
-}
-
-function escapeHtml(text) {
-  return String(text || '')
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'",'&#039;');
-}
-
-function syncFormFromState() {
-  const ids = ['eventName','category','court','matchState','teamAName','teamBName','a1','a2','b1','b2'];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = state[id] || '';
-  });
-  const golden = document.getElementById('goldenPoint');
-  if (golden) golden.checked = !!state.goldenPoint;
-  const status = document.getElementById('summaryStatus');
-  if (status) status.textContent = `${state.teamAName} ${displayPoints('A')} · ${displayPoints('B')} ${state.teamBName}`;
-}
-
-function displayPoints(side) {
-  return side === 'A' ? scoreLabel(state.pointsA, state.pointsB, state.goldenPoint) : scoreLabel(state.pointsB, state.pointsA, state.goldenPoint);
-}
-
-function connectSync(onUpdate) {
-  window.addEventListener('storage', (e) => {
-    if (e.key === STORAGE_KEY) {
-      state = loadState();
-      onUpdate();
-    }
-  });
-  if (channel) {
-    channel.onmessage = (ev) => {
-      state = { ...defaultState(), ...ev.data };
-      onUpdate();
-    };
-  }
-}
-
-function bindOperatorEvents() {
-  document.getElementById('saveSetup')?.addEventListener('click', async () => {
-    saveSetupFromForm();
-    await saveFilesFromForm();
-    refreshOperator();
-  });
-  document.getElementById('resetAll')?.addEventListener('click', () => {
-    if (confirm('¿Reiniciar todo el marcador?')) {
-      resetState();
-      refreshOperator();
-    }
-  });
-  document.getElementById('resetPoints')?.addEventListener('click', () => {
-    resetPoints();
-    refreshOperator();
-  });
-  document.getElementById('swapSides')?.addEventListener('click', () => {
-    swapSides();
-    refreshOperator();
-  });
-  document.getElementById('finishMatch')?.addEventListener('click', () => {
-    state.matchState = 'FINALIZADO';
-    const sa = setsWon('A');
-    const sb = setsWon('B');
-    state.winner = sa > sb ? 'A' : sb > sa ? 'B' : state.winner;
-    saveState();
-    refreshOperator();
-  });
-  document.getElementById('fullscreenPublic')?.addEventListener('click', () => window.open('publico.html', '_blank'));
-
-  document.querySelectorAll('[data-action]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const action = btn.dataset.action;
-      if (action === 'pointA') pointTo('A');
-      if (action === 'pointB') pointTo('B');
-      if (action === 'undoA') undoPoint('A');
-      if (action === 'undoB') undoPoint('B');
-      if (action === 'gamePlusA') addGame('A', 1);
-      if (action === 'gamePlusB') addGame('B', 1);
-      if (action === 'gameMinusA') addGame('A', -1);
-      if (action === 'gameMinusB') addGame('B', -1);
-      if (action === 'serveA') { state.serve = 'A'; saveState(); }
-      if (action === 'serveB') { state.serve = 'B'; saveState(); }
-      refreshOperator();
-    });
-  });
-
-  ['eventName','category','court','matchState','teamAName','teamBName','a1','a2','b1','b2','goldenPoint'].forEach(id => {
-    document.getElementById(id)?.addEventListener('change', () => {
-      saveSetupFromForm();
-      refreshOperator();
-    });
-  });
-
-  document.addEventListener('keydown', (e) => {
-    const tag = document.activeElement?.tagName;
-    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
-    const key = e.key.toLowerCase();
-    if (key === 'q') pointTo('A');
-    if (key === 'p') pointTo('B');
-    if (key === 'a') undoPoint('A');
-    if (key === 'l') undoPoint('B');
-    if (key === 's') { state.serve = 'A'; saveState(); }
-    if (key === 'k') { state.serve = 'B'; saveState(); }
-    if (key === '1') addGame('A', 1);
-    if (key === '2') addGame('B', 1);
-    if (key === '7') addGame('A', -1);
-    if (key === '8') addGame('B', -1);
-    refreshOperator();
-  });
-}
-
-function refreshOperator() {
-  syncFormFromState();
-  const preview = document.getElementById('publicPreview');
-  if (preview) renderScoreboard(preview);
-}
-
-function initOperator() {
-  refreshOperator();
-  bindOperatorEvents();
-  connectSync(refreshOperator);
-}
-
-function initPublic() {
-  const stage = document.getElementById('publicStage');
-  const render = () => renderScoreboard(stage);
-  render();
-  connectSync(render);
-}
-
-window.initOperator = initOperator;
-window.initPublic = initPublic;
+function renderPlanillero(){if(!$("planilleroApp"))return;$("planilleroApp").innerHTML=`<div class="wrap"><div class="header"><div class="brand"><div class="logo">APF</div><div><h1>Planillero APF</h1><p>Llevá los puntos en vivo.</p></div></div><div class="nav"><a class="btn" href="admin.html">Admin</a><a class="btn" href="publico.html" target="_blank">Público</a></div></div><div id="status" class="status">Conectando...</div><div class="card"><h2>Partidos para trabajar</h2><div id="planList" class="list"></div></div></div>`;listenAll(arr=>{let active=arr.filter(m=>m.status!=="Finalizado");$("planList").innerHTML=active.length?active.map(m=>card(m,"planillero")).join(""):`<div class="empty">No hay partidos cargados.</div>`;attachActions(document,arr)})}
+function renderPublic(){if(!$("publicApp"))return;$("publicApp").innerHTML=`<div class="wrap"><div class="header"><div class="brand"><div class="logo">APF</div><div><h1>Agrupación Pádel Friense</h1><p>Marcadores en vivo del torneo.</p></div></div><div class="nav"><a class="btn" href="tv.html" target="_blank">Modo TV</a></div></div><div id="status" class="status">Conectando...</div><div class="card"><h2>Marcadores en vivo</h2><div id="liveList" class="list"></div></div><div class="card"><h2>Partidos finalizados</h2><div id="doneList" class="list"></div></div></div>`;listenAll(arr=>{let live=arr.filter(m=>m.status==="En vivo"&&m.publicVisible),done=arr.filter(m=>m.status==="Finalizado").slice(0,12);$("liveList").innerHTML=live.length?live.map(m=>card(m,"public")).join(""):`<div class="empty">Todavía no hay marcadores activos.</div>`;$("doneList").innerHTML=done.length?done.map(m=>card(m,"public")).join(""):`<div class="empty">Todavía no hay partidos finalizados.</div>`})}
+function renderTV(){if(!$("tvApp"))return;document.body.classList.add("tvbody");$("tvApp").innerHTML=`<div class="tv"><div class="tvtop"><div class="tvbrand"><div class="tvlogo">APF</div><div class="tvtitle"><b id="tvComp">APF PÁDEL</b><span id="tvInfo">Marcador en vivo</span></div></div><div class="timer" id="tvTimer">00:00</div><div class="tvstatus"><span class="pill" id="tvStatus">En vivo</span></div></div><div class="tvmain"><section class="tvteam" id="teamA"><div class="pair" id="tvA">Pareja A</div><div class="players"><div class="player"><div class="photo" id="photoA1">A1</div><div class="name" id="tvP1">Jugador A1</div></div><div class="player"><div class="photo" id="photoA2">A2</div><div class="name" id="tvP2">Jugador A2</div></div></div><div class="tvpoint" id="tvPointA">0</div></section><aside class="center"><div class="serveBall">🎾</div><div class="sets"><div class="setRow"><div class="setBox"><span>A S1</span><b id="a0">0</b></div><div class="setBox"><span>B S1</span><b id="b0">0</b></div></div><div class="setRow"><div class="setBox"><span>A S2</span><b id="a1">0</b></div><div class="setBox"><span>B S2</span><b id="b1">0</b></div></div><div class="setRow"><div class="setBox"><span>A S3</span><b id="a2">0</b></div><div class="setBox"><span>B S3</span><b id="b2">0</b></div></div></div><div class="vs">VS</div></aside><section class="tvteam" id="teamB"><div class="pair" id="tvB">Pareja B</div><div class="players"><div class="player"><div class="photo" id="photoB1">B1</div><div class="name" id="tvP3">Jugador B1</div></div><div class="player"><div class="photo" id="photoB2">B2</div><div class="name" id="tvP4">Jugador B2</div></div></div><div class="tvpoint" id="tvPointB">0</div></section></div><div class="tvbottom"><span class="pill" id="tvServe">🎾 Saca Pareja A</span><span class="pill sponsor"><small>Acompañan este partido</small><span id="tvSponsor">ESPACIO SPONSOR</span></span></div></div>`;listenAll(arr=>{let hash=location.hash.replace("#","");let m=arr.find(x=>x.id===hash)||arr.find(x=>x.status==="En vivo")||arr[0];if(!m)return;["tvComp","tvInfo","tvTimer","tvStatus","tvA","tvB","tvP1","tvP2","tvP3","tvP4","tvPointA","tvPointB","tvSponsor","tvServe"].forEach(id=>{if(!$(id))return});$("tvComp").textContent=m.competition||"APF PÁDEL";$("tvInfo").textContent=info(m);$("tvTimer").textContent=fmt(m.seconds);$("tvStatus").textContent=m.status||"En vivo";$("tvA").textContent=m.team1||"Pareja A";$("tvB").textContent=m.team2||"Pareja B";$("tvP1").textContent=m.p1||"Jugador A1";$("tvP2").textContent=m.p2||"Jugador A2";$("tvP3").textContent=m.p3||"Jugador B1";$("tvP4").textContent=m.p4||"Jugador B2";$("tvPointA").textContent=pointText(m,0);$("tvPointB").textContent=pointText(m,1);for(let i=0;i<3;i++){ $("a"+i).textContent=m.games?.[i]?.[0]??0; $("b"+i).textContent=m.games?.[i]?.[1]??0; }$("teamA").classList.toggle("serving",m.serving===0);$("teamB").classList.toggle("serving",m.serving===1);$("tvServe").textContent="🎾 Saca "+(m.serving===0?(m.team1||"Pareja A"):(m.team2||"Pareja B"));$("tvSponsor").textContent=m.sponsor||"ESPACIO SPONSOR"})}
+document.addEventListener("DOMContentLoaded",()=>{renderAdmin();renderPlanillero();renderPublic();renderTV();setInterval(tick,1000)})
+})();

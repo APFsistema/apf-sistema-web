@@ -1,0 +1,35 @@
+APF MARCADOR ONLINE TORNEO v61
+
+Objetivo para el torneo:
+- Admin crea marcador.
+- Planillero lleva puntos.
+- Público sigue online.
+- TV muestra marcador lindo con sponsor.
+- Al finalizar pasa a partidos finalizados.
+
+ARCHIVOS:
+- admin.html: crear marcador y administrar.
+- planillero.html: llevar puntos.
+- publico.html: link para la gente.
+- tv.html: pantalla TV.
+- config.js: pegar datos de Firebase.
+- firebase-rules.json: reglas para Realtime Database.
+
+PASOS FIREBASE:
+1) Crear proyecto en Firebase.
+2) Crear Realtime Database.
+3) Copiar configuración web y pegar en config.js.
+4) En Realtime Database > Rules pegar firebase-rules.json y publicar.
+5) Subir todo a GitHub/Vercel.
+6) Probar:
+   /admin.html
+   /planillero.html
+   /publico.html
+   /tv.html
+
+FUNCIONAMIENTO:
+- Crear marcador en Admin.
+- El marcador aparece en Planillero.
+- Al tocar Arrancar / En vivo, aparece en Público.
+- Los puntos se actualizan online.
+- Al finalizar, desaparece de En vivo y pasa a Finalizados.
