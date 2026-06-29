@@ -1,0 +1,7 @@
+Reglas orientativas Firebase Firestore
+
+- admin: puede leer y escribir todo.
+- planillero: puede leer sus partidos asignados y escribir solo marcador/resultados de esos partidos.
+- publico: puede leer datos publicados.
+
+Colecciones: usuarios, competencias, categorias, jugadores, parejas, partidos, marcadores, resultados, rankings, sponsors, historial.

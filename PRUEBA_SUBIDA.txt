@@ -1,0 +1,6 @@
+Si podés abrir este archivo en Vercel, los archivos están subidos en la raíz.
+Links de prueba:
+/PRUEBA_SUBIDA.txt
+/admin.html
+/admin
+/index.html

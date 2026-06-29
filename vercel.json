@@ -1,1 +1,29 @@
-{"cleanUrls": true, "trailingSlash": false}
+{
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "/admin",
+      "dest": "/admin.html"
+    },
+    {
+      "src": "/planillero",
+      "dest": "/planillero.html"
+    },
+    {
+      "src": "/tv",
+      "dest": "/tv.html"
+    },
+    {
+      "src": "/fixture",
+      "dest": "/fixture.html"
+    },
+    {
+      "src": "/ranking",
+      "dest": "/ranking.html"
+    },
+    {
+      "src": "/publico",
+      "dest": "/publico.html"
+    }
+  ]
+}
