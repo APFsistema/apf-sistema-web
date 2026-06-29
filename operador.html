@@ -1,32 +1,152 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Operador APF</title><link rel="stylesheet" href="styles.css"></head>
-<body>
-  <header class="topbar"><h1>Panel operador · Marcador APF</h1><nav><a href="publico.html" target="_blank">Abrir pantalla pública</a><a href="index.html">Inicio</a></nav></header>
-  <main class="operator-layout">
-    <section class="panel">
-      <h2>Cargar partido</h2>
-      <form id="setupForm">
-        <div class="grid2"><div class="field"><label>Torneo</label><input id="eventName" /></div><div class="field"><label>Categoría</label><input id="category" /></div></div>
-        <div class="grid2"><div class="field"><label>Cancha</label><input id="court" /></div><div class="field"><label>Estado</label><select id="matchState"><option>EN JUEGO</option><option>CALENTAMIENTO</option><option>PAUSADO</option><option>FINALIZADO</option></select></div></div>
-        <div class="field"><label>Logo APF</label><input id="logoFile" type="file" accept="image/*" /></div>
-        <label style="display:flex;gap:8px;align-items:center;margin:10px 0 16px;color:var(--muted);font-weight:900"><input id="goldenPoint" type="checkbox"> Punto de oro activado</label>
-        <div class="team-form"><h3>Pareja A</h3><div class="field"><label>Nombre de pareja</label><input id="teamAName"></div><div class="grid2"><div class="field"><label>Jugador 1</label><input id="a1"><input id="a1Photo" type="file" accept="image/*"></div><div class="field"><label>Jugador 2</label><input id="a2"><input id="a2Photo" type="file" accept="image/*"></div></div></div>
-        <div class="team-form"><h3>Pareja B</h3><div class="field"><label>Nombre de pareja</label><input id="teamBName"></div><div class="grid2"><div class="field"><label>Jugador 1</label><input id="b1"><input id="b1Photo" type="file" accept="image/*"></div><div class="field"><label>Jugador 2</label><input id="b2"><input id="b2Photo" type="file" accept="image/*"></div></div></div>
-        <div class="btn-row"><button class="btn" type="submit">Guardar datos</button><button class="btn secondary" id="resetAll" type="button">Reiniciar todo</button></div>
-      </form>
-      <h2 style="margin-top:20px">Control del partido</h2>
-      <div class="score-controls"><button class="btn big a" data-point="A">+ Punto A</button><button class="btn big b" data-point="B">+ Punto B</button></div>
-      <div class="mini-controls">
-        <button class="btn secondary" data-undo="A">- Punto A</button><button class="btn secondary" data-undo="B">- Punto B</button>
-        <button class="btn secondary" data-serve="A">Saque A</button><button class="btn secondary" data-serve="B">Saque B</button>
-        <button class="btn secondary" data-side="A" data-game="1">+ Game A</button><button class="btn secondary" data-side="B" data-game="1">+ Game B</button>
-        <button class="btn secondary" data-side="A" data-game="-1">- Game A</button><button class="btn secondary" data-side="B" data-game="-1">- Game B</button>
-        <button class="btn secondary" id="resetPoints">Puntos a 0</button><button class="btn danger" id="clearWinner">Quitar ganador</button>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marcador APF · Operador</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="operator-body">
+  <header class="operator-topbar">
+    <div>
+      <div class="eyebrow">APF · PANEL OPERADOR</div>
+      <h1>Control de partido</h1>
+    </div>
+    <div class="top-actions">
+      <a class="pill-link secondary" href="publico.html" target="_blank">Abrir pantalla pública</a>
+      <a class="pill-link ghost" href="index.html">Inicio</a>
+    </div>
+  </header>
+
+  <main class="operator-shell">
+    <aside class="operator-sidebar">
+      <section class="panel-card">
+        <h2>Datos del partido</h2>
+        <div class="grid-2">
+          <label class="field"><span>Torneo</span><input id="eventName" placeholder="Torneo Apertura APF" /></label>
+          <label class="field"><span>Categoría</span><input id="category" placeholder="Suma 11 Masculino" /></label>
+          <label class="field"><span>Cancha</span><input id="court" placeholder="Cancha 1" /></label>
+          <label class="field"><span>Estado</span>
+            <select id="matchState">
+              <option value="EN JUEGO">En juego</option>
+              <option value="CALENTAMIENTO">Calentamiento</option>
+              <option value="PAUSADO">Pausado</option>
+              <option value="FINALIZADO">Finalizado</option>
+            </select>
+          </label>
+        </div>
+        <div class="grid-2">
+          <label class="field full"><span>Logo APF</span><input id="logoFile" type="file" accept="image/*" /></label>
+          <label class="checkline"><input id="goldenPoint" type="checkbox" checked /> Punto de oro</label>
+        </div>
+      </section>
+
+      <section class="panel-card">
+        <h2>Pareja A</h2>
+        <label class="field"><span>Nombre de pareja</span><input id="teamAName" placeholder="Pareja A" /></label>
+        <div class="grid-2">
+          <label class="field"><span>Jugador 1</span><input id="a1" placeholder="Jugador A1" /></label>
+          <label class="field"><span>Jugador 2</span><input id="a2" placeholder="Jugador A2" /></label>
+          <label class="field"><span>Foto Jugador 1</span><input id="a1Photo" type="file" accept="image/*" /></label>
+          <label class="field"><span>Foto Jugador 2</span><input id="a2Photo" type="file" accept="image/*" /></label>
+        </div>
+      </section>
+
+      <section class="panel-card">
+        <h2>Pareja B</h2>
+        <label class="field"><span>Nombre de pareja</span><input id="teamBName" placeholder="Pareja B" /></label>
+        <div class="grid-2">
+          <label class="field"><span>Jugador 1</span><input id="b1" placeholder="Jugador B1" /></label>
+          <label class="field"><span>Jugador 2</span><input id="b2" placeholder="Jugador B2" /></label>
+          <label class="field"><span>Foto Jugador 1</span><input id="b1Photo" type="file" accept="image/*" /></label>
+          <label class="field"><span>Foto Jugador 2</span><input id="b2Photo" type="file" accept="image/*" /></label>
+        </div>
+        <div class="btn-stack">
+          <button class="btn primary" id="saveSetup">Guardar datos</button>
+          <button class="btn danger" id="resetAll">Reiniciar todo</button>
+        </div>
+      </section>
+
+      <section class="panel-card compact">
+        <h2>Atajos de teclado</h2>
+        <ul class="hotkeys">
+          <li><strong>Q</strong> punto Pareja A</li>
+          <li><strong>P</strong> punto Pareja B</li>
+          <li><strong>A</strong> restar punto A</li>
+          <li><strong>L</strong> restar punto B</li>
+          <li><strong>S</strong> saque Pareja A</li>
+          <li><strong>K</strong> saque Pareja B</li>
+          <li><strong>1 / 2</strong> + game A / B</li>
+          <li><strong>7 / 8</strong> - game A / B</li>
+        </ul>
+      </section>
+    </aside>
+
+    <section class="operator-main">
+      <section class="panel-card">
+        <div class="controls-head">
+          <div>
+            <div class="eyebrow">CONTROL EN VIVO</div>
+            <h2>Botones rápidos</h2>
+          </div>
+          <button class="btn ghost" id="fullscreenPublic">Abrir público</button>
+        </div>
+
+        <div class="live-controls-grid">
+          <div class="control-group team-a">
+            <h3>Pareja A</h3>
+            <div class="big-btn-row">
+              <button class="action-btn plus" data-action="pointA">+ Punto</button>
+              <button class="action-btn minus" data-action="undoA">- Punto</button>
+            </div>
+            <div class="big-btn-row small">
+              <button class="action-btn secondary" data-action="gamePlusA">+ Game</button>
+              <button class="action-btn secondary" data-action="gameMinusA">- Game</button>
+            </div>
+            <button class="action-btn serve" data-action="serveA">Saque Pareja A</button>
+          </div>
+
+          <div class="center-controls">
+            <div class="status-box">
+              <span>Control general</span>
+              <strong id="summaryStatus">Listo para iniciar</strong>
+            </div>
+            <div class="center-btns">
+              <button class="action-btn neutral" id="resetPoints">Puntos a 0</button>
+              <button class="action-btn neutral" id="swapSides">Cambiar nombres A/B</button>
+              <button class="action-btn danger" id="finishMatch">Finalizar partido</button>
+            </div>
+          </div>
+
+          <div class="control-group team-b">
+            <h3>Pareja B</h3>
+            <div class="big-btn-row">
+              <button class="action-btn plus" data-action="pointB">+ Punto</button>
+              <button class="action-btn minus" data-action="undoB">- Punto</button>
+            </div>
+            <div class="big-btn-row small">
+              <button class="action-btn secondary" data-action="gamePlusB">+ Game</button>
+              <button class="action-btn secondary" data-action="gameMinusB">- Game</button>
+            </div>
+            <button class="action-btn serve" data-action="serveB">Saque Pareja B</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel-card preview-card">
+        <div class="controls-head">
+          <div>
+            <div class="eyebrow">VISTA PREVIA</div>
+            <h2>Así se verá en la TV</h2>
+          </div>
+          <div class="preview-note">La TV debe abrir <strong>publico.html</strong></div>
+        </div>
+        <div id="publicPreview" class="public-preview"></div>
+      </section>
     </section>
-    <section class="preview-wrap"><div class="scoreboard"></div></section>
   </main>
-  <script src="app.js"></script><script>initOperator()</script>
+
+  <script src="app.js"></script>
+  <script>initOperator();</script>
 </body>
 </html>
