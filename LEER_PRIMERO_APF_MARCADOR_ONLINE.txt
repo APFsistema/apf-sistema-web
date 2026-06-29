@@ -1,0 +1,1 @@
+Subir estos archivos DIRECTO a GitHub. No hay carpetas. Links: admin.html, planillero.html, publico.html, tv.html. Configurar Firebase en config.js.

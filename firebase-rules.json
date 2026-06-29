@@ -1,9 +1,1 @@
-
-{
-  "rules": {
-    "matches": {
-      ".read": true,
-      ".write": true
-    }
-  }
-}
+{"rules":{"matches":{".read":true,".write":true}}}
