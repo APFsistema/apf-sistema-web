@@ -1,0 +1,18 @@
+APF v84 - MODULO UNICO CREAR MARCADOR
+
+Base: v83.
+Cambios:
+- Un solo modulo: CREAR MARCADOR.
+- Los marcadores creados aparecen en ese mismo modulo.
+- Desde ahi: Modo TV, arrancar tiempo/en vivo, pausar, finalizar, reiniciar, eliminar.
+- Planillero ve los marcadores creados.
+- Publico los ve solo cuando se arranca el tiempo.
+- Al finalizar pasan a finalizados/historial.
+
+Prueba:
+1) /admin.html -> CREAR MARCADOR -> Crear marcador.
+2) Debe aparecer debajo.
+3) /planillero.html debe mostrarlo.
+4) Arrancar tiempo / En vivo.
+5) /publico.html debe mostrarlo.
+6) Finalizar: pasa a finalizados.
