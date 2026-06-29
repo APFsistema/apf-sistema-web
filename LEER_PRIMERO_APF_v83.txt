@@ -1,0 +1,19 @@
+APF v83 - MARCADORES DENTRO DE CREAR MARCADOR
+
+Base: v82, pero se quitó el parche molesto que ponía 'Eliminar marcador' en todas las pestañas.
+
+Cambios:
+- Limpia una sola vez los marcadores viejos que quedaron trabados en el navegador.
+- Dentro del módulo 'Crear marcador / partido' aparece un bloque 'Marcadores creados'.
+- Desde ese mismo bloque podés abrir Modo TV o eliminar cada marcador.
+- Botón 'Borrar todos' solo dentro de ese bloque.
+- No aparece más el botón global de eliminar marcadores en todas las pestañas.
+
+Prueba:
+1) Subir v83.
+2) Abrir /admin.html o /accesos.html.
+3) Entrar a Crear marcador / partido.
+4) Los marcadores viejos deberían quedar limpios.
+5) Crear un marcador nuevo.
+6) Debajo del formulario debe aparecer en 'Marcadores creados'.
+7) Eliminarlo desde ahí.

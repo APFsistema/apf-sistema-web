@@ -3532,195 +3532,6 @@ setInterval(updateLiveTimeDisplays,1000);
 })();
 </script>
 
-<!-- APF v81: eliminar marcadores creados sin borrar lo demás -->
-<style id="apf-v81-delete-marker-style">
-.apf-v81-delete-marker{
-  border:1px solid rgba(255,120,120,.35)!important;
-  background:#3b1515!important;
-  color:#ffd1d1!important;
-  border-radius:12px!important;
-  padding:8px 10px!important;
-  font-weight:900!important;
-  cursor:pointer!important;
-  margin:4px!important;
-}
-.apf-v81-delete-marker:hover{filter:brightness(1.12)}
-.apf-v81-marker-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-</style>
-<script id="apf-v81-delete-marker-script">
-(function(){
-  var markerWords = ['marcador','partido','cancha','pareja','jugador','suma','set','punto'];
-  var storeKeys = [
-    'apf_v75_data','apf_base_estable_v1','apf_public_data','apf_v92_data',
-    'apf_marker_admin_v1','apf_marker_tv_v2','apf_live_matches',
-    'matches','markers','apf_matches','apf_marcadores'
-  ];
-
-  function lowerText(el){ return (el && (el.innerText || el.textContent) || '').toLowerCase(); }
-  function looksLikeMarker(el){
-    var t = lowerText(el);
-    if(!t) return false;
-    var score = 0;
-    markerWords.forEach(function(w){ if(t.indexOf(w)>-1) score++; });
-    if(t.indexOf('vs')>-1) score++;
-    if(t.indexOf('saca')>-1) score++;
-    if(t.indexOf('set')>-1) score++;
-    return score >= 2;
-  }
-  function findCard(btn){
-    var el = btn;
-    for(var i=0;i<8 && el;i++,el=el.parentElement){
-      if(el.classList && (
-        el.classList.contains('card') ||
-        el.classList.contains('match') ||
-        el.classList.contains('match-card') ||
-        el.classList.contains('marker') ||
-        el.classList.contains('item') ||
-        el.classList.contains('fixture-card') ||
-        el.getAttribute('data-match-id') ||
-        el.getAttribute('data-id')
-      )) return el;
-    }
-    return btn.closest('div');
-  }
-  function getIdFromCard(card){
-    if(!card) return '';
-    return card.getAttribute('data-match-id') ||
-      card.getAttribute('data-marker-id') ||
-      card.getAttribute('data-id') ||
-      card.dataset.matchId ||
-      card.dataset.markerId ||
-      card.dataset.id ||
-      '';
-  }
-  function normalize(s){
-    return String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
-  }
-  function removeFromObjectArrays(obj,id,text){
-    var changed = false;
-    if(!obj || typeof obj !== 'object') return false;
-    Object.keys(obj).forEach(function(k){
-      if(Array.isArray(obj[k])){
-        var before = obj[k].length;
-        obj[k] = obj[k].filter(function(item){
-          if(!item || typeof item !== 'object') return true;
-          var itemId = item.id || item.matchId || item.markerId || item.uid || item._id || '';
-          var itemText = normalize(JSON.stringify(item));
-          if(id && String(itemId) === String(id)) return false;
-          if(text && itemText && text.length>20 && itemText.indexOf(text.slice(0,80))>-1) return false;
-          return true;
-        });
-        if(obj[k].length !== before) changed = true;
-      }
-    });
-    return changed;
-  }
-  function deleteFromStorage(id, cardText){
-    var changed = false;
-    var shortText = normalize(cardText).slice(0,120);
-    storeKeys.forEach(function(key){
-      try{
-        var raw = localStorage.getItem(key);
-        if(!raw) return;
-        var data = JSON.parse(raw);
-        if(Array.isArray(data)){
-          var before = data.length;
-          data = data.filter(function(item){
-            if(!item || typeof item !== 'object') return true;
-            var itemId = item.id || item.matchId || item.markerId || item.uid || item._id || '';
-            var itemText = normalize(JSON.stringify(item));
-            if(id && String(itemId) === String(id)) return false;
-            if(shortText && itemText.indexOf(shortText.slice(0,80))>-1) return false;
-            return true;
-          });
-          if(data.length !== before){ localStorage.setItem(key,JSON.stringify(data)); changed = true; }
-        }else if(data && typeof data === 'object'){
-          if(removeFromObjectArrays(data,id,shortText)){
-            localStorage.setItem(key,JSON.stringify(data)); changed = true;
-          }
-        }
-      }catch(e){}
-    });
-
-    try{
-      if(window.db && typeof window.db === 'object'){
-        if(removeFromObjectArrays(window.db,id,shortText)) changed = true;
-        if(typeof window.save === 'function') window.save();
-        if(typeof window.saveDB === 'function') window.saveDB();
-      }
-    }catch(e){}
-    return changed;
-  }
-  function attachButtons(){
-    var candidates = Array.prototype.slice.call(document.querySelectorAll('.card,.match,.match-card,.marker,.item,.fixture-card,[data-match-id],[data-marker-id],[data-id]'));
-    candidates.forEach(function(card){
-      if(card.id && card.id.indexOf('apf')===0 && card.id.indexOf('V81')>-1) return;
-      if(card.querySelector('.apf-v81-delete-marker')) return;
-      if(!looksLikeMarker(card)) return;
-      var t = lowerText(card);
-      if(t.indexOf('crear marcador')>-1 || t.indexOf('datos del partido')>-1 || t.indexOf('control')>-1) return;
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'apf-v81-delete-marker';
-      btn.textContent = 'Eliminar marcador';
-      btn.onclick = function(ev){
-        ev.preventDefault();
-        ev.stopPropagation();
-        var c = findCard(btn);
-        var id = getIdFromCard(c);
-        var text = c ? (c.innerText || c.textContent || '') : '';
-        if(!confirm('¿Eliminar este marcador?')) return;
-        deleteFromStorage(id,text);
-        if(c) c.remove();
-        try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch(e){}
-        try{ if(typeof window.render === 'function') window.render(); }catch(e){}
-        try{ if(typeof window.loadMatches === 'function') window.loadMatches(); }catch(e){}
-        alert('Marcador eliminado de esta vista. Si seguía apareciendo por caché, actualizá la página.');
-      };
-      var actions = card.querySelector('.actions,.row,.btns,.buttons') || card;
-      actions.appendChild(btn);
-    });
-  }
-  function addGlobalCleaner(){
-    if(document.getElementById('apfV81ClearAllMarkers')) return;
-    var isAdmin = /admin|planillero/.test(location.pathname);
-    if(!isAdmin) return;
-    var holder = document.querySelector('.header .row,.header,.nav') || document.body;
-    var b = document.createElement('button');
-    b.id = 'apfV81ClearAllMarkers';
-    b.type='button';
-    b.className='apf-v81-delete-marker';
-    b.textContent='Borrar marcadores';
-    b.onclick=function(){
-      if(!confirm('¿Borrar todos los marcadores/partidos guardados en este navegador?')) return;
-      storeKeys.forEach(function(key){
-        try{
-          var raw=localStorage.getItem(key); if(!raw) return;
-          var data=JSON.parse(raw);
-          if(Array.isArray(data)) localStorage.setItem(key,'[]');
-          else if(data && typeof data==='object'){
-            ['matches','markers','marcadores','partidos','liveMatches','fixtures'].forEach(function(k){
-              if(Array.isArray(data[k])) data[k]=[];
-            });
-            localStorage.setItem(key,JSON.stringify(data));
-          }
-        }catch(e){}
-      });
-      try{ if(window.db){ ['matches','markers','marcadores','partidos','fixtures'].forEach(function(k){ if(Array.isArray(window.db[k])) window.db[k]=[]; }); if(typeof window.save==='function') window.save(); }}catch(e){}
-      alert('Marcadores borrados. Actualizá la página si hace falta.');
-      location.reload();
-    };
-    holder.appendChild(b);
-  }
-  document.addEventListener('DOMContentLoaded',function(){
-    setTimeout(function(){attachButtons();addGlobalCleaner();},300);
-    setTimeout(function(){attachButtons();addGlobalCleaner();},1000);
-    setInterval(attachButtons,2000);
-  });
-})();
-</script>
-
-
 <!-- APF v82: Marcador TV más limpio -->
 <style id="apf-v82-tv-clean-style">
 /* Mejora visual solo para pantalla TV / marcador, sin borrar funciones */
@@ -3880,6 +3691,283 @@ button.apf-v82-hide-tv-control,
     setTimeout(run, 250);
     setTimeout(run, 900);
     setInterval(run, 2000);
+  });
+})();
+</script>
+
+
+<!-- APF v83: marcadores creados dentro del módulo Crear marcador + eliminar real -->
+<style id="apf-v83-marker-admin-style">
+.apf-v83-created-box{
+  margin-top:14px;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(183,255,60,.22);
+  background:linear-gradient(180deg,rgba(6,25,16,.95),rgba(5,17,11,.95));
+}
+.apf-v83-created-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.apf-v83-created-head h4{
+  margin:0;
+  color:#d8ffea;
+  font-size:16px;
+}
+.apf-v83-created-head span{
+  color:#a9c6b5;
+  font-size:12px;
+}
+.apf-v83-list{
+  display:grid;
+  gap:8px;
+}
+.apf-v83-marker-row{
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:14px;
+  padding:10px;
+  background:#071d13;
+}
+.apf-v83-marker-row b{
+  display:block;
+  font-size:14px;
+  color:#f2fff7;
+}
+.apf-v83-marker-row small{
+  display:block;
+  color:#a9c6b5;
+  margin-top:3px;
+  line-height:1.35;
+}
+.apf-v83-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.apf-v83-btn{
+  border:1px solid #ffffff22;
+  background:#123624;
+  color:#f2fff7;
+  border-radius:11px;
+  padding:8px 10px;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.apf-v83-btn.primary{
+  background:linear-gradient(135deg,#21d777,#9dff4d);
+  color:#06170f;
+  border:0;
+}
+.apf-v83-btn.danger{
+  background:#451818;
+  color:#ffd1d1;
+  border-color:#ff696955;
+}
+.apf-v83-empty{
+  color:#a9c6b5;
+  border:1px dashed rgba(255,255,255,.15);
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+</style>
+
+<script id="apf-v83-marker-admin-script">
+(function(){
+  const KEY = 'apf_v75_data';
+  const CLEAN_FLAG = 'apf_v83_old_markers_cleaned_once';
+
+  function loadDB(){
+    try{
+      if(window.db && typeof window.db === 'object') return window.db;
+      return JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+    }catch(e){
+      return {};
+    }
+  }
+
+  function saveDB(data){
+    try{
+      if(window.db && typeof window.db === 'object'){
+        window.db.matches = Array.isArray(data.matches) ? data.matches : [];
+        if(Array.isArray(data.fixtures)) window.db.fixtures = data.fixtures;
+        data = window.db;
+      }
+      localStorage.setItem(KEY, JSON.stringify(data));
+    }catch(e){
+      console.warn('APF v83 no pudo guardar', e);
+    }
+  }
+
+  function esc(s){
+    return String(s ?? '').replace(/[&<>"']/g, function(m){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+    });
+  }
+
+  function matchTitle(m){
+    const t1 = m.team1 || (m.playerNames ? ((m.playerNames.p1 || 'Pareja 1') + ' / ' + (m.playerNames.p2 || 'Jugador 2')) : 'Pareja 1');
+    const t2 = m.team2 || (m.playerNames ? ((m.playerNames.p3 || 'Pareja 2') + ' / ' + (m.playerNames.p4 || 'Jugador 2')) : 'Pareja 2');
+    return t1 + ' vs ' + t2;
+  }
+
+  function matchInfo(m){
+    const parts = [
+      m.competitionName || 'Sin competencia',
+      m.branch || '',
+      m.category || '',
+      m.complex || '',
+      m.status || 'En juego'
+    ].filter(Boolean);
+    return parts.join(' · ');
+  }
+
+  function clearOldMarkersOnce(){
+    // Esto limpia los marcadores viejos que quedaron trabados en tu navegador.
+    // Se ejecuta una sola vez por navegador al abrir esta versión.
+    if(localStorage.getItem(CLEAN_FLAG) === '1') return;
+    const data = loadDB();
+    data.matches = [];
+    saveDB(data);
+    localStorage.setItem(CLEAN_FLAG, '1');
+  }
+
+  function deleteMarker(id){
+    const data = loadDB();
+    const before = Array.isArray(data.matches) ? data.matches.length : 0;
+    data.matches = (data.matches || []).filter(function(m){ return String(m.id) !== String(id); });
+    // Si venía desde fixture, no borro el fixture, solo lo dejo como programado.
+    if(Array.isArray(data.fixtures)){
+      data.fixtures.forEach(function(f){
+        if(f.id === id || f.matchId === id || f.fixtureId === id){
+          f.status = 'Programado';
+        }
+      });
+    }
+    saveDB(data);
+    try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch(e){}
+    setTimeout(renderCreatedMarkers, 80);
+    if(before === data.matches.length){
+      alert('No encontré ese marcador en la base local. Actualizá la página y probá de nuevo.');
+    }
+  }
+
+  function deleteAllMarkers(){
+    if(!confirm('¿Borrar todos los marcadores creados?')) return;
+    const data = loadDB();
+    data.matches = [];
+    saveDB(data);
+    try{ if(typeof window.renderAll === 'function') window.renderAll(); }catch(e){}
+    setTimeout(renderCreatedMarkers, 80);
+  }
+
+  function findCreateMarkerModule(){
+    const modules = Array.from(document.querySelectorAll('.admin-module, .admin-section, .card.full, .card'));
+    return modules.find(function(el){
+      const text = (el.innerText || '').toLowerCase();
+      return text.includes('crear marcador') || text.includes('crear marcador / partido');
+    });
+  }
+
+  function renderCreatedMarkers(){
+    const module = findCreateMarkerModule();
+    if(!module) return;
+
+    let box = document.getElementById('apfV83CreatedMarkersBox');
+    if(!box){
+      box = document.createElement('div');
+      box.id = 'apfV83CreatedMarkersBox';
+      box.className = 'apf-v83-created-box';
+      module.appendChild(box);
+    }
+
+    const data = loadDB();
+    const matches = Array.isArray(data.matches) ? data.matches : [];
+
+    box.innerHTML = `
+      <div class="apf-v83-created-head">
+        <div>
+          <h4>Marcadores creados</h4>
+          <span>Acá mismo aparecen los marcadores que vas creando. Desde acá los abrís en TV o los eliminás.</span>
+        </div>
+        <button class="apf-v83-btn danger" onclick="apfV83DeleteAllMarkers()">Borrar todos</button>
+      </div>
+      <div class="apf-v83-list">
+        ${
+          matches.length
+          ? matches.map(function(m){
+              return `
+                <div class="apf-v83-marker-row">
+                  <b>${esc(matchTitle(m))}</b>
+                  <small>${esc(matchInfo(m))}</small>
+                  <div class="apf-v83-actions">
+                    <button class="apf-v83-btn primary" onclick="openTV('${esc(m.id)}')">Modo TV</button>
+                    <button class="apf-v83-btn danger" onclick="apfV83DeleteMarker('${esc(m.id)}')">Eliminar marcador</button>
+                  </div>
+                </div>
+              `;
+            }).join('')
+          : '<div class="apf-v83-empty">Todavía no hay marcadores creados.</div>'
+        }
+      </div>
+    `;
+  }
+
+  function wrapCreateMatch(){
+    if(window.apfV83CreateWrapped) return;
+    if(typeof window.createMatch !== 'function') return;
+    const original = window.createMatch;
+    window.createMatch = async function(){
+      const result = await original.apply(this, arguments);
+      setTimeout(renderCreatedMarkers, 120);
+      return result;
+    };
+    window.apfV83CreateWrapped = true;
+  }
+
+  function overrideDeleteMatch(){
+    window.apfV83DeleteMarker = function(id){
+      if(!confirm('¿Eliminar este marcador?')) return;
+      deleteMarker(id);
+    };
+    window.apfV83DeleteAllMarkers = deleteAllMarkers;
+
+    // Reemplaza la función vieja para que cualquier botón "Eliminar" real también funcione.
+    window.deleteMatch = function(id){
+      if(!confirm('¿Eliminar este marcador?')) return;
+      deleteMarker(id);
+    };
+  }
+
+  function removeWrongGlobalButtons(){
+    // Saca botones agregados en pruebas anteriores que aparecían en todas las pestañas.
+    document.querySelectorAll('#apfV81ClearAllMarkers, .apf-v81-delete-marker').forEach(function(el){
+      el.remove();
+    });
+  }
+
+  function init(){
+    clearOldMarkersOnce();
+    overrideDeleteMatch();
+    wrapCreateMatch();
+    removeWrongGlobalButtons();
+    renderCreatedMarkers();
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(init, 250);
+    setTimeout(init, 900);
+    setInterval(function(){
+      wrapCreateMatch();
+      removeWrongGlobalButtons();
+      renderCreatedMarkers();
+    }, 2500);
   });
 })();
 </script>
