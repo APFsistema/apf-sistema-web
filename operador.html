@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Operador APF</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+  <header class="topbar"><h1>Panel operador · Marcador APF</h1><nav><a href="publico.html" target="_blank">Abrir pantalla pública</a><a href="index.html">Inicio</a></nav></header>
+  <main class="operator-layout">
+    <section class="panel">
+      <h2>Cargar partido</h2>
+      <form id="setupForm">
+        <div class="grid2"><div class="field"><label>Torneo</label><input id="eventName" /></div><div class="field"><label>Categoría</label><input id="category" /></div></div>
+        <div class="grid2"><div class="field"><label>Cancha</label><input id="court" /></div><div class="field"><label>Estado</label><select id="matchState"><option>EN JUEGO</option><option>CALENTAMIENTO</option><option>PAUSADO</option><option>FINALIZADO</option></select></div></div>
+        <div class="field"><label>Logo APF</label><input id="logoFile" type="file" accept="image/*" /></div>
+        <label style="display:flex;gap:8px;align-items:center;margin:10px 0 16px;color:var(--muted);font-weight:900"><input id="goldenPoint" type="checkbox"> Punto de oro activado</label>
+        <div class="team-form"><h3>Pareja A</h3><div class="field"><label>Nombre de pareja</label><input id="teamAName"></div><div class="grid2"><div class="field"><label>Jugador 1</label><input id="a1"><input id="a1Photo" type="file" accept="image/*"></div><div class="field"><label>Jugador 2</label><input id="a2"><input id="a2Photo" type="file" accept="image/*"></div></div></div>
+        <div class="team-form"><h3>Pareja B</h3><div class="field"><label>Nombre de pareja</label><input id="teamBName"></div><div class="grid2"><div class="field"><label>Jugador 1</label><input id="b1"><input id="b1Photo" type="file" accept="image/*"></div><div class="field"><label>Jugador 2</label><input id="b2"><input id="b2Photo" type="file" accept="image/*"></div></div></div>
+        <div class="btn-row"><button class="btn" type="submit">Guardar datos</button><button class="btn secondary" id="resetAll" type="button">Reiniciar todo</button></div>
+      </form>
+      <h2 style="margin-top:20px">Control del partido</h2>
+      <div class="score-controls"><button class="btn big a" data-point="A">+ Punto A</button><button class="btn big b" data-point="B">+ Punto B</button></div>
+      <div class="mini-controls">
+        <button class="btn secondary" data-undo="A">- Punto A</button><button class="btn secondary" data-undo="B">- Punto B</button>
+        <button class="btn secondary" data-serve="A">Saque A</button><button class="btn secondary" data-serve="B">Saque B</button>
+        <button class="btn secondary" data-side="A" data-game="1">+ Game A</button><button class="btn secondary" data-side="B" data-game="1">+ Game B</button>
+        <button class="btn secondary" data-side="A" data-game="-1">- Game A</button><button class="btn secondary" data-side="B" data-game="-1">- Game B</button>
+        <button class="btn secondary" id="resetPoints">Puntos a 0</button><button class="btn danger" id="clearWinner">Quitar ganador</button>
+      </div>
+    </section>
+    <section class="preview-wrap"><div class="scoreboard"></div></section>
+  </main>
+  <script src="app.js"></script><script>initOperator()</script>
+</body>
+</html>
