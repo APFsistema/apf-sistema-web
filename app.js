@@ -1,62 +1,143 @@
+const DEFAULT_PHOTO = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect width="100%" height="100%" fill="%231f2937"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="52" fill="%2300e5ff" font-family="Arial">APF</text></svg>';
+const pointSteps = ['0','15','30','40','ORO'];
+let state = loadState();
+let liveMatchId = state.liveMatchId || null;
+let serve = 'A';
 
-(function(){
-const labels=["0","15","30","40"];
-const $=id=>document.getElementById(id);
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function configured(){return window.APF_FIREBASE_CONFIG&&window.APF_FIREBASE_CONFIG.apiKey&&!String(window.APF_FIREBASE_CONFIG.apiKey).includes("PEGAR_")}
-function db(){if(!configured()||!window.firebase)return null;if(!firebase.apps.length)firebase.initializeApp(window.APF_FIREBASE_CONFIG);return firebase.database()}
-function status(t,ok){let e=$("status");if(e){e.className="status "+(ok?"ok":"bad");e.textContent=t}}
-function uid(){return "m_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8)}
-function pointText(m,t){let p=m.points||[0,0];return p[0]===3&&p[1]===3?"ORO":(labels[p[t]||0]||"0")}
-function title(m){return (m.team1||"Pareja A")+" vs "+(m.team2||"Pareja B")}
-function info(m){return [m.competition||"Sin competencia",m.branch||"",m.category||"",m.court||"",m.phase||"",m.timeText||""].filter(Boolean).join(" · ")}
-function fmt(s){s=s||0;return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
-function normalize(m){return Object.assign({points:[0,0],games:[[0,0],[0,0],[0,0]],currentSet:0,setsWon:[0,0],seconds:0,serving:0,status:"Programado",publicVisible:false,running:false},m||{})}
-async function update(id,patch){let d=db();if(!d)return alert("Falta configurar Firebase en config.js");await d.ref("matches/"+id).update(Object.assign({},patch,{updatedAt:Date.now()}))}
-function listenAll(cb){let d=db();if(!d){status("Firebase no configurado. Pegá los datos en config.js.",false);cb([]);return;}status("Conectado a marcador online",true);d.ref("matches").on("value",snap=>{let val=snap.val()||{};let arr=Object.keys(val).map(id=>normalize(Object.assign({id},val[id]))).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));cb(arr)})}
-function card(m,mode){
-let done=m.status==="Finalizado",live=m.status==="En vivo",sc=live?"live":done?"done":"";
-let set=m.currentSet||0;
-let controls=mode==="planillero"?`<div class="row"><button class="btn small primary" data-act="point" data-team="0" data-id="${esc(m.id)}">+ Punto A</button><button class="btn small primary" data-act="point" data-team="1" data-id="${esc(m.id)}">+ Punto B</button><button class="btn small" data-act="game" data-team="0" data-id="${esc(m.id)}">+ Juego A</button><button class="btn small" data-act="game" data-team="1" data-id="${esc(m.id)}">+ Juego B</button><button class="btn small warn" data-act="serve" data-id="${esc(m.id)}">Cambiar saque</button></div>`:"";
-return `<div class="item"><b>${esc(title(m))}</b><span>${esc(info(m))}</span><span>${esc((m.p1||"Jugador A1")+" / "+(m.p2||"Jugador A2")+" vs "+(m.p3||"Jugador B1")+" / "+(m.p4||"Jugador B2"))}</span><span class="badge ${sc}">${esc(m.status)}</span><span class="badge">${esc(m.format||"Mejor de 3 sets")}</span><div class="score"><div><span>${esc(m.team1||"Pareja A")}: Set ${set+1} · ${(m.games&&m.games[set]?m.games[set][0]:0)} games</span><span>${esc(m.team2||"Pareja B")}: Set ${set+1} · ${(m.games&&m.games[set]?m.games[set][1]:0)} games</span></div><div class="points">${esc(pointText(m,0))} - ${esc(pointText(m,1))}</div></div>${controls}<div class="row"><a class="btn small primary" href="tv.html#${esc(m.id)}" target="_blank">TV</a>${!done?`<button class="btn small primary" data-act="start" data-id="${esc(m.id)}">Arrancar / En vivo</button><button class="btn small warn" data-act="pause" data-id="${esc(m.id)}">${m.running?"Pausar":"Reanudar"}</button><button class="btn small danger" data-act="finish" data-id="${esc(m.id)}">Finalizar</button>`:""}${mode==="admin"?`<button class="btn small danger" data-act="delete" data-id="${esc(m.id)}">Eliminar</button>`:""}</div></div>`
+function loadState(){
+  const saved = localStorage.getItem('apfManagerV1');
+  if(saved) return JSON.parse(saved);
+  return { tournaments:[], pairs:[], matches:[], sponsors:[], liveMatchId:null };
 }
-function attachActions(root,matches){
-root.querySelectorAll("[data-act]").forEach(b=>b.onclick=async()=>{
-let id=b.dataset.id, act=b.dataset.act, team=Number(b.dataset.team||0), m=matches.find(x=>x.id===id); if(!m)return;
-if(act==="delete"){if(confirm("¿Eliminar marcador?")) await db().ref("matches/"+id).remove(); return}
-if(act==="start"){await update(id,{status:"En vivo",publicVisible:true,running:true,startedAt:m.startedAt||Date.now()}); return}
-if(act==="pause"){await update(id,{running:!m.running}); return}
-if(act==="finish"){if(confirm("¿Finalizar partido?")) await update(id,{status:"Finalizado",publicVisible:false,running:false,finishedAt:Date.now()}); return}
-if(act==="serve"){await update(id,{serving:m.serving===0?1:0}); return}
-if(act==="point"){await scorePoint(m,team); return}
-if(act==="game"){await scoreGame(m,team); return}
-})
+function saveState(){
+  state.liveMatchId = liveMatchId;
+  localStorage.setItem('apfManagerV1', JSON.stringify(state));
+  renderAll();
 }
-async function scorePoint(m,team){
-if(m.status==="Programado"){m.status="En vivo";m.publicVisible=true;m.running=true;m.startedAt=m.startedAt||Date.now()}
-let other=team?0:1, p=m.points||[0,0];
-if(p[0]===3&&p[1]===3){await scoreGame(m,team);return}
-if(p[team]===3&&p[other]<3){await scoreGame(m,team);return}
-p[team]=Math.min(3,(p[team]||0)+1);
-await update(m.id,{points:p,status:m.status,publicVisible:m.publicVisible,running:m.running,startedAt:m.startedAt||null})
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function $(id){ return document.getElementById(id); }
+
+function goView(viewId){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  $(viewId).classList.add('active');
+  document.querySelector(`.tab[data-view="${viewId}"]`)?.classList.add('active');
+  renderAll();
 }
-async function scoreGame(m,team){
-let games=m.games||[[0,0],[0,0],[0,0]], set=m.currentSet||0, sets=m.setsWon||[0,0];
-games[set][team]=(games[set][team]||0)+1;
-let a=games[set][0], b=games[set][1], mx=Math.max(a,b), df=Math.abs(a-b);
-let patch={games,points:[0,0],serving:m.serving===0?1:0};
-if((mx>=6&&df>=2)||mx>=7){sets[team]++;patch.setsWon=sets;if(sets[team]>=2||set>=2){patch.status="Finalizado";patch.publicVisible=false;patch.running=false;patch.finishedAt=Date.now()}else{patch.currentSet=set+1}}
-await update(m.id,patch)
+document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>goView(btn.dataset.view)));
+
+$('tournamentForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  state.tournaments.push({ id:uid(), name:$('tName').value, category:$('tCategory').value, format:$('tFormat').value, date:$('tDate').value, prize:$('tPrize').value });
+  e.target.reset(); saveState();
+});
+$('pairForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  state.pairs.push({ id:uid(), p1:$('p1').value, p2:$('p2').value, category:$('pairCategory').value, photo1:$('photo1').value || DEFAULT_PHOTO, photo2:$('photo2').value || DEFAULT_PHOTO });
+  e.target.reset(); saveState();
+});
+$('matchForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const match = { id:uid(), tournamentId:$('matchTournament').value, pairA:$('matchA').value, pairB:$('matchB').value, date:$('matchDate').value, time:$('matchTime').value, court:$('matchCourt').value || 'Cancha', status:'Pendiente', score:initScore() };
+  state.matches.push(match); liveMatchId = match.id; e.target.reset(); saveState();
+});
+$('sponsorForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  state.sponsors.push({ id:uid(), name:$('sName').value, logo:$('sLogo').value, instagram:$('sInstagram').value, plan:$('sPlan').value });
+  e.target.reset(); saveState();
+});
+function initScore(){ return { A:{points:0,games:0,sets:0}, B:{points:0,games:0,sets:0}, history:[] }; }
+function pairName(pair){ return pair ? `${pair.p1} / ${pair.p2}` : 'Pareja eliminada'; }
+function getPair(id){ return state.pairs.find(p=>p.id===id); }
+function getTournament(id){ return state.tournaments.find(t=>t.id===id); }
+function getLiveMatch(){ return state.matches.find(m=>m.id===liveMatchId) || state.matches[0]; }
+function snapshot(match){ match.score.history.push(JSON.stringify({score:{A:{...match.score.A},B:{...match.score.B}},status:match.status,serve})); if(match.score.history.length>30) match.score.history.shift(); }
+
+function renderAll(){
+  renderStats(); renderTournaments(); renderPairs(); renderSelects(); renderMatches(); renderSponsors(); renderScoreboard(); renderPublic();
 }
-function tick(){let d=db();if(!d)return;d.ref("matches").once("value",snap=>{let val=snap.val()||{};Object.keys(val).forEach(id=>{let m=val[id];if(m&&m.running&&m.status==="En vivo"){d.ref("matches/"+id+"/seconds").transaction(v=>(v||0)+1)}})})}
-function renderAdmin(){
-if(!$("adminApp"))return;
-$("adminApp").innerHTML=`<div class="wrap"><div class="header"><div class="brand"><div class="logo">APF</div><div><h1>APF Marcador Online</h1><p>Admin: crear marcador y controlar estado.</p></div></div><div class="nav"><a class="btn" href="planillero.html">Planillero</a><a class="btn" href="publico.html" target="_blank">Público</a><a class="btn" href="tv.html" target="_blank">TV</a></div></div><div id="status" class="status">Conectando...</div><div class="card"><h2>Crear marcador</h2><p>Cargá el partido. Aparecerá en Planillero. El público lo verá cuando arranque.</p><div class="grid"><div class="field"><label>Competencia</label><input id="competition" placeholder="Torneo Apertura APF"></div><div class="field"><label>Rama</label><select id="branch"><option>Masculino</option><option>Femenino</option><option>Mixto</option></select></div><div class="field"><label>Categoría</label><input id="category" placeholder="Suma 13"></div><div class="field"><label>Cancha</label><input id="court" placeholder="Cancha 1"></div><div class="field"><label>Instancia</label><input id="phase" placeholder="Grupo / Final"></div><div class="field"><label>Hora</label><input id="timeText" placeholder="14:00 hs"></div><div class="field"><label>Formato</label><select id="format"><option>Mejor de 3 sets</option><option>2 sets + super tiebreak</option><option>1 set</option></select></div><div class="field"><label>Pareja A</label><input id="team1"></div><div class="field"><label>Pareja B</label><input id="team2"></div><div class="field"><label>Jugador A1</label><input id="p1"></div><div class="field"><label>Jugador A2</label><input id="p2"></div><div class="field"><label>Jugador B1</label><input id="p3"></div><div class="field"><label>Jugador B2</label><input id="p4"></div><div class="field"><label>Sponsor texto</label><input id="sponsor" placeholder="Nombre sponsor"></div><div class="field"><label>Logo sponsor URL</label><input id="sponsorLogo" placeholder="https://..."></div></div><div class="row"><button class="btn primary" id="createBtn">Crear marcador</button></div></div><div class="card"><h2>Marcadores creados</h2><div id="adminList" class="list"></div></div><div class="card"><h2>Historial / Finalizados</h2><div id="doneList" class="list"></div></div><div class="footer">Agrupación Pádel Friense</div></div>`;
-$("createBtn").onclick=async()=>{let d=db();if(!d)return alert("Falta configurar Firebase en config.js");let m={competition:$("competition").value.trim()||"Sin competencia",branch:$("branch").value,category:$("category").value.trim(),court:$("court").value.trim(),phase:$("phase").value.trim(),timeText:$("timeText").value.trim(),format:$("format").value,team1:$("team1").value.trim()||"Pareja A",team2:$("team2").value.trim()||"Pareja B",p1:$("p1").value.trim()||"Jugador A1",p2:$("p2").value.trim()||"Jugador A2",p3:$("p3").value.trim()||"Jugador B1",p4:$("p4").value.trim()||"Jugador B2",sponsor:$("sponsor").value.trim()||"ESPACIO SPONSOR",sponsorLogo:$("sponsorLogo").value.trim(),status:"Programado",publicVisible:false,running:false,points:[0,0],games:[[0,0],[0,0],[0,0]],currentSet:0,setsWon:[0,0],serving:0,seconds:0,createdAt:Date.now()};await d.ref("matches/"+uid()).set(m);alert("Marcador creado. Ya aparece en Planillero.");};
-listenAll(arr=>{let active=arr.filter(m=>m.status!=="Finalizado"),done=arr.filter(m=>m.status==="Finalizado");$("adminList").innerHTML=active.length?active.map(m=>card(m,"admin")).join(""):`<div class="empty">No hay marcadores creados.</div>`;$("doneList").innerHTML=done.length?done.map(m=>card(m,"admin")).join(""):`<div class="empty">No hay finalizados.</div>`;attachActions(document,arr)})
+function renderStats(){
+  $('statTorneos').textContent = state.tournaments.length;
+  $('statParejas').textContent = state.pairs.length;
+  $('statPartidos').textContent = state.matches.length;
+  $('statSponsors').textContent = state.sponsors.length;
+  const upcoming = state.matches.slice(-5).reverse();
+  $('dashboardMatches').innerHTML = upcoming.length ? upcoming.map(matchItemHtml).join('') : '<p class="muted">Todavía no hay partidos cargados.</p>';
 }
-function renderPlanillero(){if(!$("planilleroApp"))return;$("planilleroApp").innerHTML=`<div class="wrap"><div class="header"><div class="brand"><div class="logo">APF</div><div><h1>Planillero APF</h1><p>Llevá los puntos en vivo.</p></div></div><div class="nav"><a class="btn" href="admin.html">Admin</a><a class="btn" href="publico.html" target="_blank">Público</a></div></div><div id="status" class="status">Conectando...</div><div class="card"><h2>Partidos para trabajar</h2><div id="planList" class="list"></div></div></div>`;listenAll(arr=>{let active=arr.filter(m=>m.status!=="Finalizado");$("planList").innerHTML=active.length?active.map(m=>card(m,"planillero")).join(""):`<div class="empty">No hay partidos cargados.</div>`;attachActions(document,arr)})}
-function renderPublic(){if(!$("publicApp"))return;$("publicApp").innerHTML=`<div class="wrap"><div class="header"><div class="brand"><div class="logo">APF</div><div><h1>Agrupación Pádel Friense</h1><p>Marcadores en vivo del torneo.</p></div></div><div class="nav"><a class="btn" href="tv.html" target="_blank">Modo TV</a></div></div><div id="status" class="status">Conectando...</div><div class="card"><h2>Marcadores en vivo</h2><div id="liveList" class="list"></div></div><div class="card"><h2>Partidos finalizados</h2><div id="doneList" class="list"></div></div></div>`;listenAll(arr=>{let live=arr.filter(m=>m.status==="En vivo"&&m.publicVisible),done=arr.filter(m=>m.status==="Finalizado").slice(0,12);$("liveList").innerHTML=live.length?live.map(m=>card(m,"public")).join(""):`<div class="empty">Todavía no hay marcadores activos.</div>`;$("doneList").innerHTML=done.length?done.map(m=>card(m,"public")).join(""):`<div class="empty">Todavía no hay partidos finalizados.</div>`})}
-function renderTV(){if(!$("tvApp"))return;document.body.classList.add("tvbody");$("tvApp").innerHTML=`<div class="tv"><div class="tvtop"><div class="tvbrand"><div class="tvlogo">APF</div><div class="tvtitle"><b id="tvComp">APF PÁDEL</b><span id="tvInfo">Marcador en vivo</span></div></div><div class="timer" id="tvTimer">00:00</div><div class="tvstatus"><span class="pill" id="tvStatus">En vivo</span></div></div><div class="tvmain"><section class="tvteam" id="teamA"><div class="pair" id="tvA">Pareja A</div><div class="players"><div class="player"><div class="photo" id="photoA1">A1</div><div class="name" id="tvP1">Jugador A1</div></div><div class="player"><div class="photo" id="photoA2">A2</div><div class="name" id="tvP2">Jugador A2</div></div></div><div class="tvpoint" id="tvPointA">0</div></section><aside class="center"><div class="serveBall">🎾</div><div class="sets"><div class="setRow"><div class="setBox"><span>A S1</span><b id="a0">0</b></div><div class="setBox"><span>B S1</span><b id="b0">0</b></div></div><div class="setRow"><div class="setBox"><span>A S2</span><b id="a1">0</b></div><div class="setBox"><span>B S2</span><b id="b1">0</b></div></div><div class="setRow"><div class="setBox"><span>A S3</span><b id="a2">0</b></div><div class="setBox"><span>B S3</span><b id="b2">0</b></div></div></div><div class="vs">VS</div></aside><section class="tvteam" id="teamB"><div class="pair" id="tvB">Pareja B</div><div class="players"><div class="player"><div class="photo" id="photoB1">B1</div><div class="name" id="tvP3">Jugador B1</div></div><div class="player"><div class="photo" id="photoB2">B2</div><div class="name" id="tvP4">Jugador B2</div></div></div><div class="tvpoint" id="tvPointB">0</div></section></div><div class="tvbottom"><span class="pill" id="tvServe">🎾 Saca Pareja A</span><span class="pill sponsor"><small>Acompañan este partido</small><span id="tvSponsor">ESPACIO SPONSOR</span></span></div></div>`;listenAll(arr=>{let hash=location.hash.replace("#","");let m=arr.find(x=>x.id===hash)||arr.find(x=>x.status==="En vivo")||arr[0];if(!m)return;["tvComp","tvInfo","tvTimer","tvStatus","tvA","tvB","tvP1","tvP2","tvP3","tvP4","tvPointA","tvPointB","tvSponsor","tvServe"].forEach(id=>{if(!$(id))return});$("tvComp").textContent=m.competition||"APF PÁDEL";$("tvInfo").textContent=info(m);$("tvTimer").textContent=fmt(m.seconds);$("tvStatus").textContent=m.status||"En vivo";$("tvA").textContent=m.team1||"Pareja A";$("tvB").textContent=m.team2||"Pareja B";$("tvP1").textContent=m.p1||"Jugador A1";$("tvP2").textContent=m.p2||"Jugador A2";$("tvP3").textContent=m.p3||"Jugador B1";$("tvP4").textContent=m.p4||"Jugador B2";$("tvPointA").textContent=pointText(m,0);$("tvPointB").textContent=pointText(m,1);for(let i=0;i<3;i++){ $("a"+i).textContent=m.games?.[i]?.[0]??0; $("b"+i).textContent=m.games?.[i]?.[1]??0; }$("teamA").classList.toggle("serving",m.serving===0);$("teamB").classList.toggle("serving",m.serving===1);$("tvServe").textContent="🎾 Saca "+(m.serving===0?(m.team1||"Pareja A"):(m.team2||"Pareja B"));$("tvSponsor").textContent=m.sponsor||"ESPACIO SPONSOR"})}
-document.addEventListener("DOMContentLoaded",()=>{renderAdmin();renderPlanillero();renderPublic();renderTV();setInterval(tick,1000)})
-})();
+function renderTournaments(){
+  $('tournamentList').innerHTML = state.tournaments.map(t=>`<article class="mini-card"><span class="chip">${t.category}</span><h4>${t.name}</h4><p>Formato: ${t.format}</p><p>Fecha: ${t.date || 'Sin fecha'}</p><p>Premio: ${t.prize || 'A definir'}</p><button onclick="deleteTournament('${t.id}')">Eliminar</button></article>`).join('') || empty('No hay torneos cargados.');
+}
+function renderPairs(){
+  $('pairList').innerHTML = state.pairs.map(p=>`<article class="mini-card"><div class="photos"><img src="${p.photo1}"/><img src="${p.photo2}"/></div><h4>${pairName(p)}</h4><p>Categoría: ${p.category || 'Sin categoría'}</p><button onclick="deletePair('${p.id}')">Eliminar</button></article>`).join('') || empty('No hay parejas cargadas.');
+}
+function renderSelects(){
+  $('matchTournament').innerHTML = state.tournaments.map(t=>`<option value="${t.id}">${t.name} · ${t.category}</option>`).join('');
+  ['matchA','matchB'].forEach(id=> $(id).innerHTML = state.pairs.map(p=>`<option value="${p.id}">${pairName(p)}</option>`).join(''));
+  $('liveMatchSelect').innerHTML = state.matches.map(m=>`<option value="${m.id}" ${m.id===liveMatchId?'selected':''}>${pairName(getPair(m.pairA))} vs ${pairName(getPair(m.pairB))}</option>`).join('');
+}
+function renderMatches(){
+  $('matchList').innerHTML = state.matches.map(m=>`<article class="mini-card"><span class="chip">${getTournament(m.tournamentId)?.category || 'Sin torneo'}</span><h4>${pairName(getPair(m.pairA))}</h4><p>vs</p><h4>${pairName(getPair(m.pairB))}</h4><p>${m.date || 'Sin fecha'} ${m.time || ''} · ${m.court || ''}</p><p>Estado: <b class="${m.status==='Finalizado'?'finished':''}">${m.status}</b></p><p>Resultado: ${m.score.A.sets}-${m.score.B.sets} sets · ${m.score.A.games}-${m.score.B.games} games</p><button onclick="setLive('${m.id}')">Abrir en marcador</button> <button onclick="deleteMatch('${m.id}')">Eliminar</button></article>`).join('') || empty('No hay partidos creados.');
+}
+function renderSponsors(){
+  $('sponsorList').innerHTML = state.sponsors.map(s=>`<article class="mini-card"><h4>${s.name}</h4>${s.logo?`<img src="${s.logo}" style="max-width:100%;height:90px;object-fit:contain;background:white;border-radius:12px;padding:8px">`:''}<p>Plan: ${s.plan}</p><p>${s.instagram || ''}</p><button onclick="deleteSponsor('${s.id}')">Eliminar</button></article>`).join('') || empty('No hay sponsors cargados.');
+}
+function renderScoreboard(){
+  const match = getLiveMatch();
+  if(!match){
+    ['aName','bName'].forEach(id=>$(id).textContent='Cargá un partido');
+    return;
+  }
+  liveMatchId = match.id;
+  const a = getPair(match.pairA), b = getPair(match.pairB), t = getTournament(match.tournamentId);
+  $('scoreTournament').textContent = t ? `${t.name} · ${t.category}` : 'APF Manager';
+  $('scoreCourt').textContent = `${match.court || 'Cancha'} · ${match.status}`;
+  $('aName').textContent = pairName(a); $('bName').textContent = pairName(b);
+  $('aPhoto1').src = a?.photo1 || DEFAULT_PHOTO; $('aPhoto2').src = a?.photo2 || DEFAULT_PHOTO;
+  $('bPhoto1').src = b?.photo1 || DEFAULT_PHOTO; $('bPhoto2').src = b?.photo2 || DEFAULT_PHOTO;
+  $('aPoints').textContent = pointSteps[match.score.A.points] || 'GAME'; $('bPoints').textContent = pointSteps[match.score.B.points] || 'GAME';
+  $('aGames').textContent = match.score.A.games; $('bGames').textContent = match.score.B.games;
+  $('aSets').textContent = match.score.A.sets; $('bSets').textContent = match.score.B.sets;
+  $('teamABox').classList.toggle('serving', serve==='A'); $('teamBBox').classList.toggle('serving', serve==='B');
+  $('liveSponsors').innerHTML = state.sponsors.slice(0,8).map(s=>`<span class="sponsor-badge">${s.name}</span>`).join('');
+}
+function renderPublic(){
+  $('publicMatches').innerHTML = state.matches.map(matchItemHtml).join('') || empty('Todavía no hay fixture público.');
+  $('publicSponsors').innerHTML = state.sponsors.map(s=>`<div class="sponsor-card">${s.logo?`<img src="${s.logo}">`:''}<b>${s.name}</b><p>${s.plan}</p></div>`).join('') || empty('Sin sponsors cargados.');
+}
+function matchItemHtml(m){
+  return `<div class="list-item"><div><b>${pairName(getPair(m.pairA))}</b><br><span>vs ${pairName(getPair(m.pairB))}</span><br><small>${m.date || 'Sin fecha'} ${m.time || ''} · ${m.court || ''}</small></div><div><span class="chip">${m.status}</span><br><b>${m.score.A.sets}-${m.score.B.sets}</b></div></div>`;
+}
+function empty(text){ return `<p style="color:#9ca3af">${text}</p>`; }
+
+function selectLiveMatch(){ liveMatchId = $('liveMatchSelect').value; saveState(); }
+function setLive(id){ liveMatchId=id; goView('marcador'); saveState(); }
+function addPoint(team){ const m=getLiveMatch(); if(!m)return; snapshot(m); m.status='En juego'; m.score[team].points++; if(m.score[team].points>=5){ newGame(team,false); return; } saveState(); }
+function removePoint(team){ const m=getLiveMatch(); if(!m)return; snapshot(m); m.score[team].points=Math.max(0,m.score[team].points-1); saveState(); }
+function newGame(team, takeSnap=true){ const m=getLiveMatch(); if(!m)return; if(takeSnap) snapshot(m); m.status='En juego'; m.score[team].games++; m.score.A.points=0; m.score.B.points=0; serve = serve==='A'?'B':'A'; if(m.score[team].games>=6 && Math.abs(m.score.A.games-m.score.B.games)>=2) newSet(team,false); else saveState(); }
+function newSet(team, takeSnap=true){ const m=getLiveMatch(); if(!m)return; if(takeSnap) snapshot(m); m.score[team].sets++; m.score.A.games=0; m.score.B.games=0; m.score.A.points=0; m.score.B.points=0; saveState(); }
+function toggleServe(){ serve = serve==='A'?'B':'A'; saveState(); }
+function finishMatch(){ const m=getLiveMatch(); if(!m)return; snapshot(m); m.status='Finalizado'; saveState(); }
+function resetScore(){ const m=getLiveMatch(); if(!m)return; snapshot(m); m.score=initScore(); m.status='Pendiente'; saveState(); }
+
+function deleteTournament(id){ state.tournaments = state.tournaments.filter(x=>x.id!==id); saveState(); }
+function deletePair(id){ state.pairs = state.pairs.filter(x=>x.id!==id); saveState(); }
+function deleteMatch(id){ state.matches = state.matches.filter(x=>x.id!==id); if(liveMatchId===id) liveMatchId = state.matches[0]?.id || null; saveState(); }
+function deleteSponsor(id){ state.sponsors = state.sponsors.filter(x=>x.id!==id); saveState(); }
+
+function seedDemo(){
+  const t = {id:uid(), name:'Torneo Apertura APF', category:'Suma 11 Masculino', format:'Zonas + Playoffs', date:'2026-07-02', prize:'$400.000'};
+  const t2 = {id:uid(), name:'Torneo Apertura APF', category:'Suma 15 Femenino', format:'Zonas + Playoffs', date:'2026-07-02', prize:'$400.000'};
+  const pairs = [
+    {id:uid(),p1:'Sebastián Peñaflor',p2:'Jeremías Ávila',category:'Suma 11',photo1:DEFAULT_PHOTO,photo2:DEFAULT_PHOTO},
+    {id:uid(),p1:'Maximiliano Paz',p2:'Esteban Sabagh',category:'Suma 11',photo1:DEFAULT_PHOTO,photo2:DEFAULT_PHOTO},
+    {id:uid(),p1:'Lorena Picco',p2:'Emiliano Manzanelli',category:'Suma 15',photo1:DEFAULT_PHOTO,photo2:DEFAULT_PHOTO},
+    {id:uid(),p1:'Jose Vergara',p2:'Gastón Llapur',category:'Suma 11',photo1:DEFAULT_PHOTO,photo2:DEFAULT_PHOTO}
+  ];
+  const m1 = {id:uid(), tournamentId:t.id, pairA:pairs[0].id, pairB:pairs[1].id, date:'2026-07-02', time:'20:00', court:'Cancha 1', status:'Pendiente', score:initScore()};
+  const m2 = {id:uid(), tournamentId:t2.id, pairA:pairs[2].id, pairB:pairs[3].id, date:'2026-07-02', time:'21:00', court:'Cancha 2', status:'Pendiente', score:initScore()};
+  state.tournaments=[t,t2]; state.pairs=pairs; state.matches=[m1,m2]; liveMatchId=m1.id;
+  state.sponsors=[{id:uid(),name:'Sponsor Principal',logo:'',instagram:'@sponsor',plan:'Principal'},{id:uid(),name:'Kiosco Roma',logo:'',instagram:'',plan:'Marcador'},{id:uid(),name:'Buenas Migas',logo:'',instagram:'',plan:'Fixture'}];
+  saveState();
+}
+
+renderAll();
