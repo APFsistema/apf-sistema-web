@@ -1,0 +1,113 @@
+{
+  "competencias": {
+    "campos": [
+      "nombre",
+      "tipo",
+      "rama",
+      "categoria",
+      "formato",
+      "estado",
+      "fechaInicio",
+      "reglas",
+      "createdBy",
+      "createdAt"
+    ]
+  },
+  "jugadores": {
+    "campos": [
+      "nombre",
+      "apellido",
+      "rama",
+      "categoria",
+      "lado",
+      "fotoUrl",
+      "telefono",
+      "createdAt"
+    ]
+  },
+  "parejas": {
+    "campos": [
+      "jugador1Id",
+      "jugador2Id",
+      "nombreVisible",
+      "competenciaId",
+      "estadoInscripcion",
+      "pago",
+      "observaciones"
+    ]
+  },
+  "partidos": {
+    "campos": [
+      "competenciaId",
+      "pareja1Id",
+      "pareja2Id",
+      "fecha",
+      "hora",
+      "cancha",
+      "estado",
+      "planilleroId",
+      "marcadorId",
+      "resultadoId"
+    ]
+  },
+  "marcadores": {
+    "campos": [
+      "partidoId",
+      "sets",
+      "puntos",
+      "sacador",
+      "estado",
+      "updatedAt",
+      "live"
+    ]
+  },
+  "resultados": {
+    "campos": [
+      "partidoId",
+      "ganadorId",
+      "sets",
+      "games",
+      "publicado",
+      "finalizadoPor",
+      "finalizadoAt"
+    ]
+  },
+  "rankings": {
+    "campos": [
+      "competenciaId",
+      "categoria",
+      "rama",
+      "tabla",
+      "updatedAt"
+    ]
+  },
+  "usuarios": {
+    "campos": [
+      "nombre",
+      "email",
+      "rol",
+      "activo",
+      "canchaAsignada",
+      "permisos"
+    ]
+  },
+  "sponsors": {
+    "campos": [
+      "nombre",
+      "tipo",
+      "logoUrl",
+      "ubicaciones",
+      "competenciaId",
+      "activo"
+    ]
+  },
+  "historial": {
+    "campos": [
+      "usuarioId",
+      "accion",
+      "modulo",
+      "detalle",
+      "createdAt"
+    ]
+  }
+}

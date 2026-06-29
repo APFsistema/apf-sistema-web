@@ -1,0 +1,9 @@
+# Variables futuras para plataforma APF online
+APP_NAME=Agrupacion Padel Friense
+PUBLIC_URL=https://tudominio.com
+ADMIN_ROUTE=/admin
+SCOREKEEPER_ROUTE=/planillero
+TV_ROUTE=/tv
+DATABASE_URL=pendiente
+AUTH_PROVIDER=Firebase_o_Supabase
+STORAGE_BUCKET=pendiente

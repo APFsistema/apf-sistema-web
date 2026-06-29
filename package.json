@@ -1,0 +1,17 @@
+{
+  "name": "apf-plataforma-web-v60",
+  "version": "1.0.0",
+  "description": "Base APF para pasar de prototipo a plataforma online real",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@vitejs/plugin-legacy": "latest",
+    "vite": "latest",
+    "firebase": "latest",
+    "@supabase/supabase-js": "latest"
+  },
+  "devDependencies": {}
+}
