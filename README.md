@@ -1,1 +1,1 @@
-APF Manager V5.8.3h - Admin y publico separados. Admin: /  Publico: /#public=apf-torneo
+APF Manager V5.8.3i - Online automático. Subir a Vercel. Admin: /  Público: /#public=apf-torneo
