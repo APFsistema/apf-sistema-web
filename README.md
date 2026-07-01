@@ -1,1 +1,1 @@
-APF Manager V5.8.3e - Público solo lectura con link único. Admin: / ; Público: /#public=CANAL (copiado desde el sistema).
+APF Manager V5.8.3f - Público solo lectura final. Admin: dominio base. Público: dominio/#public=apf-torneo
