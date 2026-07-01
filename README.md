@@ -1,10 +1,15 @@
-APF Manager V5.8.2.11 - Volver al fixture en planillero
+# APF Manager V5.8.3b - Online Firebase corregido
 
-Base: V5.8.2.10.
+Base: V5.8.3 modo público online.
 
-Cambio puntual:
-- Se quitó el botón visible “Volver al fixture” del tablero en vivo para no tapar el diseño.
-- La opción “Volver al fixture” queda dentro de ⚙ Planillero.
-- En resultado final también queda disponible para volver sin recargar.
+Corrección puntual:
+- Se agregaron los SDK de Firebase App y Realtime Database para que el botón Probar/publicar pueda iniciar Firebase correctamente.
+- No se tocó el marcador, puntos, sets, sponsors, sorteo ni calentamiento.
 
-No se tocaron marcador, puntos, sets, tie-break, STB, sponsors, sorteo, calentamiento ni vista pública.
+Uso:
+1. Abrir index.html.
+2. Entrar a Configuración > Modo público online.
+3. Pegar el JSON de Firebase.
+4. Activar modo online.
+5. Guardar online.
+6. Probar/publicar.
