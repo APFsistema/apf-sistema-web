@@ -1,15 +1,4 @@
-# APF Manager V5.8.3b - Online Firebase corregido
+APF Manager V5.8.3c - Online con logo integrado
 
-Base: V5.8.3 modo público online.
-
-Corrección puntual:
-- Se agregaron los SDK de Firebase App y Realtime Database para que el botón Probar/publicar pueda iniciar Firebase correctamente.
-- No se tocó el marcador, puntos, sets, sponsors, sorteo ni calentamiento.
-
-Uso:
-1. Abrir index.html.
-2. Entrar a Configuración > Modo público online.
-3. Pegar el JSON de Firebase.
-4. Activar modo online.
-5. Guardar online.
-6. Probar/publicar.
+Corrección puntual: el logo APF queda integrado dentro del HTML para que no falle en Vercel si no sube apf-logo.png.
+Base: V5.8.3b online Firebase corregido.
