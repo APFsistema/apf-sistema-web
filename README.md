@@ -1,1 +1,1 @@
-APF Manager V5.8.3g - Público solo lectura corregido. Admin en /, público en /#public=apf-torneo.
+APF Manager V5.8.3h - Admin y publico separados. Admin: /  Publico: /#public=apf-torneo
