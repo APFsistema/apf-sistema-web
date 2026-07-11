@@ -1,1 +1,1 @@
-APF Manager V5.8.3l - Saque automático en Tie-break/STB + exportar/importar datos.
+APF Manager V5.8.3m - Emergencia espacio: agrega exportar/importar y limpieza de fotos de jugadores.
